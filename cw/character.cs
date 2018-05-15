@@ -10,8 +10,11 @@
 //
 //
 //_couponlock = threading.Lock()
-//
-//class Character(object):
+
+class Character
+{
+    public Character(UNK? data=null)
+    {
 //    def __init__(self, data=None):
 //        if not data is None:
 //            self.data = data
@@ -171,14 +174,16 @@
 //
 //        # キャッシュ
 //        self._voc_tbl = {}
-//
-//    def get_imagepaths(self):
-//        """現在表示中のカード画像の情報を
-//        cw.image.ImageInfoのlistで返す。
-//        """
-//        data = self.data.find("Property")
-//        return cw.image.get_imageinfos(data)
-//
+    }
+  
+    public UNK get_imagepaths()
+    {
+        // 現在表示中のカード画像の情報を
+        // cw.image.ImageInfoのlistで返す。
+        UNK data = this.data.find("Property");
+        return cw.image.get_imageinfos(data);
+    }
+
 //    def set_images(self, paths):
 //        """このキャラクターのカード画像を
 //        cw.image.ImageInfoのlistで指定した内容に差し替える。
@@ -2932,3 +2937,4 @@
 //
 //        return d
 //
+}
