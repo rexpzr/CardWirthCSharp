@@ -1,0 +1,2 @@
+# CardWirthCSharp
+CardWirthPyをC#で書き直し、Unityでも動作可能にするプロジェクト
