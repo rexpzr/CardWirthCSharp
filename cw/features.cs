@@ -152,21 +152,16 @@ namespace cw.features
         {
         }
     }
-
-    //
-    //def wrap_ability(data):
-    //    """
-    //    能力値の切り上げ・切り捨て。
-    //    """
-    //    data.dex = cw.util.numwrap(data.dex, 1, data.maxdex)
-    //    data.agl = cw.util.numwrap(data.agl, 1, data.maxagl)
-    //    data.int = cw.util.numwrap(data.int, 1, data.maxint)
-    //    data.str = cw.util.numwrap(data.str, 1, data.maxstr)
-    //    data.vit = cw.util.numwrap(data.vit, 1, data.maxvit)
-    //    data.min = cw.util.numwrap(data.min, 1, data.maxmin)
-    //    data.aggressive = int(cw.util.numwrap(data.aggressive, -4, 4))
-    //    data.cheerful = int(cw.util.numwrap(data.cheerful, -4, 4))
-    //    data.brave = int(cw.util.numwrap(data.brave, -4, 4))
-    //    data.cautious = int(cw.util.numwrap(data.cautious, -4, 4))
-    //    data.trickish = int(cw.util.numwrap(data.trickish, -4, 4))
+    
+    public static F
+    {
+        public static void wrap_ability(UNK data)
+        {
+            data.dex = cw.util.F.numwrap(data.dex, 1, data.maxdex)
+            data.agl = cw.util.F.numwrap(data.agl, 1, data.maxagl)
+            data.int = cw.util.F.numwrap(data.int, 1, data.maxint)
+            data.str = cw.util.F.numwrap(data.str, 1, data.maxstr)
+            data.vit = cw.util.F.numwrap(data.vit, 1, data.maxvit)
+        }
+    }
 }
