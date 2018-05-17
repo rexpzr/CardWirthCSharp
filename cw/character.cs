@@ -12,34 +12,53 @@
 //_couponlock = threading.Lock()
 
 class Character
-{
+{          
+    private UNK data;
+    private bool reversed;
+    //  名前
+    private string name;
+    //  レベル
+    private int level;
+    //  各種所持カードのリスト
+    private List<UNK> cardpocket;
+    //  全てホールド
+    private List<UNK> hold_all;
+    //  現在ライフ・最大ライフ
+    private UNK life;
+    private UNK maxlife;
+    //  精神状態
+    private string mentality;
+    private UNK mentality_dur;
+
+
+
     public Character(UNK? data=null)
     {
 //    def __init__(self, data=None):
 //        if not data is None:
 //            self.data = data
-//        self.reversed = False
+//        self.reversed = false
 //
-//        # 名前
-//        self.name = self.data.gettext("Property/Name", "")
-//        # レベル
-//        self.level = cw.util.numwrap(self.data.getint("Property/Level", 1), 1, 65536)
-//        # 各種所持カードのリスト
-//        self.cardpocket = self.get_cardpocket()
-//        # 全てホールド
-//        self.hold_all = [
-//            self.data.getbool("SkillCards", "hold_all", False),
-//            self.data.getbool("ItemCards", "hold_all", False),
-//            self.data.getbool("BeastCards", "hold_all", False),
-//        ]
-//        # 現在ライフ・最大ライフ
-//        self.life = max(0, self.data.getint("Property/Life", 0))
-//        self.maxlife = max(1, self.data.getint("Property/Life", "max", 1))
-//        self.life = min(self.maxlife, self.life)
-//        # 精神状態
-//        self.mentality = self.data.gettext("Property/Status/Mentality", "Normal")
-//        self.mentality_dur = cw.util.numwrap(self.data.getint("Property/Status/Mentality",
-//                                                                    "duration", 0), 0, 999)
+           // 名前
+           this.name = this.data.gettext("Property/Name", "");
+           // レベル
+           this.level = cw.util.numwrap(this.data.getint("Property/Level", 1), 1, 65536);
+           // 各種所持カードのリスト
+           this.cardpocket = this.get_cardpocket();
+           // 全てホールド
+           this.hold_all = [
+               this.data.getbool("SkillCards", "hold_all", false),
+               this.data.getbool("ItemCards", "hold_all", false),
+               this.data.getbool("BeastCards", "hold_all", false),
+           ];
+           // 現在ライフ・最大ライフ
+           this.life = max(0, this.data.getint("Property/Life", 0));
+           this.maxlife = max(1, this.data.getint("Property/Life", "max", 1));
+           this.life = min(this.maxlife, this.life);
+           // 精神状態
+           this.mentality = this.data.gettext("Property/Status/Mentality", "Normal");
+           this.mentality_dur = cw.util.numwrap(this.data.getint("Property/Status/Mentality",
+                                                                   "duration", 0), 0, 999);
 //        if self.mentality_dur == 0 or self.mentality == "Normal":
 //            self.mentality = "Normal"
 //            self.mentality_dur = 0
