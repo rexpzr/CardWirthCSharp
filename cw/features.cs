@@ -1,67 +1,98 @@
 namespace cw.features
 {
-    //"""特性の定義。性別、年代、素質、特徴に派生する。"""
-    //class Feature(object):
-    //    def __init__(self, data):
-    //        self.data = data
-    //        # 特性名
-    //        self.name = self.data.gettext("Name", "")
-    //
-    //        # 器用度修正
-    //        self.dexbonus = self.data.getfloat("Physical", "dex", 0.0)
-    //        # 敏捷度修正
-    //        self.aglbonus = self.data.getfloat("Physical", "agl", 0.0)
-    //        # 知力修正
-    //        self.intbonus = self.data.getfloat("Physical", "int", 0.0)
-    //        # 筋力修正
-    //        self.strbonus = self.data.getfloat("Physical", "str", 0.0)
-    //        # 生命力修正
-    //        self.vitbonus = self.data.getfloat("Physical", "vit", 0.0)
-    //        # 精神力修正
-    //        self.minbonus = self.data.getfloat("Physical", "min", 0.0)
-    //
-    //        # 好戦-平和
-    //        self.aggressive = self.data.getfloat("Mental", "aggressive", 0.0)
-    //        # 社交-内向
-    //        self.cheerful   = self.data.getfloat("Mental", "cheerful", 0.0)
-    //        # 勇敢-臆病
-    //        self.brave      = self.data.getfloat("Mental", "brave", 0.0)
-    //        # 慎重-大胆
-    //        self.cautious   = self.data.getfloat("Mental", "cautious", 0.0)
-    //        # 狡猾-正直
-    //        self.trickish   = self.data.getfloat("Mental", "trickish", 0.0)
-    //
-    //    def modulate(self, data, physical=True, mental=True):
-    //        """dataの能力値を特性によって調整する。"""
-    //        if physical:
-    //            data.dex += self.dexbonus
-    //            data.agl += self.aglbonus
-    //            data.int += self.intbonus
-    //            data.str += self.strbonus
-    //            data.vit += self.vitbonus
-    //            data.min += self.minbonus
-    //        if mental:
-    //            data.aggressive += self.aggressive
-    //            data.cheerful   += self.cheerful
-    //            data.brave      += self.brave
-    //            data.cautious   += self.cautious
-    //            data.trickish   += self.trickish
-    //
-    //    def demodulate(self, data, physical=True, mental=True):
-    //        """modulate()と逆の調整を行う。"""
-    //        if physical:
-    //            data.dex -= self.dexbonus
-    //            data.agl -= self.aglbonus
-    //            data.int -= self.intbonus
-    //            data.str -= self.strbonus
-    //            data.vit -= self.vitbonus
-    //            data.min -= self.minbonus
-    //        if mental:
-    //            data.aggressive -= self.aggressive
-    //            data.cheerful   -= self.cheerful
-    //            data.brave      -= self.brave
-    //            data.cautious   -= self.cautious
-    //            data.trickish   -= self.trickish
+    // """特性の定義。性別、年代、素質、特徴に派生する。"""
+    class Feature
+    {
+        public UNK data;
+        public string name;
+        public float dexbonus;
+        public float aglbonus;
+        public float intbonus;
+        public float strbonus;
+        public float vitbonus;
+        public float minbonus;
+
+        public float aggressive;
+        public float cheerful;
+        public float brave;
+        public float cautious;
+        public float trickish;
+            
+        public Feature(UNK data)
+        {
+            this.data = data;
+            // 特性名
+            this.name = this.data.gettext("Name", "");
+    
+            // 器用度修正
+            this.dexbonus = this.data.getfloat("Physical", "dex", 0.0);
+            // 敏捷度修正
+            this.aglbonus = this.data.getfloat("Physical", "agl", 0.0);
+            // 知力修正
+            this.intbonus = this.data.getfloat("Physical", "int", 0.0);
+            // 筋力修正
+            this.strbonus = this.data.getfloat("Physical", "str", 0.0);
+            // 生命力修正
+            this.vitbonus = this.data.getfloat("Physical", "vit", 0.0);
+            // 精神力修正
+            this.minbonus = this.data.getfloat("Physical", "min", 0.0);
+    
+            // 好戦-平和
+            this.aggressive = this.data.getfloat("Mental", "aggressive", 0.0);
+            // 社交-内向
+            this.cheerful   = this.data.getfloat("Mental", "cheerful", 0.0);
+            // 勇敢-臆病
+            this.brave      = this.data.getfloat("Mental", "brave", 0.0);
+            // 慎重-大胆
+            this.cautious   = this.data.getfloat("Mental", "cautious", 0.0);
+            // 狡猾-正直
+            this.trickish   = this.data.getfloat("Mental", "trickish", 0.0);
+        }
+    
+        public void modulate(UNK data, bool physical=true, bool mental=true)
+        {
+            // """dataの能力値を特性によって調整する。"""
+            if (physical)
+            {
+                data.dex += this.dexbonus;
+                data.agl += this.aglbonus;
+                data.int += this.intbonus;
+                data.str += this.strbonus;
+                data.vit += this.vitbonus;
+                data.min += this.minbonus;
+            }
+            if (mental)
+            {
+                data.aggressive += this.aggressive;
+                data.cheerful   += this.cheerful;
+                data.brave      += this.brave;
+                data.cautious   += this.cautious;
+                data.trickish   += this.trickish;
+            }
+        }
+    
+        public void demodulate(UNK data, bool physical=true, bool mental=true)
+        {
+            // """modulate()と逆の調整を行う。"""
+            if (physical)
+            {
+                data.dex -= this.dexbonus;
+                data.agl -= this.aglbonus;
+                data.int -= this.intbonus;
+                data.str -= this.strbonus;
+                data.vit -= this.vitbonus;
+                data.min -= this.minbonus;
+            }
+            if (mental)
+            {
+                data.aggressive -= this.aggressive;
+                data.cheerful   -= this.cheerful;
+                data.brave      -= this.brave;
+                data.cautious   -= this.cautious;
+                data.trickish   -= this.trickish;
+            }
+        }
+    }
 
     // 性別の定義。
     class Sex : Feature
