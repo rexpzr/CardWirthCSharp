@@ -30,3 +30,18 @@ class AAA(BBB):
 ```
 
 とする
+
+* モジュールに直接定義した関数は、static の class F を作成して、そのクラスメソッドとする
+```
+//def hoge(x):
+```
+なら
+```
+public static class F
+{
+    public static UNK hoge(UNK x)
+    {
+```
+とする
+
+* 型が分からない変数は、型を```UNK```とする
