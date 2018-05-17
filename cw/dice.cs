@@ -9,22 +9,31 @@ class Dice
         }
         return n;
     }
-    //def choice(self, seq):
-    //    if seq:
-    //        return random.choice(seq)
-    //    else:
-    //        return None
 
-    //def shuffle(self, seq):
-    //    seq2 = copy.copy(seq)
-    //    random.shuffle(seq2)
-    //    return seq2
+    public UNK? choice(UNK seq)
+    {
+        if (seq) {
+            return random.choice(seq); // TODO
+        } else {
+            return null;
+        }
+    }
 
-    //def pop(self, seq):
-    //    item = self.choice(seq)
+    public UNK shuffle(UNK seq)
+    {
+        UNK seq2 = copy.copy(seq); // TODO
+        random.shuffle(seq2); // TODO
+        return seq2;
+    }
 
-    //    if item:
-    //        seq.remove(item)
+    public UNK pop(UNK seq)
+    {
+        UNK item = self.choice(seq); // TODO
 
-    //    return item
+        if (item) {
+            seq.remove(item); // TODO
+        }
+
+        return item;
+    }
 }
