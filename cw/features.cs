@@ -188,11 +188,11 @@ namespace cw.features
     {
         public static void wrap_ability(UNK data)
         {
-            data.dex = cw.util.F.numwrap(data.dex, 1, data.maxdex)
-            data.agl = cw.util.F.numwrap(data.agl, 1, data.maxagl)
-            data.int = cw.util.F.numwrap(data.int, 1, data.maxint)
-            data.str = cw.util.F.numwrap(data.str, 1, data.maxstr)
-            data.vit = cw.util.F.numwrap(data.vit, 1, data.maxvit)
+            data.dex = cw.util.F.numwrap(data.dex, 1, data.maxdex);
+            data.agl = cw.util.F.numwrap(data.agl, 1, data.maxagl);
+            data.int = cw.util.F.numwrap(data.int, 1, data.maxint);
+            data.str = cw.util.F.numwrap(data.str, 1, data.maxstr);
+            data.vit = cw.util.F.numwrap(data.vit, 1, data.maxvit);
         }
     }
 }
