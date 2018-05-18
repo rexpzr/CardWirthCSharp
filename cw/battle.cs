@@ -1,23 +1,38 @@
-//import bisect
-//
-//import cw
-//
-//
-//class BattleError(Exception):
-//    pass
-//
-//class BattleAreaChangeError(BattleError):
-//    pass
-//
-//class BattleStartBattleError(BattleError):
-//    pass
-//
-//class BattleWinError(BattleError):
-//    pass
-//
-//class BattleDefeatError(BattleError):
-//    pass
-//
+public class BattleError : Exception
+{
+    public BattleError() { }
+    public BattleError(string message) : base(message) { }
+    public BattleError(string message, Exception inner) : base(message) { }
+}
+
+public class BattleAreaChangeError : Exception
+{
+    public BattleAreaChangeError() { }
+    public BattleAreaChangeError(string message) : base(message) { }
+    public BattleAreaChangeError(string message, Exception inner) : base(message) { }
+}
+
+public class BattleStartBattleError : Exception
+{
+    public BattleStartBattleError() { }
+    public BattleStartBattleError(string message) : base(message) { }
+    public BattleStartBattleError(string message, Exception inner) : base(message) { }
+}
+
+public class BattleWinError : Exception
+{
+    public BattleWinError() { }
+    public BattleWinError(string message) : base(message) { }
+    public BattleWinError(string message, Exception inner) : base(message) { }
+}
+
+public class BattleDefeatError : Exception
+{
+    public BattleDefeatError() { }
+    public BattleDefeatError(string message) : base(message) { }
+    public BattleDefeatError(string message, Exception inner) : base(message) { }
+}
+
 //class BattleEngine(object):
 //    def __init__(self):
 //        """
