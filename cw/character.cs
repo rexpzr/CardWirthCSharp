@@ -30,6 +30,80 @@ class Character
     private string mentality;
     private UNK mentality_dur;
 
+    // 麻痺値
+    private UNK paralyze;
+    // 中毒値
+    private UNK poison;
+    // 束縛時間値
+    private UNK bind;
+    // 沈黙時間値
+    private UNK silence;
+    // 暴露時間値
+    private UNK faceup;
+    // 魔法無効時間値
+    private UNK antimagic;
+    // 行動力強化値
+    private UNK enhance_act;
+    private UNK enhance_act_dur;
+
+    // 回避力強化値
+    private UNK enhance_avo;
+    private UNK enhance_avo_dur;
+
+    // 抵抗力強化値
+    private UNK enhance_res;
+    private UNK enhance_res_dur;
+
+    // 防御力強化値
+    private UNK enhance_def;
+    private UNK enhance_def_dur;
+
+    // 各種能力値  
+    private UNK physical;
+    private UNK mental;
+    private UNK enhance;
+
+    // 特性
+    private UNK feature;
+    private UNK noeffect;
+    private UNK resist;
+    private UNK weakness;
+
+    // デッキ
+    private Deck deck;
+
+    // 戦闘行動(Target, CardHeader)
+    private UNK actiondata;
+    private bool actionautoselected;
+
+    // 行動順位を決定する数値
+    private UNK actionorder;
+
+    // ラウンド処理中で行動開始前ならTrue
+    private bool actionend;
+    private bool reversed;
+
+    // クーポン一覧
+    private Dictionary<UNK, UNK> coupons;
+
+    // 時限クーポンのデータのリスト(name, flag_countable)
+    private UNK timedcoupons;
+
+    // 対象消去されたか否か
+    private bool _vanished;
+    // 互換性マーク
+    private UNK versionhint;
+
+    // 状態の正規化
+    private UNK cardimg;
+
+    // 適性検査用のCardHeader。
+    private UNK test_aptitude;
+
+    // キャッシュ
+    private Dictionary<UNK, UNK> _voc_tbl;
+
+
 
 
     public Character(UNK? data=null)
@@ -39,27 +113,183 @@ class Character
 //            self.data = data
 //        self.reversed = false
 //
-           // 名前
-           this.name = this.data.gettext("Property/Name", "");
-           // レベル
-           this.level = cw.util.numwrap(this.data.getint("Property/Level", 1), 1, 65536);
-           // 各種所持カードのリスト
-           this.cardpocket = this.get_cardpocket();
-           // 全てホールド
-           this.hold_all = [
-               this.data.getbool("SkillCards", "hold_all", false),
-               this.data.getbool("ItemCards", "hold_all", false),
-               this.data.getbool("BeastCards", "hold_all", false),
-           ];
-           // 現在ライフ・最大ライフ
-           this.life = max(0, this.data.getint("Property/Life", 0));
-           this.maxlife = max(1, this.data.getint("Property/Life", "max", 1));
-           this.life = min(this.maxlife, this.life);
-           // 精神状態
-           this.mentality = this.data.gettext("Property/Status/Mentality", "Normal");
-           this.mentality_dur = cw.util.numwrap(this.data.getint("Property/Status/Mentality",
+        // 名前
+        this.name = this.data.gettext("Property/Name", "");
+        // レベル
+        this.level = cw.util.numwrap(this.data.getint("Property/Level", 1), 1, 65536);
+        // 各種所持カードのリスト
+        this.cardpocket = this.get_cardpocket();
+        // 全てホールド
+        this.hold_all = [
+           this.data.getbool("SkillCards", "hold_all", false),
+           this.data.getbool("ItemCards", "hold_all", false),
+           this.data.getbool("BeastCards", "hold_all", false),
+        ];
+        // 現在ライフ・最大ライフ
+        this.life = max(0, this.data.getint("Property/Life", 0));
+        this.maxlife = max(1, this.data.getint("Property/Life", "max", 1));
+        this.life = min(this.maxlife, this.life);
+        // 精神状態
+        this.mentality = this.data.gettext("Property/Status/Mentality", "Normal");
+        this.mentality_dur = cw.util.numwrap(this.data.getint("Property/Status/Mentality",
+                                                               "duration", 0), 0, 999);
+
+        if (this.mentality_dur == 0 or this.mentality == "Normal")
+        {
+             this.mentality = "Normal"
+             this.mentality_dur = 0 
+        }
+
+       // 麻痺値
+       this.paralyze = cw.util.numwrap(this.data.getint("Property/Status/Paralyze", 0), 0, 40);
+       // 中毒値
+       this.poison = cw.util.numwrap(this.data.getint("Property/Status/Poison", 0), 0, 40);
+       // 束縛時間値
+       this.bind = cw.util.numwrap(this.data.getint("Property/Status/Bind", "duration", 0), 0, 999);
+       // 沈黙時間値
+       this.silence = cw.util.numwrap(this.data.getint("Property/Status/Silence", "duration", 0), 0, 999);
+       // 暴露時間値
+       this.faceup = cw.util.numwrap(this.data.getint("Property/Status/FaceUp", "duration", 0), 0, 999);
+       // 魔法無効時間値
+       this.antimagic = cw.util.numwrap(this.data.getint("Property/Status/AntiMagic",
                                                                    "duration", 0), 0, 999);
-//        if self.mentality_dur == 0 or self.mentality == "Normal":
+       // 行動力強化値
+       this.enhance_act = cw.util.numwrap(this.data.getint("Property/Enhance/Action", 0), -10, 10);
+       this.enhance_act_dur = cw.util.numwrap(this.data.getint("Property/Enhance/Action",
+                                                                   "duration", 0), 0, 999);
+       if (this.enhance_act == 0 || this.enhance_act_dur == 0)
+       {
+           this.enhance_act = 0;
+           this.enhance_act_dur = 0;
+       }
+
+       // 回避力強化値
+       this.enhance_avo = cw.util.numwrap(this.data.getint("Property/Enhance/Avoid", 0), -10, 10);
+       this.enhance_avo_dur = cw.util.numwrap(this.data.getint("Property/Enhance/Avoid",
+                                                                   "duration", 0), 0, 999);
+       if (this.enhance_avo == 0 || this.enhance_avo_dur == 0)
+       {
+           this.enhance_avo = 0;
+           this.enhance_avo_dur = 0;
+       }
+       // 抵抗力強化値
+       this.enhance_res = cw.util.numwrap(this.data.getint("Property/Enhance/Resist", 0), -10, 10);
+       this.enhance_res_dur = cw.util.numwrap(this.data.getint("Property/Enhance/Resist",
+                                                                   "duration", 0), 0, 999);
+       if (this.enhance_res == 0 || this.enhance_res_dur == 0)
+       {
+           this.enhance_res = 0;
+           this.enhance_res_dur = 0;
+       }
+       // 防御力強化値
+       this.enhance_def = cw.util.numwrap(this.data.getint("Property/Enhance/Defense", 0), -10, 10);
+       this.enhance_def_dur = cw.util.numwrap(this.data.getint("Property/Enhance/Defense",
+                                                                   "duration", 0), 0, 999);
+       if (this.enhance_def == 0 || this.enhance_def_dur == 0)
+       {
+            this.enhance_def = 0;
+            this.enhance_def_dur = 0;
+       
+       }
+       // 各種能力値
+       e = this.data.getfind("Property/Ability/Physical");
+       this.physical = copy.copy(e.attrib);
+       e = this.data.getfind("Property/Ability/Mental");
+       this.mental = copy.copy(e.attrib);
+       e = this.data.getfind("Property/Ability/Enhance");
+       this.enhance = copy.copy(e.attrib);
+
+       // for key, value in this.physical.iteritems():
+       //     try:
+       //         this.physical[key] = cw.util.numwrap(float(value), 0, 65536)
+       //     except:
+       //         this.physical[key] = 0
+       // for key, value in this.mental.iteritems():
+       //     try:
+       //         this.mental[key] = cw.util.numwrap(float(value), -65536, 65536)
+       //     except:
+       //         this.mental[key] = 0
+       // for key, value in this.enhance.iteritems():
+       //     try:
+       //         this.enhance[key] = cw.util.numwrap(float(value), -10, 10)
+       //     except:
+       //         this.enhance[key] = 0
+
+       // 特性
+       e = this.data.getfind("Property/Feature/Type");
+       this.feature = copy.copy(e.attrib);
+       e = this.data.getfind("Property/Feature/NoEffect");
+       this.noeffect = copy.copy(e.attrib);
+       e = this.data.getfind("Property/Feature/Resist");
+       this.resist = copy.copy(e.attrib);
+       e = this.data.getfind("Property/Feature/Weakness");
+       this.weakness = copy.copy(e.attrib);
+
+       // for d in (this.feature, this.noeffect, this.resist, this.weakness):
+       //     for key, value in d.iteritems():
+       //         try:
+       //             d[key] = cw.util.str2bool(value)
+       //         except:
+       //             d[key] = false
+
+       // デッキ
+       this.deck = cw.deck.Deck(self);
+       // 戦闘行動(Target, CardHeader)
+       this.actiondata = None;
+       this.actionautoselected = false;
+       // 行動順位を決定する数値
+       this.actionorder = 0;
+       // ラウンド処理中で行動開始前ならTrue
+       this.actionend = true;
+
+       this.reversed = false;
+
+       // クーポン一覧
+       this.coupons = {};
+       
+       // for e in this.data.getfind("Property/Coupons"):
+       //     if not e.text:
+       //         continue
+
+       //     if e.text in (u"＠効果対象", u"イベント対象", u"使用者"):
+       //         // 効果・イベント対象に付与されるシステムクーポン(Wsn.2)
+       //         continue
+
+       //     try:
+       //         this.coupons[e.text] = int(e.get("value")), e
+       //     except:
+       //         this.coupons[e.text] = 0, e
+       //     if e.text == u"：Ｒ":
+       //         this.reversed = True
+
+       // 時限クーポンのデータのリスト(name, flag_countable)
+       this.timedcoupons = this.get_timedcoupons();
+
+       // 対象消去されたか否か
+       this._vanished = false;
+       // 互換性マーク
+       this.versionhint = cw.cwpy.sct.from_basehint(this.data.getattr("Property", "versionHint", ""));
+
+       // 状態の正規化
+       this.cardimg = None;
+
+       // if this.is_unconscious():
+       //     // 最初から意識不明の場合、基本的に全てのステータスが
+       //     // クリアされるが、唯一、回数制限つきの付帯能力だけは、
+       //     // 後から意識不明になった時と違ってクリアされない(CardWirth 1.50)
+       //     this.set_unconsciousstatus(clearbeast=false)
+
+       // 適性検査用のCardHeader。
+       this.test_aptitude = None;
+
+       // キャッシュ
+       this._voc_tbl = {};
+
+
+
+
+
+//        if this.mentality_dur == 0 or this.mentality == "Normal":
 //            self.mentality = "Normal"
 //            self.mentality_dur = 0
 //        # 麻痺値
