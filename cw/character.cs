@@ -15,102 +15,55 @@ class Character
 {          
     private UNK data;
     private bool reversed;
-    //  名前
     private string name;
-    //  レベル
     private int level;
-    //  各種所持カードのリスト
     private List<UNK> cardpocket;
-    //  全てホールド
     private List<UNK> hold_all;
-    //  現在ライフ・最大ライフ
     private UNK life;
     private UNK maxlife;
-    //  精神状態
     private string mentality;
     private UNK mentality_dur;
-
-    // 麻痺値
     private UNK paralyze;
-    // 中毒値
     private UNK poison;
-    // 束縛時間値
     private UNK bind;
-    // 沈黙時間値
     private UNK silence;
-    // 暴露時間値
     private UNK faceup;
-    // 魔法無効時間値
     private UNK antimagic;
-    // 行動力強化値
     private UNK enhance_act;
     private UNK enhance_act_dur;
-
-    // 回避力強化値
     private UNK enhance_avo;
     private UNK enhance_avo_dur;
-
-    // 抵抗力強化値
     private UNK enhance_res;
     private UNK enhance_res_dur;
-
-    // 防御力強化値
     private UNK enhance_def;
     private UNK enhance_def_dur;
-
-    // 各種能力値  
     private UNK physical;
     private UNK mental;
     private UNK enhance;
-
-    // 特性
     private UNK feature;
     private UNK noeffect;
     private UNK resist;
     private UNK weakness;
-
-    // デッキ
     private Deck deck;
-
-    // 戦闘行動(Target, CardHeader)
     private UNK actiondata;
     private bool actionautoselected;
-
-    // 行動順位を決定する数値
     private UNK actionorder;
-
-    // ラウンド処理中で行動開始前ならTrue
     private bool actionend;
     private bool reversed;
-
-    // クーポン一覧
     private Dictionary<UNK, UNK> coupons;
-
-    // 時限クーポンのデータのリスト(name, flag_countable)
     private UNK timedcoupons;
-
-    // 対象消去されたか否か
     private bool _vanished;
-    // 互換性マーク
     private UNK versionhint;
-
-    // 状態の正規化
     private UNK cardimg;
-
-    // 適性検査用のCardHeader。
     private UNK test_aptitude;
-
-    // キャッシュ
     private Dictionary<UNK, UNK> _voc_tbl;
-
-
 
 
     public Character(UNK? data=null)
     {
 //    def __init__(self, data=None):
 //        if not data is None:
-//            self.data = data
+//        self.data = data
 //        self.reversed = false
 //
         // 名前
@@ -134,10 +87,10 @@ class Character
         this.mentality_dur = cw.util.numwrap(this.data.getint("Property/Status/Mentality",
                                                                "duration", 0), 0, 999);
 
-        if (this.mentality_dur == 0 or this.mentality == "Normal")
+        if (this.mentality_dur == 0 || this.mentality == "Normal")
         {
-             this.mentality = "Normal"
-             this.mentality_dur = 0 
+             this.mentality = "Normal";
+             this.mentality_dur = 0; 
         }
 
        // 麻痺値
@@ -284,146 +237,6 @@ class Character
 
        // キャッシュ
        this._voc_tbl = {};
-
-
-
-
-
-//        if this.mentality_dur == 0 or this.mentality == "Normal":
-//            self.mentality = "Normal"
-//            self.mentality_dur = 0
-//        # 麻痺値
-//        self.paralyze = cw.util.numwrap(self.data.getint("Property/Status/Paralyze", 0), 0, 40)
-//        # 中毒値
-//        self.poison = cw.util.numwrap(self.data.getint("Property/Status/Poison", 0), 0, 40)
-//        # 束縛時間値
-//        self.bind = cw.util.numwrap(self.data.getint("Property/Status/Bind", "duration", 0), 0, 999)
-//        # 沈黙時間値
-//        self.silence = cw.util.numwrap(self.data.getint("Property/Status/Silence", "duration", 0), 0, 999)
-//        # 暴露時間値
-//        self.faceup = cw.util.numwrap(self.data.getint("Property/Status/FaceUp", "duration", 0), 0, 999)
-//        # 魔法無効時間値
-//        self.antimagic = cw.util.numwrap(self.data.getint("Property/Status/AntiMagic",
-//                                                                    "duration", 0), 0, 999)
-//        # 行動力強化値
-//        self.enhance_act = cw.util.numwrap(self.data.getint("Property/Enhance/Action", 0), -10, 10)
-//        self.enhance_act_dur = cw.util.numwrap(self.data.getint("Property/Enhance/Action",
-//                                                                    "duration", 0), 0, 999)
-//        if self.enhance_act == 0 or self.enhance_act_dur == 0:
-//            self.enhance_act = 0
-//            self.enhance_act_dur = 0
-//        # 回避力強化値
-//        self.enhance_avo = cw.util.numwrap(self.data.getint("Property/Enhance/Avoid", 0), -10, 10)
-//        self.enhance_avo_dur = cw.util.numwrap(self.data.getint("Property/Enhance/Avoid",
-//                                                                    "duration", 0), 0, 999)
-//        if self.enhance_avo == 0 or self.enhance_avo_dur == 0:
-//            self.enhance_avo = 0
-//            self.enhance_avo_dur = 0
-//        # 抵抗力強化値
-//        self.enhance_res = cw.util.numwrap(self.data.getint("Property/Enhance/Resist", 0), -10, 10)
-//        self.enhance_res_dur = cw.util.numwrap(self.data.getint("Property/Enhance/Resist",
-//                                                                    "duration", 0), 0, 999)
-//        if self.enhance_res == 0 or self.enhance_res_dur == 0:
-//            self.enhance_res = 0
-//            self.enhance_res_dur = 0
-//        # 防御力強化値
-//        self.enhance_def = cw.util.numwrap(self.data.getint("Property/Enhance/Defense", 0), -10, 10)
-//        self.enhance_def_dur = cw.util.numwrap(self.data.getint("Property/Enhance/Defense",
-//                                                                    "duration", 0), 0, 999)
-//        if self.enhance_def == 0 or self.enhance_def_dur == 0:
-//            self.enhance_def = 0
-//            self.enhance_def_dur = 0
-//        # 各種能力値
-//        e = self.data.getfind("Property/Ability/Physical")
-//        self.physical = copy.copy(e.attrib)
-//        e = self.data.getfind("Property/Ability/Mental")
-//        self.mental = copy.copy(e.attrib)
-//        e = self.data.getfind("Property/Ability/Enhance")
-//        self.enhance = copy.copy(e.attrib)
-//
-//        for key, value in self.physical.iteritems():
-//            try:
-//                self.physical[key] = cw.util.numwrap(float(value), 0, 65536)
-//            except:
-//                self.physical[key] = 0
-//        for key, value in self.mental.iteritems():
-//            try:
-//                self.mental[key] = cw.util.numwrap(float(value), -65536, 65536)
-//            except:
-//                self.mental[key] = 0
-//        for key, value in self.enhance.iteritems():
-//            try:
-//                self.enhance[key] = cw.util.numwrap(float(value), -10, 10)
-//            except:
-//                self.enhance[key] = 0
-//
-//        # 特性
-//        e = self.data.getfind("Property/Feature/Type")
-//        self.feature = copy.copy(e.attrib)
-//        e = self.data.getfind("Property/Feature/NoEffect")
-//        self.noeffect = copy.copy(e.attrib)
-//        e = self.data.getfind("Property/Feature/Resist")
-//        self.resist = copy.copy(e.attrib)
-//        e = self.data.getfind("Property/Feature/Weakness")
-//        self.weakness = copy.copy(e.attrib)
-//
-//        for d in (self.feature, self.noeffect, self.resist, self.weakness):
-//            for key, value in d.iteritems():
-//                try:
-//                    d[key] = cw.util.str2bool(value)
-//                except:
-//                    d[key] = False
-//
-//        # デッキ
-//        self.deck = cw.deck.Deck(self)
-//        # 戦闘行動(Target, CardHeader)
-//        self.actiondata = None
-//        self.actionautoselected = False
-//        # 行動順位を決定する数値
-//        self.actionorder = 0
-//        # ラウンド処理中で行動開始前ならTrue
-//        self.actionend = True
-//
-//        self.reversed = False
-//
-//        # クーポン一覧
-//        self.coupons = {}
-//        for e in self.data.getfind("Property/Coupons"):
-//            if not e.text:
-//                continue
-//
-//            if e.text in (u"＠効果対象", u"イベント対象", u"使用者"):
-//                # 効果・イベント対象に付与されるシステムクーポン(Wsn.2)
-//                continue
-//
-//            try:
-//                self.coupons[e.text] = int(e.get("value")), e
-//            except:
-//                self.coupons[e.text] = 0, e
-//            if e.text == u"：Ｒ":
-//                self.reversed = True
-//        # 時限クーポンのデータのリスト(name, flag_countable)
-//        self.timedcoupons = self.get_timedcoupons()
-//
-//        # 対象消去されたか否か
-//        self._vanished = False
-//        # 互換性マーク
-//        self.versionhint = cw.cwpy.sct.from_basehint(self.data.getattr("Property", "versionHint", ""))
-//
-//        # 状態の正規化
-//        self.cardimg = None
-//        if self.is_unconscious():
-//            # 最初から意識不明の場合、基本的に全てのステータスが
-//            # クリアされるが、唯一、回数制限つきの付帯能力だけは、
-//            # 後から意識不明になった時と違ってクリアされない(CardWirth 1.50)
-//            self.set_unconsciousstatus(clearbeast=False)
-//
-//        # 適性検査用のCardHeader。
-//        self.test_aptitude = None
-//
-//        # キャッシュ
-//        self._voc_tbl = {}
-    }
   
     public UNK get_imagepaths()
     {
@@ -537,79 +350,120 @@ class Character
 //
 //        return newpaths
 //
-//    def get_name(self):
-//        return self.data.gettext("Property/Name", "")
-//
-//    def set_name(self, name):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        self.data.edit("Property/Name", name)
-//        self.name = name
-//
-//    def get_description(self):
-//        return cw.util.decodewrap(self.data.gettext("Property/Description", ""))
-//
-//    def set_description(self, desc):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        self.data.edit("Property/Description", cw.util.encodewrap(desc))
-//
-//    def set_maxlife(self, value):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        v = float(self.life) / self.maxlife
-//        self.maxlife = value
-//        self.data.edit("Property/Life", str(int(value)), "max")
-//        if self.life <> 0:
-//            self.life = max(1, int(self.maxlife * v))
-//            self.data.edit("Property/Life", str(int(self.maxlife)))
-//
-//        if self.data.getattr("Property/Life", "coefficient", 0):
-//            self.data.remove("Property/Life", attrname="coefficient")
-//
-//    def set_physical(self, name, value):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        self.data.edit("Property/Ability/Physical", str(int(value)), name)
-//        self.physical[name] = float(value)
-//        self._clear_vocationcache()
-//
-//    def set_mental(self, name, value):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        self.data.edit("Property/Ability/Mental", str(value), name)
-//        self.mental[name] = float(value)
-//        self._clear_vocationcache()
-//
-//    def set_feature(self, name, value):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        self.data.edit("Property/Feature/Type", str(value), name)
-//        self.feature[name] = value
-//
-//    def set_noeffect(self, name, value):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        self.data.edit("Property/Feature/NoEffect", str(value), name)
-//        self.noeffect[name] = value
-//
-//    def set_resist(self, name, value):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        self.data.edit("Property/Feature/Resist", str(value), name)
-//        self.resist[name] = value
-//
-//    def set_weakness(self, name, value):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        self.data.edit("Property/Feature/Weakness", str(value), name)
-//        self.weakness[name] = value
-//
-//    def set_enhance(self, name, value):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        self.data.edit("Property/Ability/Enhance", str(value), name)
-//        self.enhance[name] = value
+    public string get_name()
+    {       
+        return this.data.gettext("Property/Name", "");
+    }
+
+    public void set_name(string name){
+        if (cw.cwpy.ydata){
+            cw.cwpy.ydata.changed();
+        }
+        this.data.edit("Property/Name", name);
+        this.name = name;
+    }
+
+    public string get_description()
+    {
+        return cw.util.decodewrap(this.data.gettext("Property/Description", ""));
+    }
+
+    public void set_description(UNK desc)
+    {
+        if (cw.cwpy.ydata)
+        {
+            cw.cwpy.ydata.changed();
+        }
+        this.data.edit("Property/Description", cw.util.encodewrap(desc));
+    }
+
+    public void set_maxlife(UNK value)
+    {
+        if (cw.cwpy.ydata)
+        {
+            cw.cwpy.ydata.changed();
+        }
+        v = float(this.life) / this.maxlife;
+        this.maxlife = value;
+        this.data.edit("Property/Life", str(int(value)), "max");
+        if (this.life != 0)
+        {
+            this.life = max(1, int(this.maxlife * v));
+            this.data.edit("Property/Life", str(int(this.maxlife)));
+        }
+        if (this.data.getattr("Property/Life", "coefficient", 0))
+        {
+            this.data.remove("Property/Life", attrname="coefficient");
+        }
+    }
+
+    public void set_physical(UNK name, UNK value)
+    {
+        if (cw.cwpy.ydata)
+        {
+            cw.cwpy.ydata.changed();
+        }
+        this.data.edit("Property/Ability/Physical", str(int(value)), name);
+        this.physical[name] = float(value);
+        this._clear_vocationcache();
+    }
+
+    public void set_mental(UNK name, UNK value)
+    {
+        if (cw.cwpy.ydata)
+        {
+            cw.cwpy.ydata.changed();
+        }
+        this.data.edit("Property/Ability/Mental", str(value), name);
+        this.mental[name] = float(value);
+        this._clear_vocationcache();
+    }
+
+  public void set_feature(UNK name, UNK value)
+  {
+      if (cw.cwpy.ydata)
+      {
+          cw.cwpy.ydata.changed();
+      }
+      this.data.edit("Property/Feature/Type", str(value), name);
+      this.feature[name] = value;
+  }
+  public void set_noeffect(UNK name, UNK value)
+  {
+      if (cw.cwpy.ydata)
+      {
+          cw.cwpy.ydata.changed();
+      }
+      this.data.edit("Property/Feature/NoEffect", str(value), name);
+      this.noeffect[name] = value;
+  }
+  public void set_resist(UNK name, UNK value)
+  {
+      if (cw.cwpy.ydata)
+      {
+          cw.cwpy.ydata.changed();
+      }
+      this.data.edit("Property/Feature/Resist", str(value), name);
+      this.resist[name] = value;
+  }
+  public void set_weakness(UNK name, UNK value)
+  {
+      if (cw.cwpy.ydata)
+      {
+          cw.cwpy.ydata.changed();
+      }
+      this.data.edit("Property/Feature/Weakness", str(value), name);
+      this.weakness[name] = value;
+  }
+  public void set_enhance(UNK name, UNK value)
+  {
+      if (cw.cwpy.ydata)
+      {
+          cw.cwpy.ydata.changed();
+      }
+      this.data.edit("Property/Ability/Enhance", str(value), name);
+      this.enhance[name] = value;
+  }
 //
 //    def get_cardpocket(self):
 //        flag = bool(self.data.getroot().tag == "CastCard")
@@ -690,81 +544,105 @@ class Character
 //        """
 //        pass
 //
-//    #---------------------------------------------------------------------------
-//    #　状態チェック用
-//    #---------------------------------------------------------------------------
-//
-//    def is_normal(self):
-//        """
-//        通常の精神状態かどうかをbool値で返す。
-//        """
-//        return bool(self.mentality == "Normal")
-//
-//    def is_panic(self):
-//        """
-//        恐慌状態かどうかをbool値で返す
-//        """
-//        return bool(self.mentality == "Panic")
-//
-//    def is_brave(self):
-//        """
-//        勇敢状態かどうかをbool値で返す
-//        """
-//        return bool(self.mentality == "Brave")
-//
-//    def is_overheat(self):
-//        """
-//        激昂状態かどうかをbool値で返す
-//        """
-//        return bool(self.mentality == "Overheat")
-//
-//    def is_confuse(self):
-//        """
-//        混乱状態かどうかをbool値で返す
-//        """
-//        return bool(self.mentality == "Confuse")
-//
-//    def is_sleep(self):
-//        """
-//        睡眠状態かどうかをbool値で返す
-//        """
-//        return bool(self.mentality == "Sleep")
-//
-//    def is_paralyze(self):
-//        """
-//        麻痺または石化状態かどうかをbool値で返す
-//        """
-//        return bool(self.paralyze > 0)
-//
-//    def is_poison(self):
-//        """
-//        中毒状態かどうかをbool値で返す
-//        """
-//        return bool(self.poison > 0)
-//
-//    def is_bind(self):
-//        """
-//        呪縛状態かどうかをbool値で返す
-//        """
-//        return bool(self.bind > 0)
-//
-//    def is_silence(self):
-//        """
-//        沈黙状態かどうかをbool値で返す。
-//        """
-//        return bool(self.silence > 0)
-//
-//    def is_faceup(self):
-//        """
-//        暴露状態かどうかをbool値で返す。
-//        """
-//        return bool(self.faceup > 0)
-//
-//    def is_antimagic(self):
-//        """
-//        魔法無効状態かどうかをbool値で返す。
-//        """
-//        return bool(self.antimagic > 0)
+    // ---------------------------------------------------------------------------
+    // 　状態チェック用
+    // ---------------------------------------------------------------------------
+    public bool is_normal()
+    {
+        // """
+        // 通常の精神状態かどうかをbool値で返す。
+        // """
+        return bool(this.mentality == "Normal");
+    }
+
+    public bool is_panic()
+    {
+        // """
+        // 恐慌状態かどうかをbool値で返す
+        // """
+        return bool(this.mentality == "Panic");
+    }
+
+    public bool is_brave()
+    {
+        // """
+        // 勇敢状態かどうかをbool値で返す
+        // """
+        return bool(this.mentality == "Brave");
+    }
+
+    public bool is_overheat()
+    {
+        // """
+        // 激昂状態かどうかをbool値で返す
+        // """
+        return bool(this.mentality == "Overheat");
+    }
+
+    public bool is_confuse()
+    {
+        // """
+        // 混乱状態かどうかをbool値で返す
+        // """
+        return bool(this.mentality == "Confuse");
+    }
+
+    public bool is_sleep()
+    {
+        // """
+        // 睡眠状態かどうかをbool値で返す
+        // """
+        return bool(this.mentality == "Sleep");
+    }
+
+    public bool is_paralyze()
+    {
+        // """
+        // 麻痺または石化状態かどうかをbool値で返す
+        // """
+        return bool(this.paralyze > 0);
+    }
+
+    public bool is_poison()
+    {
+        // """
+        // 中毒状態かどうかをbool値で返す
+        // """
+        return bool(this.poison > 0);
+    }
+
+    public bool is_bind()
+    {
+        // """
+        // 呪縛状態かどうかをbool値で返す
+        // """
+        return bool(this.bind > 0);
+    }
+
+    public bool is_silence()
+    {
+        // """
+        // 沈黙状態かどうかをbool値で返す。
+        // """
+        return bool(this.silence > 0);
+    }
+
+    public bool is_faceup()
+    {
+        // """
+        // 暴露状態かどうかをbool値で返す。
+        // """
+        return bool(this.faceup > 0);
+    }
+
+    public bool is_antimagic()
+    {
+        // """
+        // 魔法無効状態かどうかをbool値で返す。
+        // """
+        return bool(this.antimagic > 0);;
+    }
+
 //
 //    @staticmethod
 //    def calc_petrified(paralyze):
