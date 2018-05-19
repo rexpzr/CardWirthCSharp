@@ -2989,24 +2989,38 @@ class Character
 //            assert False
 //        self.data.edit(type, str(value), "hold_all")
 //
-//class Player(Character):
-//    def lost(self):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        self.remove_numbercoupon()
-//        self.remove_timedcoupons()
-//        self.data.edit("Property", "True", "lost")
-//        self.data.write_xml()
-//        if cw.cwpy.is_playingscenario():
-//            if self.data.fpath.lower().startswith("yado"):
-//                fpath = cw.util.relpath(self.data.fpath, cw.cwpy.ydata.yadodir)
-//            else:
-//                fpath = cw.util.relpath(self.data.fpath, cw.cwpy.ydata.tempdir)
-//            fpath = cw.util.join_paths(fpath)
-//            cw.cwpy.sdata.lostadventurers.add(fpath)
-//        if cw.cwpy.cardgrp.has(self):
-//            cw.cwpy.cardgrp.remove(self)
-//            cw.cwpy.pcards.remove(self)
+class Player : Character {
+    public void lost()
+     {
+        if (cw.cwpy.ydata)
+        {
+            cw.cwpy.ydata.changed();
+        }
+        this.remove_numbercoupon();
+        this.remove_timedcoupons();
+        this.data.edit("Property", "True", "lost");
+        this.data.write_xml();
+        if (cw.cwpy.is_playingscenario())
+        {
+            if (this.data.fpath.lower().startswith("yado"))
+            {
+                fpath = cw.util.relpath(this.data.fpath, cw.cwpy.ydata.yadodir);
+            }
+            else
+            {
+                fpath = cw.util.relpath(this.data.fpath, cw.cwpy.ydata.tempdir);
+            }
+            fpath = cw.util.join_paths(fpath);
+            cw.cwpy.sdata.lostadventurers.add(fpath);
+        }
+        if (cw.cwpy.cardgrp.has(self))
+        {
+            cw.cwpy.cardgrp.remove(self);
+            cw.cwpy.pcards.remove(self);
+        }
+    }
+}
+   
 //
 //    def set_name(self, name):
 //        Character.set_name(self, name)
