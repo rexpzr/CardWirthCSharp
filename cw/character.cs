@@ -93,158 +93,158 @@ class Character
              this.mentality_dur = 0; 
         }
 
-       // 麻痺値
-       this.paralyze = cw.util.numwrap(this.data.getint("Property/Status/Paralyze", 0), 0, 40);
-       // 中毒値
-       this.poison = cw.util.numwrap(this.data.getint("Property/Status/Poison", 0), 0, 40);
-       // 束縛時間値
-       this.bind = cw.util.numwrap(this.data.getint("Property/Status/Bind", "duration", 0), 0, 999);
-       // 沈黙時間値
-       this.silence = cw.util.numwrap(this.data.getint("Property/Status/Silence", "duration", 0), 0, 999);
-       // 暴露時間値
-       this.faceup = cw.util.numwrap(this.data.getint("Property/Status/FaceUp", "duration", 0), 0, 999);
-       // 魔法無効時間値
-       this.antimagic = cw.util.numwrap(this.data.getint("Property/Status/AntiMagic",
+        // 麻痺値
+        this.paralyze = cw.util.numwrap(this.data.getint("Property/Status/Paralyze", 0), 0, 40);
+        // 中毒値
+        this.poison = cw.util.numwrap(this.data.getint("Property/Status/Poison", 0), 0, 40);
+        // 束縛時間値
+        this.bind = cw.util.numwrap(this.data.getint("Property/Status/Bind", "duration", 0), 0, 999);
+        // 沈黙時間値
+        this.silence = cw.util.numwrap(this.data.getint("Property/Status/Silence", "duration", 0), 0, 999);
+        // 暴露時間値
+        this.faceup = cw.util.numwrap(this.data.getint("Property/Status/FaceUp", "duration", 0), 0, 999);
+        // 魔法無効時間値
+        this.antimagic = cw.util.numwrap(this.data.getint("Property/Status/AntiMagic",
                                                                    "duration", 0), 0, 999);
-       // 行動力強化値
-       this.enhance_act = cw.util.numwrap(this.data.getint("Property/Enhance/Action", 0), -10, 10);
-       this.enhance_act_dur = cw.util.numwrap(this.data.getint("Property/Enhance/Action",
+        // 行動力強化値
+        this.enhance_act = cw.util.numwrap(this.data.getint("Property/Enhance/Action", 0), -10, 10);
+        this.enhance_act_dur = cw.util.numwrap(this.data.getint("Property/Enhance/Action",
                                                                    "duration", 0), 0, 999);
-       if (this.enhance_act == 0 || this.enhance_act_dur == 0)
-       {
+        if (this.enhance_act == 0 || this.enhance_act_dur == 0)
+        {
            this.enhance_act = 0;
            this.enhance_act_dur = 0;
-       }
+        }
 
-       // 回避力強化値
-       this.enhance_avo = cw.util.numwrap(this.data.getint("Property/Enhance/Avoid", 0), -10, 10);
-       this.enhance_avo_dur = cw.util.numwrap(this.data.getint("Property/Enhance/Avoid",
+        // 回避力強化値
+        this.enhance_avo = cw.util.numwrap(this.data.getint("Property/Enhance/Avoid", 0), -10, 10);
+        this.enhance_avo_dur = cw.util.numwrap(this.data.getint("Property/Enhance/Avoid",
                                                                    "duration", 0), 0, 999);
-       if (this.enhance_avo == 0 || this.enhance_avo_dur == 0)
-       {
+        if (this.enhance_avo == 0 || this.enhance_avo_dur == 0)
+        {
            this.enhance_avo = 0;
            this.enhance_avo_dur = 0;
-       }
-       // 抵抗力強化値
-       this.enhance_res = cw.util.numwrap(this.data.getint("Property/Enhance/Resist", 0), -10, 10);
-       this.enhance_res_dur = cw.util.numwrap(this.data.getint("Property/Enhance/Resist",
+        }
+        // 抵抗力強化値
+        this.enhance_res = cw.util.numwrap(this.data.getint("Property/Enhance/Resist", 0), -10, 10);
+        this.enhance_res_dur = cw.util.numwrap(this.data.getint("Property/Enhance/Resist",
                                                                    "duration", 0), 0, 999);
-       if (this.enhance_res == 0 || this.enhance_res_dur == 0)
-       {
+        if (this.enhance_res == 0 || this.enhance_res_dur == 0)
+        {
            this.enhance_res = 0;
            this.enhance_res_dur = 0;
-       }
-       // 防御力強化値
-       this.enhance_def = cw.util.numwrap(this.data.getint("Property/Enhance/Defense", 0), -10, 10);
-       this.enhance_def_dur = cw.util.numwrap(this.data.getint("Property/Enhance/Defense",
+        }
+        // 防御力強化値
+        this.enhance_def = cw.util.numwrap(this.data.getint("Property/Enhance/Defense", 0), -10, 10);
+        this.enhance_def_dur = cw.util.numwrap(this.data.getint("Property/Enhance/Defense",
                                                                    "duration", 0), 0, 999);
-       if (this.enhance_def == 0 || this.enhance_def_dur == 0)
-       {
+        if (this.enhance_def == 0 || this.enhance_def_dur == 0)
+        {
             this.enhance_def = 0;
             this.enhance_def_dur = 0;
-       
-       }
-       // 各種能力値
-       e = this.data.getfind("Property/Ability/Physical");
-       this.physical = copy.copy(e.attrib);
-       e = this.data.getfind("Property/Ability/Mental");
-       this.mental = copy.copy(e.attrib);
-       e = this.data.getfind("Property/Ability/Enhance");
-       this.enhance = copy.copy(e.attrib);
 
-       // for key, value in this.physical.iteritems():
-       //     try:
-       //         this.physical[key] = cw.util.numwrap(float(value), 0, 65536)
-       //     except:
-       //         this.physical[key] = 0
-       // for key, value in this.mental.iteritems():
-       //     try:
-       //         this.mental[key] = cw.util.numwrap(float(value), -65536, 65536)
-       //     except:
-       //         this.mental[key] = 0
-       // for key, value in this.enhance.iteritems():
-       //     try:
-       //         this.enhance[key] = cw.util.numwrap(float(value), -10, 10)
-       //     except:
-       //         this.enhance[key] = 0
+        }
+        // 各種能力値
+        e = this.data.getfind("Property/Ability/Physical");
+        this.physical = copy.copy(e.attrib);
+        e = this.data.getfind("Property/Ability/Mental");
+        this.mental = copy.copy(e.attrib);
+        e = this.data.getfind("Property/Ability/Enhance");
+        this.enhance = copy.copy(e.attrib);
 
-       // 特性
-       e = this.data.getfind("Property/Feature/Type");
-       this.feature = copy.copy(e.attrib);
-       e = this.data.getfind("Property/Feature/NoEffect");
-       this.noeffect = copy.copy(e.attrib);
-       e = this.data.getfind("Property/Feature/Resist");
-       this.resist = copy.copy(e.attrib);
-       e = this.data.getfind("Property/Feature/Weakness");
-       this.weakness = copy.copy(e.attrib);
+        // for key, value in this.physical.iteritems():
+        //     try:
+        //         this.physical[key] = cw.util.numwrap(float(value), 0, 65536)
+        //     except:
+        //         this.physical[key] = 0
+        // for key, value in this.mental.iteritems():
+        //     try:
+        //         this.mental[key] = cw.util.numwrap(float(value), -65536, 65536)
+        //     except:
+        //         this.mental[key] = 0
+        // for key, value in this.enhance.iteritems():
+        //     try:
+        //         this.enhance[key] = cw.util.numwrap(float(value), -10, 10)
+        //     except:
+        //         this.enhance[key] = 0
 
-       // for d in (this.feature, this.noeffect, this.resist, this.weakness):
-       //     for key, value in d.iteritems():
-       //         try:
-       //             d[key] = cw.util.str2bool(value)
-       //         except:
-       //             d[key] = false
+        // 特性
+        e = this.data.getfind("Property/Feature/Type");
+        this.feature = copy.copy(e.attrib);
+        e = this.data.getfind("Property/Feature/NoEffect");
+        this.noeffect = copy.copy(e.attrib);
+        e = this.data.getfind("Property/Feature/Resist");
+        this.resist = copy.copy(e.attrib);
+        e = this.data.getfind("Property/Feature/Weakness");
+        this.weakness = copy.copy(e.attrib);
 
-       // デッキ
-       this.deck = cw.deck.Deck(self);
-       // 戦闘行動(Target, CardHeader)
-       this.actiondata = None;
-       this.actionautoselected = false;
-       // 行動順位を決定する数値
-       this.actionorder = 0;
-       // ラウンド処理中で行動開始前ならTrue
-       this.actionend = true;
+        // for d in (this.feature, this.noeffect, this.resist, this.weakness):
+        //     for key, value in d.iteritems():
+        //         try:
+        //             d[key] = cw.util.str2bool(value)
+        //         except:
+        //             d[key] = false
 
-       this.reversed = false;
+        // デッキ
+        this.deck = cw.deck.Deck(self);
+        // 戦闘行動(Target, CardHeader)
+        this.actiondata = None;
+        this.actionautoselected = false;
+        // 行動順位を決定する数値
+        this.actionorder = 0;
+        // ラウンド処理中で行動開始前ならTrue
+        this.actionend = true;
 
-       // クーポン一覧
-       this.coupons = {};
-       
-       // for e in this.data.getfind("Property/Coupons"):
-       //     if not e.text:
-       //         continue
+        this.reversed = false;
 
-       //     if e.text in (u"＠効果対象", u"イベント対象", u"使用者"):
-       //         // 効果・イベント対象に付与されるシステムクーポン(Wsn.2)
-       //         continue
+        // クーポン一覧
+        this.coupons = {};
 
-       //     try:
-       //         this.coupons[e.text] = int(e.get("value")), e
-       //     except:
-       //         this.coupons[e.text] = 0, e
-       //     if e.text == u"：Ｒ":
-       //         this.reversed = True
+        // for e in this.data.getfind("Property/Coupons"):
+        //     if not e.text:
+        //         continue
 
-       // 時限クーポンのデータのリスト(name, flag_countable)
-       this.timedcoupons = this.get_timedcoupons();
+        //     if e.text in (u"＠効果対象", u"イベント対象", u"使用者"):
+        //         // 効果・イベント対象に付与されるシステムクーポン(Wsn.2)
+        //         continue
 
-       // 対象消去されたか否か
-       this._vanished = false;
-       // 互換性マーク
-       this.versionhint = cw.cwpy.sct.from_basehint(this.data.getattr("Property", "versionHint", ""));
+        //     try:
+        //         this.coupons[e.text] = int(e.get("value")), e
+        //     except:
+        //         this.coupons[e.text] = 0, e
+        //     if e.text == u"：Ｒ":
+        //         this.reversed = True
 
-       // 状態の正規化
-       this.cardimg = None;
+        // 時限クーポンのデータのリスト(name, flag_countable)
+        this.timedcoupons = this.get_timedcoupons();
 
-       // if this.is_unconscious():
-       //     // 最初から意識不明の場合、基本的に全てのステータスが
-       //     // クリアされるが、唯一、回数制限つきの付帯能力だけは、
-       //     // 後から意識不明になった時と違ってクリアされない(CardWirth 1.50)
-       //     this.set_unconsciousstatus(clearbeast=false)
+        // 対象消去されたか否か
+        this._vanished = false;
+        // 互換性マーク
+        this.versionhint = cw.cwpy.sct.from_basehint(this.data.getattr("Property", "versionHint", ""));
 
-       // 適性検査用のCardHeader。
-       this.test_aptitude = None;
+        // 状態の正規化
+        this.cardimg = None;
 
-       // キャッシュ
-       this._voc_tbl = {};
+        // if this.is_unconscious():
+        //     // 最初から意識不明の場合、基本的に全てのステータスが
+        //     // クリアされるが、唯一、回数制限つきの付帯能力だけは、
+        //     // 後から意識不明になった時と違ってクリアされない(CardWirth 1.50)
+        //     this.set_unconsciousstatus(clearbeast=false)
+
+        // 適性検査用のCardHeader。
+        this.test_aptitude = None;
+
+        // キャッシュ
+        this._voc_tbl = {};
   
-    public UNK get_imagepaths()
-    {
-        // 現在表示中のカード画像の情報を
-        // cw.image.ImageInfoのlistで返す。
-        UNK data = this.data.find("Property");
-        return cw.image.get_imageinfos(data);
-    }
+        public UNK get_imagepaths()
+        {
+            // 現在表示中のカード画像の情報を
+            // cw.image.ImageInfoのlistで返す。
+            UNK data = this.data.find("Property");
+            return cw.image.get_imageinfos(data);
+        }
 
 //    def set_images(self, paths):
 //        """このキャラクターのカード画像を
@@ -350,120 +350,120 @@ class Character
 //
 //        return newpaths
 //
-    public string get_name()
-    {       
-        return this.data.gettext("Property/Name", "");
-    }
+          public string get_name()
+          {       
+              return this.data.gettext("Property/Name", "");
+          }
 
-    public void set_name(string name){
-        if (cw.cwpy.ydata){
-            cw.cwpy.ydata.changed();
-        }
-        this.data.edit("Property/Name", name);
-        this.name = name;
-    }
+          public void set_name(string name){
+              if (cw.cwpy.ydata){
+                  cw.cwpy.ydata.changed();
+              }
+              this.data.edit("Property/Name", name);
+              this.name = name;
+          }
 
-    public string get_description()
-    {
-        return cw.util.decodewrap(this.data.gettext("Property/Description", ""));
-    }
+          public string get_description()
+          {
+              return cw.util.decodewrap(this.data.gettext("Property/Description", ""));
+          }
 
-    public void set_description(UNK desc)
-    {
-        if (cw.cwpy.ydata)
+          public void set_description(UNK desc)
+          {
+              if (cw.cwpy.ydata)
+              {
+                  cw.cwpy.ydata.changed();
+              }
+              this.data.edit("Property/Description", cw.util.encodewrap(desc));
+          }
+
+          public void set_maxlife(UNK value)
+          {
+              if (cw.cwpy.ydata)
+              {
+                  cw.cwpy.ydata.changed();
+              }
+              v = float(this.life) / this.maxlife;
+              this.maxlife = value;
+              this.data.edit("Property/Life", str(int(value)), "max");
+              if (this.life != 0)
+              {
+                  this.life = max(1, int(this.maxlife * v));
+                  this.data.edit("Property/Life", str(int(this.maxlife)));
+              }
+              if (this.data.getattr("Property/Life", "coefficient", 0))
+              {
+                  this.data.remove("Property/Life", attrname="coefficient");
+              }
+          }
+
+          public void set_physical(UNK name, UNK value)
+          {
+              if (cw.cwpy.ydata)
+              {
+                  cw.cwpy.ydata.changed();
+              }
+              this.data.edit("Property/Ability/Physical", str(int(value)), name);
+              this.physical[name] = float(value);
+              this._clear_vocationcache();
+          }
+
+          public void set_mental(UNK name, UNK value)
+          {
+              if (cw.cwpy.ydata)
+              {
+                  cw.cwpy.ydata.changed();
+              }
+              this.data.edit("Property/Ability/Mental", str(value), name);
+              this.mental[name] = float(value);
+              this._clear_vocationcache();
+          }
+
+        public void set_feature(UNK name, UNK value)
         {
-            cw.cwpy.ydata.changed();
+            if (cw.cwpy.ydata)
+            {
+                cw.cwpy.ydata.changed();
+            }
+            this.data.edit("Property/Feature/Type", str(value), name);
+            this.feature[name] = value;
         }
-        this.data.edit("Property/Description", cw.util.encodewrap(desc));
-    }
-
-    public void set_maxlife(UNK value)
-    {
-        if (cw.cwpy.ydata)
+        public void set_noeffect(UNK name, UNK value)
         {
-            cw.cwpy.ydata.changed();
+            if (cw.cwpy.ydata)
+            {
+                cw.cwpy.ydata.changed();
+            }
+            this.data.edit("Property/Feature/NoEffect", str(value), name);
+            this.noeffect[name] = value;
         }
-        v = float(this.life) / this.maxlife;
-        this.maxlife = value;
-        this.data.edit("Property/Life", str(int(value)), "max");
-        if (this.life != 0)
+        public void set_resist(UNK name, UNK value)
         {
-            this.life = max(1, int(this.maxlife * v));
-            this.data.edit("Property/Life", str(int(this.maxlife)));
+            if (cw.cwpy.ydata)
+            {
+                cw.cwpy.ydata.changed();
+            }
+            this.data.edit("Property/Feature/Resist", str(value), name);
+            this.resist[name] = value;
         }
-        if (this.data.getattr("Property/Life", "coefficient", 0))
+        public void set_weakness(UNK name, UNK value)
         {
-            this.data.remove("Property/Life", attrname="coefficient");
+            if (cw.cwpy.ydata)
+            {
+                cw.cwpy.ydata.changed();
+            }
+            this.data.edit("Property/Feature/Weakness", str(value), name);
+            this.weakness[name] = value;
         }
-    }
-
-    public void set_physical(UNK name, UNK value)
-    {
-        if (cw.cwpy.ydata)
+        public void set_enhance(UNK name, UNK value)
         {
-            cw.cwpy.ydata.changed();
+            if (cw.cwpy.ydata)
+            {
+                cw.cwpy.ydata.changed();
+            }
+            this.data.edit("Property/Ability/Enhance", str(value), name);
+            this.enhance[name] = value;
         }
-        this.data.edit("Property/Ability/Physical", str(int(value)), name);
-        this.physical[name] = float(value);
-        this._clear_vocationcache();
-    }
-
-    public void set_mental(UNK name, UNK value)
-    {
-        if (cw.cwpy.ydata)
-        {
-            cw.cwpy.ydata.changed();
-        }
-        this.data.edit("Property/Ability/Mental", str(value), name);
-        this.mental[name] = float(value);
-        this._clear_vocationcache();
-    }
-
-  public void set_feature(UNK name, UNK value)
-  {
-      if (cw.cwpy.ydata)
-      {
-          cw.cwpy.ydata.changed();
-      }
-      this.data.edit("Property/Feature/Type", str(value), name);
-      this.feature[name] = value;
-  }
-  public void set_noeffect(UNK name, UNK value)
-  {
-      if (cw.cwpy.ydata)
-      {
-          cw.cwpy.ydata.changed();
-      }
-      this.data.edit("Property/Feature/NoEffect", str(value), name);
-      this.noeffect[name] = value;
-  }
-  public void set_resist(UNK name, UNK value)
-  {
-      if (cw.cwpy.ydata)
-      {
-          cw.cwpy.ydata.changed();
-      }
-      this.data.edit("Property/Feature/Resist", str(value), name);
-      this.resist[name] = value;
-  }
-  public void set_weakness(UNK name, UNK value)
-  {
-      if (cw.cwpy.ydata)
-      {
-          cw.cwpy.ydata.changed();
-      }
-      this.data.edit("Property/Feature/Weakness", str(value), name);
-      this.weakness[name] = value;
-  }
-  public void set_enhance(UNK name, UNK value)
-  {
-      if (cw.cwpy.ydata)
-      {
-          cw.cwpy.ydata.changed();
-      }
-      this.data.edit("Property/Ability/Enhance", str(value), name);
-      this.enhance[name] = value;
-  }
 //
 //    def get_cardpocket(self):
 //        flag = bool(self.data.getroot().tag == "CastCard")
