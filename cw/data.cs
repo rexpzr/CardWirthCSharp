@@ -17,7 +17,6 @@ class SystemData{
     private UNK mtime;
     private string tempdir;
     private string scedir;
-
     private Dictionary<UNK, UNK> this_areas;
     private Dictionary<UNK, UNK> this_battles;
     private Dictionary<UNK, UNK> this_packs;
@@ -26,10 +25,9 @@ class SystemData{
     private Dictionary<UNK, UNK> this_items;
     private Dictionary<UNK, UNK> this_skills;
     private Dictionary<UNK, UNK> this_beasts;
-
     private bool is_playing; 
     private UNK events; 
-    private UNK playerevents; // # プレイヤーカードのキーコード・死亡時イベント(Wsn.2)
+    private UNK playerevents;
     private UNK deletedpaths; 
     private UNK lostadventurers; 
     private Dictionary<UNK, UNK> gossips; 
@@ -53,18 +51,11 @@ class SystemData{
     private bool in_f9; 
     private bool in_endprocess; 
     private Dictionary<UNK, UNK> background_image_mtime; 
-
-    // # "file.x2.bmp"などのスケーリングされたイメージを読み込むか
     private bool can_loaded_scaledimage; 
-
-    // # メッセージのバックログ
     private List<UNK> backlog; 
-    // # キャンプ中に移動したカードの使用回数の記憶
     private Dictionary<UNK, UNK> uselimit_table; 
 
-
-    
-    public SytemData()
+    public SystemData()
     {
         // '''
         // 引数のゲームの状態遷移の情報によって読み込むxmlを変える。
@@ -94,7 +85,7 @@ class SystemData{
 
         this.is_playing = true;
         this.events = None;
-        this.playerevents = None;
+        this.playerevents = None;  // プレイヤーカードのキーコード・死亡時イベント(Wsn.2)
         this.deletedpaths = set();
         this.lostadventurers = set();
         this.gossips = {};
@@ -119,13 +110,16 @@ class SystemData{
         this.in_endprocess = false;
         this.background_image_mtime = {};
 
+        // "file.x2.bmp"などのスケーリングされたイメージを読み込むか
         this.can_loaded_scaledimage = true;
 
+        // メッセージのバックログ
         this.backlog = [];
 
+        // キャンプ中に移動したカードの使用回数の記憶
         this.uselimit_table = {};
 
-        // # refresh debugger
+        // refresh debugger
         this._init_debugger();
     }
     
@@ -197,14 +191,16 @@ class SystemData{
 //             except:
 //                 return False
 
-//     def get_versionhint(self, frompos=0):
-//         """現在有効になっている互換性マークを返す(常に無し)。"""
-//         return None
-
-//     def set_versionhint(self, pos, hint):
-//         """互換性モードを設定する(処理無し)。"""
-//         pass
-
+    public UNK get_versionhint(UNK frompos=0)
+    {
+        // """現在有効になっている互換性マークを返す(常に無し)。"""
+        return None;
+    }
+    public UNK set_versionhint(UNK pos, UNK hint)
+    {
+        // """互換性モードを設定する(処理無し)。"""
+        pass;
+    }
 //     def update_scale(self):
 //         for mcards in self.sparea_mcards.itervalues():
 //             for mcard in mcards:
@@ -351,25 +347,37 @@ class SystemData{
 
 //         return "", False
 
-//     def get_resdata(self, isbattle, resid):
-//         if isbattle:
-//             data = self.get_battledata(resid)
-//         else:
-//             data = self.get_areadata(resid)
+    public UNK get_resdata(UNK isbattle,UNK resid)
+    {
+        if (isbattle)
+        {
+            data = self.get_battledata(resid);
+        }
+        else
+        {
+            data = self.get_areadata(resid);
+        }
 
-//         if data is None:
-//             return None
+        if (data is None)
+        {
+            return None;
+        }
 
-//         return xml2etree(element=data)
+        return xml2etree(element=data);
+    }
 
-//     def get_carddata(self, linkdata, inusecard=True):
-//         return linkdata
+    public UNK get_carddata(UNK linkdata,UNK inusecard=true)
+    {
+        return linkdata;
+    }
 
-//     def is_updatedfilenames(self):
-//         """WSNシナリオのデータ(XML)のファイル名がデータテーブル
-//         作成時点から変更されている場合はTrueを返す。
-//         """
-//         return False
+    public bool is_updatedfilenames()
+    {
+        // """WSNシナリオのデータ(XML)のファイル名がデータテーブル
+        // 作成時点から変更されている場合はTrueを返す。
+        // """
+        return false;
+    }
 
 //     def _get_resdata(self, table, resid, tag, nocache, resname=u"?", rootattrs=None):
 //         fpath0 = table.get(resid, (u"", u"(未定義の%s ID:%s)" % (resname, resid)))[1]
@@ -403,105 +411,138 @@ class SystemData{
 //                 return None
 //         return fpath[1]
 
-//     def _get_resids(self, table):
-//         return table.keys()
-
-//     def get_areadata(self, resid, tag="", nocache=False, rootattrs=None):
-//         return self._get_resdata(self._areas, resid, tag, nocache, resname=u"エリア", rootattrs=rootattrs)
-
-//     def get_areaname(self, resid):
-//         return self._get_resname(self._areas, resid)
-
-//     def get_areafpath(self, resid):
-//         return self._get_resfpath(self._areas, resid)
-
-//     def get_areaids(self):
-//         return self._get_resids(self._areas)
-
-//     def get_battledata(self, resid, tag="", nocache=False, rootattrs=None):
-//         return self._get_resdata(self._battles, resid, tag, nocache, resname=u"バトル", rootattrs=rootattrs)
-
-//     def get_battlename(self, resid):
-//         return self._get_resname(self._battles, resid)
-
-//     def get_battlefpath(self, resid):
-//         return self._get_resfpath(self._battles, resid)
-
-//     def get_battleids(self):
-//         return self._get_resids(self._battles)
-
-//     def get_packagedata(self, resid, tag="", nocache=False, rootattrs=None):
-//         return self._get_resdata(self._packs, resid, tag, nocache, resname=u"パッケージ", rootattrs=rootattrs)
-
-//     def get_packagename(self, resid):
-//         return self._get_resname(self._packs, resid)
-
-//     def get_packagefpath(self, resid):
-//         return self._get_resfpath(self._packs, resid)
-
-//     def get_packageids(self):
-//         return self._get_resids(self._packs)
-
-//     def get_castdata(self, resid, tag="", nocache=False, rootattrs=None):
-//         return self._get_resdata(self._casts, resid, tag, nocache, resname=u"キャスト", rootattrs=rootattrs)
-
-//     def get_castname(self, resid):
-//         return self._get_resname(self._casts, resid)
-
-//     def get_castfpath(self, resid):
-//         return self._get_resfpath(self._casts, resid)
-
-//     def get_castids(self):
-//         return self._get_resids(self._casts)
-
-//     def get_skilldata(self, resid, tag="", nocache=False, rootattrs=None):
-//         return self._get_resdata(self._skills, resid, tag, nocache, resname=u"特殊技能", rootattrs=rootattrs)
-
-//     def get_skillname(self, resid):
-//         return self._get_resname(self._skills, resid)
-
-//     def get_skillfpath(self, resid):
-//         return self._get_resfpath(self._skills, resid)
-
-//     def get_skillids(self):
-//         return self._get_resids(self._skills)
-
-//     def get_itemdata(self, resid, tag="", nocache=False, rootattrs=None):
-//         return self._get_resdata(self._items, resid, tag, nocache, resname=u"アイテム", rootattrs=rootattrs)
-
-//     def get_itemname(self, resid):
-//         return self._get_resname(self._items, resid)
-
-//     def get_itemfpath(self, resid):
-//         return self._get_resfpath(self._items, resid)
-
-//     def get_itemids(self):
-//         return self._get_resids(self._items)
-
-//     def get_beastdata(self, resid, tag="", nocache=False, rootattrs=None):
-//         return self._get_resdata(self._beasts, resid, tag, nocache, resname=u"召喚獣", rootattrs=rootattrs)
-
-//     def get_beastname(self, resid):
-//         return self._get_resname(self._beasts, resid)
-
-//     def get_beastfpath(self, resid):
-//         return self._get_resfpath(self._beasts, resid)
-
-//     def get_beastids(self):
-//         return self._get_resids(self._beasts)
-
-//     def get_infodata(self, resid, tag="", nocache=False, rootattrs=None):
-//         return self._get_resdata(self._infos, resid, tag, nocache, resname=u"情報", rootattrs=rootattrs)
-
-//     def get_infoname(self, resid):
-//         return self._get_resname(self._infos, resid)
-
-//     def get_infofpath(self, resid):
-//         return self._get_resfpath(self._infos, resid)
-
-//     def get_infoids(self):
-//         return self._get_resids(self._infos)
-
+    public UNK _get_resids(UNK table)
+    {
+        return table.keys();
+    }
+    public UNK get_areadata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    {
+        return this._get_resdata(this._areas, resid, tag, nocache, resname=u"エリア", rootattrs=rootattrs);
+    }
+    public UNK get_areaname(UNK resid)
+    {
+        return this._get_resname(this._areas, resid);
+    }
+    public UNK get_areafpath(UNK resid)
+    {
+        return this._get_resfpath(this._areas, resid);
+    }
+    public UNK get_areaids()
+    {
+        return this._get_resids(this._areas);
+    }
+    public UNK get_battledata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    {
+        return this._get_resdata(this._battles, resid, tag, nocache, resname=u"バトル", rootattrs=rootattrs);
+    }
+    public UNK get_battlename(UNK resid)
+    {
+        return this._get_resname(this._battles, resid);
+    }
+    public UNK get_battlefpath(UNK resid)
+    {
+        return this._get_resfpath(this._battles, resid);
+    }
+    public UNK get_battleids()
+    {
+        return this._get_resids(this._battles);
+    }
+    public UNK get_packagedata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    {
+        return this._get_resdata(this._packs, resid, tag, nocache, resname=u"パッケージ", rootattrs=rootattrs);
+    }
+    public UNK get_packagename(UNK resid)
+    {
+        return this._get_resname(this._packs, resid);
+    }
+    public UNK get_packagefpath(UNK resid)
+    {
+        return this._get_resfpath(this._packs, resid);
+    }
+    public UNK get_packageids()
+    {
+        return this._get_resids(this._packs);
+    }
+    public UNK get_castdata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    {
+        return this._get_resdata(this._casts, resid, tag, nocache, resname=u"キャスト", rootattrs=rootattrs);
+    }
+    public UNK get_castname(UNK resid)
+    {
+        return this._get_resname(this._casts, resid);
+    }
+    public UNK get_castfpath(UNK resid)
+    {
+        return this._get_resfpath(this._casts, resid);
+    }
+    public UNK get_castids()
+    {
+        return this._get_resids(this._casts);
+    }
+    public UNK get_skilldata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    {
+        return this._get_resdata(this._skills, resid, tag, nocache, resname=u"特殊技能", rootattrs=rootattrs);
+    }
+    public UNK get_skillname(UNK resid)
+    {
+        return this._get_resname(this._skills, resid);
+    }
+    public UNK get_skillfpath(UNK resid)
+    {
+        return this._get_resfpath(this._skills, resid);
+    }
+    public UNK get_skillids()
+    {
+        return this._get_resids(this._skills);
+    }
+    public UNK get_itemdata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    {
+        return this._get_resdata(this._items, resid, tag, nocache, resname=u"アイテム", rootattrs=rootattrs);
+    }
+    public UNK get_itemname(UNK resid)
+    {
+        return this._get_resname(this._items, resid);
+    }
+    public UNK get_itemfpath(UNK resid)
+    {
+        return this._get_resfpath(this._items, resid);
+    }
+    public UNK get_itemids()
+    {
+        return this._get_resids(this._items);
+    }
+    public UNK get_beastdata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    {
+        return this._get_resdata(this._beasts, resid, tag, nocache, resname=u"召喚獣", rootattrs=rootattrs);
+    }
+    public UNK get_beastname(UNK resid)
+    {
+        return this._get_resname(this._beasts, resid);
+    }
+    public UNK get_beastfpath(UNK resid)
+    {
+        return this._get_resfpath(this._beasts, resid);
+    }
+    public UNK get_beastids()
+    {
+        return this._get_resids(this._beasts);
+    }
+    public UNK get_infodata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    {
+        return this._get_resdata(this._infos, resid, tag, nocache, resname=u"情報", rootattrs=rootattrs);
+    }
+    public UNK get_infoname(UNK resid)
+    {
+        return this._get_resname(this._infos, resid);
+    }
+    public UNK get_infofpath(UNK resid)
+    {
+        return this._get_resfpath(this._infos, resid);
+    }
+    public UNK get_infoids()
+    {
+        return this._get_resids(this._infos);
+    }
 //     def _get_carddatapath(self, type, resid, dpath):
 //         dpath = cw.util.join_paths(dpath, type)
 //         if not os.path.isdir(dpath):
