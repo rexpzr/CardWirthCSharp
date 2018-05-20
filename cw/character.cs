@@ -237,14 +237,15 @@ class Character
 
         // キャッシュ
         this._voc_tbl = {};
-  
-        public UNK get_imagepaths()
-        {
-            // 現在表示中のカード画像の情報を
-            // cw.image.ImageInfoのlistで返す。
-            UNK data = this.data.find("Property");
-            return cw.image.get_imageinfos(data);
-        }
+    }
+
+    public UNK get_imagepaths()
+    {
+        // 現在表示中のカード画像の情報を
+        // cw.image.ImageInfoのlistで返す。
+        UNK data = this.data.find("Property");
+        return cw.image.get_imageinfos(data);
+    }
 
 //    def set_images(self, paths):
 //        """このキャラクターのカード画像を
@@ -350,120 +351,120 @@ class Character
 //
 //        return newpaths
 //
-          public string get_name()
-          {       
-              return this.data.gettext("Property/Name", "");
-          }
+    public string get_name()
+    {       
+        return this.data.gettext("Property/Name", "");
+    }
 
-          public void set_name(string name){
-              if (cw.cwpy.ydata){
-                  cw.cwpy.ydata.changed();
-              }
-              this.data.edit("Property/Name", name);
-              this.name = name;
-          }
-
-          public string get_description()
-          {
-              return cw.util.decodewrap(this.data.gettext("Property/Description", ""));
-          }
-
-          public void set_description(UNK desc)
-          {
-              if (cw.cwpy.ydata)
-              {
-                  cw.cwpy.ydata.changed();
-              }
-              this.data.edit("Property/Description", cw.util.encodewrap(desc));
-          }
-
-          public void set_maxlife(UNK value)
-          {
-              if (cw.cwpy.ydata)
-              {
-                  cw.cwpy.ydata.changed();
-              }
-              v = float(this.life) / this.maxlife;
-              this.maxlife = value;
-              this.data.edit("Property/Life", str(int(value)), "max");
-              if (this.life != 0)
-              {
-                  this.life = max(1, int(this.maxlife * v));
-                  this.data.edit("Property/Life", str(int(this.maxlife)));
-              }
-              if (this.data.getattr("Property/Life", "coefficient", 0))
-              {
-                  this.data.remove("Property/Life", attrname="coefficient");
-              }
-          }
-
-          public void set_physical(UNK name, UNK value)
-          {
-              if (cw.cwpy.ydata)
-              {
-                  cw.cwpy.ydata.changed();
-              }
-              this.data.edit("Property/Ability/Physical", str(int(value)), name);
-              this.physical[name] = float(value);
-              this._clear_vocationcache();
-          }
-
-          public void set_mental(UNK name, UNK value)
-          {
-              if (cw.cwpy.ydata)
-              {
-                  cw.cwpy.ydata.changed();
-              }
-              this.data.edit("Property/Ability/Mental", str(value), name);
-              this.mental[name] = float(value);
-              this._clear_vocationcache();
-          }
-
-        public void set_feature(UNK name, UNK value)
-        {
-            if (cw.cwpy.ydata)
-            {
-                cw.cwpy.ydata.changed();
-            }
-            this.data.edit("Property/Feature/Type", str(value), name);
-            this.feature[name] = value;
+    public void set_name(string name){
+        if (cw.cwpy.ydata){
+            cw.cwpy.ydata.changed();
         }
-        public void set_noeffect(UNK name, UNK value)
+        this.data.edit("Property/Name", name);
+        this.name = name;
+    }
+
+    public string get_description()
+    {
+        return cw.util.decodewrap(this.data.gettext("Property/Description", ""));
+    }
+
+    public void set_description(UNK desc)
+    {
+        if (cw.cwpy.ydata)
         {
-            if (cw.cwpy.ydata)
-            {
-                cw.cwpy.ydata.changed();
-            }
-            this.data.edit("Property/Feature/NoEffect", str(value), name);
-            this.noeffect[name] = value;
+            cw.cwpy.ydata.changed();
         }
-        public void set_resist(UNK name, UNK value)
+        this.data.edit("Property/Description", cw.util.encodewrap(desc));
+    }
+
+    public void set_maxlife(UNK value)
+    {
+        if (cw.cwpy.ydata)
         {
-            if (cw.cwpy.ydata)
-            {
-                cw.cwpy.ydata.changed();
-            }
-            this.data.edit("Property/Feature/Resist", str(value), name);
-            this.resist[name] = value;
+            cw.cwpy.ydata.changed();
         }
-        public void set_weakness(UNK name, UNK value)
+        v = float(this.life) / this.maxlife;
+        this.maxlife = value;
+        this.data.edit("Property/Life", str(int(value)), "max");
+        if (this.life != 0)
         {
-            if (cw.cwpy.ydata)
-            {
-                cw.cwpy.ydata.changed();
-            }
-            this.data.edit("Property/Feature/Weakness", str(value), name);
-            this.weakness[name] = value;
+            this.life = max(1, int(this.maxlife * v));
+            this.data.edit("Property/Life", str(int(this.maxlife)));
         }
-        public void set_enhance(UNK name, UNK value)
+        if (this.data.getattr("Property/Life", "coefficient", 0))
         {
-            if (cw.cwpy.ydata)
-            {
-                cw.cwpy.ydata.changed();
-            }
-            this.data.edit("Property/Ability/Enhance", str(value), name);
-            this.enhance[name] = value;
+            this.data.remove("Property/Life", attrname="coefficient");
         }
+    }
+
+    public void set_physical(UNK name, UNK value)
+    {
+        if (cw.cwpy.ydata)
+        {
+            cw.cwpy.ydata.changed();
+        }
+        this.data.edit("Property/Ability/Physical", str(int(value)), name);
+        this.physical[name] = float(value);
+        this._clear_vocationcache();
+    }
+
+    public void set_mental(UNK name, UNK value)
+    {
+        if (cw.cwpy.ydata)
+        {
+            cw.cwpy.ydata.changed();
+        }
+        this.data.edit("Property/Ability/Mental", str(value), name);
+        this.mental[name] = float(value);
+        this._clear_vocationcache();
+    }
+
+  public void set_feature(UNK name, UNK value)
+  {
+      if (cw.cwpy.ydata)
+      {
+          cw.cwpy.ydata.changed();
+      }
+      this.data.edit("Property/Feature/Type", str(value), name);
+      this.feature[name] = value;
+  }
+  public void set_noeffect(UNK name, UNK value)
+  {
+      if (cw.cwpy.ydata)
+      {
+          cw.cwpy.ydata.changed();
+      }
+      this.data.edit("Property/Feature/NoEffect", str(value), name);
+      this.noeffect[name] = value;
+  }
+  public void set_resist(UNK name, UNK value)
+  {
+      if (cw.cwpy.ydata)
+      {
+          cw.cwpy.ydata.changed();
+      }
+      this.data.edit("Property/Feature/Resist", str(value), name);
+      this.resist[name] = value;
+  }
+  public void set_weakness(UNK name, UNK value)
+  {
+      if (cw.cwpy.ydata)
+      {
+          cw.cwpy.ydata.changed();
+      }
+      this.data.edit("Property/Feature/Weakness", str(value), name);
+      this.weakness[name] = value;
+  }
+  public void set_enhance(UNK name, UNK value)
+  {
+      if (cw.cwpy.ydata)
+      {
+          cw.cwpy.ydata.changed();
+      }
+      this.data.edit("Property/Ability/Enhance", str(value), name);
+      this.enhance[name] = value;
+  }
 //
 //    def get_cardpocket(self):
 //        flag = bool(self.data.getroot().tag == "CastCard")
@@ -2989,6 +2990,8 @@ class Character
 //            assert False
 //        self.data.edit(type, str(value), "hold_all")
 //
+
+}
 class Player : Character {
     public void lost()
      {
@@ -3038,44 +3041,58 @@ class Player : Character {
 //assert calc_maxlife(8, 5, 10) == 90
 //assert calc_maxlife(9, 5, 10) == 96
 //
-//class Enemy(Character):
-//    def is_dead(self):
-//        """
-//        敵は隠蔽状態であれば死亡と見做す。
-//        """
-//        b = Character.is_dead(self)
-//        b |= self.status == "hidden"
-//        return b
-//
-//    def is_inactive(self, check_reversed=True):
-//        """
-//        敵は隠蔽状態であれば行動不能と見做す。
-//        """
-//        b = Character.is_inactive(self, check_reversed=check_reversed)
-//        b |= self.status == "hidden"
-//        return b
-//
-//class Friend(Character):
-//    pass
-//
-//class AlbumPage(object):
-//    def __init__(self, data):
-//        self.data = data
-//        self.name = self.data.gettext("Property/Name", "")
-//        self.level = cw.util.numwrap(self.data.getint("Property/Level"), 1, 65536)
-//
-//    def get_specialcoupons(self):
-//        """
-//        "＠"で始まる特殊クーポンの
-//        辞書(key=クーポン名, value=クーポン得点)を返す。
-//        """
-//        d = {}
-//
-//        for e in self.data.getfind("Property/Coupons"):
-//            coupon = e.text
-//            if coupon and coupon.startswith(u"＠"):
-//                d[coupon] = int(e.get("value", "0"))
-//
-//        return d
-//
+class Enemy : Character
+{
+    public UNK is_dead()
+    {
+        // """
+        // 敵は隠蔽状態であれば死亡と見做す。
+        // """
+        b = Character.is_dead();
+        b = b || this.status == "hidden"; //b |= this.status == "hidden";
+        return b;
+    }
+    public UNK is_inactive(UNK check_reversed=true)
+    {
+        // """
+        // 敵は隠蔽状態であれば行動不能と見做す。
+        // """
+        b = Character.is_inactive(check_reversed=check_reversed);
+        b = b || this.status == "hidden"; //b |= this.status == "hidden";
+        return b;
+    }
+}
+
+class Friend : Character{
+   // pass;
+}
+
+class AlbumPage 
+{
+    private UNK data;
+    private string name;
+    private int level;
+    // def __init__(self, data):
+    public AlbumPage (UNK data)
+    {
+        this.data = data;
+        this.name = this.data.gettext("Property/Name", "");
+        this.level = cw.util.numwrap(this.data.getint("Property/Level"), 1, 65536);
+    }
+
+    public UNK get_specialcoupons()
+    {
+        // """
+        // "＠"で始まる特殊クーポンの
+        // 辞書(key=クーポン名, value=クーポン得点)を返す。
+        // """
+        d = {};
+
+        // for e in this.data.getfind("Property/Coupons"):
+        //     coupon = e.text
+        //     if coupon and coupon.startswith(u"＠"):
+        //         d[coupon] = int(e.get("value", "0"))
+
+        return d;
+    }
 }
