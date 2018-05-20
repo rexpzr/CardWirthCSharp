@@ -774,41 +774,55 @@ class Character
 //        """
 //        return len([h for h in self.get_pocketcards(cw.POCKET_BEAST) if not h.attachment])
 //
-//    def is_enhanced_act(self):
-//        return self.enhance_act <> 0 and 0 < self.enhance_act_dur
-//
-//    def is_enhanced_res(self):
-//        return self.enhance_res <> 0 and 0 < self.enhance_res_dur
-//
-//    def is_enhanced_avo(self):
-//        return self.enhance_avo <> 0 and 0 < self.enhance_avo_dur
-//
-//    def is_enhanced_def(self):
-//        return self.enhance_def <> 0 and 0 < self.enhance_def_dur
-//
-//    def is_upaction(self):
-//        return self.enhance_act > 0 and 0 < self.enhance_act_dur
-//
-//    def is_upresist(self):
-//        return self.enhance_res > 0 and 0 < self.enhance_res_dur
-//
-//    def is_upavoid(self):
-//        return self.enhance_avo > 0 and 0 < self.enhance_avo_dur
-//
-//    def is_updefense(self):
-//        return self.enhance_def > 0 and 0 < self.enhance_def_dur
-//
-//    def is_downaction(self):
-//        return self.enhance_act < 0 and 0 < self.enhance_act_dur
-//
-//    def is_downresist(self):
-//        return self.enhance_res < 0 and 0 < self.enhance_res_dur
-//
-//    def is_downavoid(self):
-//        return self.enhance_avo < 0 and 0 < self.enhance_avo_dur
-//
-//    def is_downdefense(self):
-//        return self.enhance_def < 0 and 0 < self.enhance_def_dur
+    public UNK is_enhanced_act()
+    {
+        return this.enhance_act <> 0 and 0 < this.enhance_act_dur;
+    }
+    public UNK is_enhanced_res()
+    {
+        return this.enhance_res <> 0 and 0 < this.enhance_res_dur;
+    }
+    public UNK is_enhanced_avo()
+    {
+        return this.enhance_avo <> 0 and 0 < this.enhance_avo_dur;
+    }
+    public UNK is_enhanced_def()
+    {
+        return this.enhance_def <> 0 and 0 < this.enhance_def_dur;
+    }
+    public UNK is_upaction()
+    {
+        return this.enhance_act > 0 and 0 < this.enhance_act_dur;
+    }
+    public UNK is_upresist()
+    { 
+        return this.enhance_res > 0 and 0 < this.enhance_res_dur;
+    }
+    public UNK is_upavoid()
+    {
+        return this.enhance_avo > 0 and 0 < this.enhance_avo_dur;
+    }
+    public UNK is_updefense()
+    {
+        return this.enhance_def > 0 and 0 < this.enhance_def_dur;
+    }
+    public UNK is_downaction()
+    {
+        return this.enhance_act < 0 and 0 < this.enhance_act_dur;
+    }
+    public UNK is_downresist()
+    {
+        return this.enhance_res < 0 and 0 < this.enhance_res_dur;
+    }
+    public UNK is_downavoid()
+    {
+        return this.enhance_avo < 0 and 0 < this.enhance_avo_dur;
+    }
+    public UNK is_downdefense()
+    {
+        return this.enhance_def < 0 and 0 < this.enhance_def_dur;
+    }
+    
 //
 //    def is_effective(self, motion):
 //        """motionが現在のselfに対して有効な効果か。
@@ -2725,32 +2739,49 @@ class Character
 //            if cw.cwpy.is_battlestatus():
 //                self.deck.lose_skillpower(self, -value)
 //
-//    def set_beast(self, element=None, vanish=False, is_scenariocard=False):
-//        """召喚獣を召喚する。付帯召喚設定は強制的にクリアされる。
-//        vanish: 召喚獣を消去するかどうか。
-//        """
-//        idx = cw.POCKET_BEAST
-//
-//        eff = False
-//        if vanish:
-//            for header in self.get_pocketcards(idx)[::-1]:
-//                if not header.attachment:
-//                    self.throwaway_card(header, update_image=False)
-//                    eff = True
-//
-//        elif self.can_addbeast():
-//            if self.is_unconscious():
-//                return eff
-//            etree = cw.data.xml2etree(element=element, nocache=True)
-//            cw.content.get_card(etree, self, not is_scenariocard, update_image=False)
-//            eff = True
-//        return eff
-//
-//    def can_addbeast(self):
-//        if self.is_unconscious():
-//            return False
-//        idx = cw.POCKET_BEAST
-//        return len(self.get_pocketcards(idx)) < self.get_cardpocketspace()[idx]
+    public void set_beast(UNK element=None, bool vanish=false, bool is_scenariocard=false)
+    {
+        // """召喚獣を召喚する。付帯召喚設定は強制的にクリアされる。
+        // vanish: 召喚獣を消去するかどうか。
+        // """
+        UNK idx;
+        bool eff;
+        UNK etree;
+
+        idx = cw.POCKET_BEAST;
+        eff = false;
+        if (vanish)
+        {
+            // for header in this.get_pocketcards(idx)[::-1]:
+            //     if (not header.attachment)
+            //     {
+            //         this.throwaway_card(header, update_image=false)
+            //         eff = true
+            //       }
+        }
+        else if (this.can_addbeast())
+        {
+            if (this.is_unconscious())
+            {
+               return eff;
+            }
+            etree = cw.data.xml2etree(element=element, nocache=true);
+            cw.content.get_card(etree, self, not is_scenariocard, update_image=false);
+            eff = true;
+            return eff;
+        }
+    }
+
+    public void can_addbeast()
+    {
+        if (this.is_unconscious())
+        {
+           return false;
+        }
+        idx = cw.POCKET_BEAST;
+        return len(this.get_pocketcards(idx)) < this.get_cardpocketspace()[idx];
+    }
+
 //
 //    def decrease_physical(self, stype, time):
 //        """中毒麻痺の時間経過による軽減。"""
@@ -3022,15 +3053,21 @@ class Player : Character {
             cw.cwpy.pcards.remove(self);
         }
     }
+
+   public void set_name(UNK name)
+   {
+       Character.set_name(name);
+       if (cw.cwpy.ydata)
+       {
+           // for header in cw.cwpy.ydata.partyrecord:
+           //     header.rename_member(self.data.fpath, name)
+       }
+       cw.cwpy.background.reload(false, nocheckvisible=true);
+   }
+
 }
    
-//
-//    def set_name(self, name):
-//        Character.set_name(self, name)
-//        if cw.cwpy.ydata:
-//            for header in cw.cwpy.ydata.partyrecord:
-//                header.rename_member(self.data.fpath, name)
-//        cw.cwpy.background.reload(False, nocheckvisible=True)
+
 //
 //def calc_maxlife(vit, minval, level):
 //    """能力値から体力の最大値を計算する。"""
