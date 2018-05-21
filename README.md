@@ -45,3 +45,19 @@ public static class F
 とする
 
 * 型が分からない変数は、型を```UNK```とする
+
+## Python C# 対応表
+
+| 名前 | Python | C# |
+----|----|---- 
+| コメント | ```#``` | ```//``` |
+| 関数 | ```def hoge(self, aaa, bbb):``` | ```public UNK hoge(UNK aaa, UNK bbb) {``` |
+| なし | ```None``` | ```null``` |
+| and (ブール演算) | ```hoge and fuge``` | ```hoge && fuge``` |
+| or (ブール演算) | ```hoge or fuge``` | ```hoge || fuge``` |
+| if | ```if aaa > bbb:``` | ```if (aaa > bbb) {``` |
+| cast int | ```int(hoge)``` | ```(int)hoge``` |
+| 行末 | なし | ```;``` （セミコロン） |
+| class | ```class AAA(BBB):``` | ```class AAA : BBB {```|
+| インスタンスメソッド呼び出し | ```self.hoge()``` | ```this.hoge();```|
+----|----|---- 
