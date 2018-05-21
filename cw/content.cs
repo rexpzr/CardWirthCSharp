@@ -4225,46 +4225,53 @@
 //    "Load": "reload_yado",
 //    "StartScenario": "start_scenario"}
 //
-//class PostEventContent(EventContentBase):
-//    def __init__(self, data):
-//        EventContentBase.__init__(self, data)
-//
-//    def action(self):
-//        """CWPyのメソッド実行用コンテント。
-//        シナリオでは使えない(スキン専用)。
-//        """
-//        if not cw.cwpy.is_playingscenario() or cw.cwpy.areaid < 0:
-//            command = self.data.get("command")
-//            arg = self.data.get("arg")
-//            PostEventContent.do_action(command, arg)
-//
-//        return cw.IDX_TREEEND
-//
-//    @staticmethod
-//    def do_action(command, arg):
-//        try:
-//            arg = int(arg)
-//        except:
-//            pass
-//
-//        if command in methoddict:
-//            methodname = methoddict[command]
-//            method = getattr(cw.cwpy, methodname)
-//
-//            lock_menucards = cw.cwpy.lock_menucards
-//            cw.cwpy.lock_menucards = True
-//
-//            if arg:
-//                cw.cwpy.exec_func(method, arg)
-//            else:
-//                cw.cwpy.exec_func(method)
-//
-//            if methodname <> "call_dlg":
-//                # ダイアログのコールの場合はcall_dlgでロックが解除されるので
-//                # ここで解除する必要はない
-//                def func():
-//                    cw.cwpy.lock_menucards = lock_menucards
-//                cw.cwpy.exec_func(func)
+public class PostEventContent : EventContentBase
+{
+    public PostEventContent(UNK data) : base(data) {
+    }
+
+    public UNK action() {
+        // """CWPyのメソッド実行用コンテント。
+        // シナリオでは使えない(スキン専用)。
+        // """
+        if (!cw.cwpy.is_playingscenario() || cw.cwpy.areaid < 0) {
+            UNK command = this.data.get("command");
+            UNK arg = this.data.get("arg");
+            PostEventContent.do_action(command, arg);
+        }
+
+        return cw.IDX_TREEEND;
+    }
+
+    public static void do_action(UNK command, UNK arg)
+    {
+        try {
+            arg = int(arg);
+        } catch(UNKException e) {
+        }
+
+        if (command in methoddict) { // TODO
+            methodname = methoddict[command];
+            method = getattr(cw.cwpy, methodname);
+
+            lock_menucards = cw.cwpy.lock_menucards;
+            cw.cwpy.lock_menucards = true;
+
+            if (arg) {
+                cw.cwpy.exec_func(method, arg);
+            } else {
+                cw.cwpy.exec_func(method);
+            }
+
+            if (methodname != "call_dlg") {
+                // ダイアログのコールの場合はcall_dlgでロックが解除されるので
+                // ここで解除する必要はない
+                def func(): // TODO
+                    cw.cwpy.lock_menucards = lock_menucards // TODO
+                cw.cwpy.exec_func(func); // TODO
+            }
+        }
+    }
 //
 //#-------------------------------------------------------------------------------
 //# コンテント取得用関数
