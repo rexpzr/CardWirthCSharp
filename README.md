@@ -54,7 +54,7 @@ public static class F
 | 関数 | ```def hoge(self, aaa, bbb):``` | ```public UNK hoge(UNK aaa, UNK bbb) {``` |
 | なし | ```None``` | ```null``` |
 | and (ブール演算) | ```hoge and fuge``` | ```hoge && fuge``` |
-| or (ブール演算) | ```hoge or fuge``` | ```hoge || fuge``` |
+| or (ブール演算) | ```hoge or fuge``` | ```hoge \|\| fuge``` |
 | if | ```if aaa > bbb:``` | ```if (aaa > bbb) {``` |
 | cast int | ```int(hoge)``` | ```(int)hoge``` |
 | 行末 | なし | ```;``` （セミコロン） |
