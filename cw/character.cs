@@ -224,13 +224,14 @@ class Character
         this.versionhint = cw.cwpy.sct.from_basehint(this.data.getattr("Property", "versionHint", ""));
 
         // 状態の正規化
-        this.cardimg = None;
+        this.cardimg = null;
 
-        // if this.is_unconscious():
-        //     // 最初から意識不明の場合、基本的に全てのステータスが
-        //     // クリアされるが、唯一、回数制限つきの付帯能力だけは、
-        //     // 後から意識不明になった時と違ってクリアされない(CardWirth 1.50)
-        //     this.set_unconsciousstatus(clearbeast=false)
+        if (this.is_unconscious()) {
+            // 最初から意識不明の場合、基本的に全てのステータスが
+            // クリアされるが、唯一、回数制限つきの付帯能力だけは、
+            // 後から意識不明になった時と違ってクリアされない(CardWirth 1.50)
+            this.set_unconsciousstatus(clearbeast=false);
+        }
 
         // 適性検査用のCardHeader。
         this.test_aptitude = None;
