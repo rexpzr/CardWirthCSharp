@@ -62,3 +62,6 @@ public static class F
 | インスタンスメソッド呼び出し | ```self.hoge()``` | ```this.hoge();```|
 | true | ```True``` | ```true```|
 | false | ```False``` | ```false```|
+| ノット（ブール演算） | ```not``` | ```!```|
+| 異なる（比較演算） | ```<>``` | ```!=```|
+| nullチェック | ```if hoge is None:``` | ```if (hoge == null) {```|
