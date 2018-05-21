@@ -4269,21 +4269,29 @@
 //#-------------------------------------------------------------------------------
 //# コンテント取得用関数
 //#-------------------------------------------------------------------------------
-//
-//def get_content(data):
-//    """対応するEventContentインスタンスを返す。
-//    data: Element
-//    """
-//    if data.content:
-//        return data.content
-//
-//    classname = data.tag + data.get("type", "") + "Content"
-//
-//    try:
-//        data.content = globals()[classname](data)
-//        return data.content
-//    except:
-//        cw.util.print_ex(file=sys.stderr)
-//        print "NoContent: ", classname
-//        return None
-//
+
+public static class F
+{
+    public static EventContent? get_content(Element data)
+    {
+        // """対応するEventContentインスタンスを返す。
+        // data: Element
+        // """
+        if (data.content) {
+            return data.content;
+        }
+    
+        string classname = data.tag + data.get("type", "") + "Content";
+    
+        try
+        {
+            data.content = globals()[classname](data); // TODO
+            return data.content;
+        } catch(UNKException e) {
+            cw.util.print_ex(file=sys.stderr); // TODO
+            Debug.Log("NoContent: " + classname); // TODO
+            return null;
+        }
+    }
+
+}
