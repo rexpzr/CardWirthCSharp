@@ -61,11 +61,11 @@ class Character
 
     public Character(UNK? data=null)
     {
-//    def __init__(self, data=None):
-//        if not data is None:
-//        self.data = data
-//        self.reversed = false
-//
+        if (data != null) {
+            this.data = data;
+            this.reversed = false;
+        }
+
         // 名前
         this.name = this.data.gettext("Property/Name", "");
         // レベル
