@@ -60,4 +60,3 @@ public static class F
 | 行末 | なし | ```;``` （セミコロン） |
 | class | ```class AAA(BBB):``` | ```class AAA : BBB {```|
 | インスタンスメソッド呼び出し | ```self.hoge()``` | ```this.hoge();```|
-----|----|---- 
