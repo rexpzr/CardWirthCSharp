@@ -2787,245 +2787,311 @@ class Character
         return len(this.get_pocketcards(idx)) < this.get_cardpocketspace()[idx];
     }
 
-//
-//    def decrease_physical(self, stype, time):
-//        """中毒麻痺の時間経過による軽減。"""
-//        for _t in xrange(time):
-//            uvalue = cw.util.div_vocation(self.get_vocation_val(("vit", "aggressive"))) + self.level + cw.cwpy.dice.roll(2)
-//            tvalue = (self.poison if stype == "Poison" else self.paralyze) + cw.cwpy.dice.roll(2)
-//
-//            flag = uvalue >= tvalue
-//            dice = cw.cwpy.dice.roll(2)
-//            if dice == 12:
-//                flag = True
-//            if dice == 2:
-//                flag = False
-//
-//            if flag:
-//                if stype == "Poison":
-//                    self.set_poison(-1)
-//                else:
-//                    self.set_paralyze(-1)
-//
-//    def set_timeelapse(self, time=1, fromevent=False):
-//        """時間経過。"""
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        # 時限クーポン処理
-//        self.count_timedcoupon()
-//        oldalive = self.is_alive()
-//        flag = False # 反転しながら画像を更新する場合はTrue
-//        updateimage = False # 反転せずに画像を更新する場合はTrue
-//
-//        # 中毒
-//        if self.is_poison() and not self.is_unconscious():
-//            self.decrease_physical("Poison", time)
-//
-//            if not self.is_poison():
-//                flag = True
-//                cw.cwpy.advlog.recover_poison(self)
-//            else:
-//                cw.cwpy.play_sound("dump")
-//                value = 1 * self.poison
-//                n = value / 5
-//                n2 = value % 5 * 2
-//                value = cw.cwpy.dice.roll(n, 10)
-//
-//                if n2:
-//                    value += cw.cwpy.dice.roll(1, n2)
-//
-//                oldlife = self.life
-//                value = self.set_life(-value)
-//                cw.cwpy.advlog.poison_damage(self, value, self.life, oldlife)
-//
-//                if self.status <> "reversed" and self.status <> "hidden":
-//                    cw.animation.animate_sprite(self, "lateralvibe", battlespeed=cw.cwpy.is_battlestatus())
-//                self.update_image()
-//                cw.cwpy.draw(clip=self.rect)
-//
-//        # 麻痺
-//        if self.is_paralyze() and not self.is_petrified() and not self.is_unconscious():
-//            self.decrease_physical("Paralyze", time)
-//            if not self.is_paralyze():
-//                cw.cwpy.advlog.recover_paralyze(self)
-//                flag = True
-//            if self.is_analyzable():
-//                updateimage = True
-//
-//        # 束縛
-//        if self.is_bind():
-//            value = self.bind - time
-//            self.set_bind(value)
-//            if not self.is_bind():
-//                cw.cwpy.advlog.recover_bind(self)
-//                flag = True
-//            if self.is_analyzable():
-//                updateimage = True
-//
-//        # 沈黙
-//        if self.is_silence():
-//            value = self.silence - time
-//            self.set_silence(value)
-//            if not self.is_silence():
-//                cw.cwpy.advlog.recover_silence(self)
-//                flag = True
-//            if self.is_analyzable():
-//                updateimage = True
-//
-//        # 暴露
-//        if self.is_faceup():
-//            value = self.faceup - time
-//            self.set_faceup(value)
-//            if not self.is_faceup():
-//                cw.cwpy.advlog.recover_faceup(self)
-//                flag = True
-//            if self.is_analyzable():
-//                updateimage = True
-//
-//        # 魔法無効化
-//        if self.is_antimagic():
-//            value = self.antimagic - time
-//            self.set_antimagic(value)
-//            if not self.is_antimagic():
-//                cw.cwpy.advlog.recover_antimagic(self)
-//                flag = True
-//            if self.is_analyzable():
-//                updateimage = True
-//
-//        # 精神状態
-//        if self.mentality_dur > 0:
-//            value = self.mentality_dur - time
-//
-//            if value > 0:
-//                self.set_mentality(self.mentality, value)
-//            else:
-//                cw.cwpy.advlog.recover_mentality(self, self.mentality)
-//                self.set_mentality("Normal", 0)
-//                flag = True
-//
-//            if self.is_analyzable():
-//                updateimage = True
-//
-//        # 行動力
-//        if self.enhance_act_dur > 0:
-//            value = self.enhance_act_dur - time
-//
-//            if value > 0:
-//                self.set_enhance_act(self.enhance_act, value)
-//            else:
-//                cw.cwpy.advlog.recover_enhance_act(self)
-//                self.set_enhance_act(0, 0)
-//                flag = True
-//
-//            if self.is_analyzable():
-//                updateimage = True
-//
-//        # 回避力
-//        if self.enhance_avo_dur > 0:
-//            value = self.enhance_avo_dur - time
-//
-//            if value > 0:
-//                self.set_enhance_avo(self.enhance_avo, value)
-//            else:
-//                cw.cwpy.advlog.recover_enhance_avo(self)
-//                self.set_enhance_avo(0, 0)
-//                flag = True
-//
-//            if self.is_analyzable():
-//                updateimage = True
-//
-//        # 抵抗力
-//        if self.enhance_res_dur > 0:
-//            value = self.enhance_res_dur - time
-//
-//            if value > 0:
-//                self.set_enhance_res(self.enhance_res, value)
-//            else:
-//                cw.cwpy.advlog.recover_enhance_res(self)
-//                self.set_enhance_res(0, 0)
-//                flag = True
-//
-//            if self.is_analyzable():
-//                updateimage = True
-//
-//        # 防御力
-//        if self.enhance_def_dur > 0:
-//            value = self.enhance_def_dur - time
-//
-//            if value > 0:
-//                self.set_enhance_def(self.enhance_def, value)
-//            else:
-//                cw.cwpy.advlog.recover_enhance_def(self)
-//                self.set_enhance_def(0, 0)
-//                flag = True
-//
-//            if self.is_analyzable():
-//                updateimage = True
-//
-//        # 中毒効果で死亡していたら、ステータスを元に戻す
-//        if self.is_unconscious():
-//            self.set_unconsciousstatus()
-//
-//        # 画像更新
-//        if flag or updateimage:
-//            if self.status <> "reversed" and self.status <> "hidden":
-//                if flag:
-//                    battlespeed = cw.cwpy.is_battlestatus()
-//                    cw.animation.animate_sprite(self, "hide", battlespeed=battlespeed)
-//                    self.update_image()
-//                    cw.animation.animate_sprite(self, "deal", battlespeed=battlespeed)
-//                else:
-//                    self.update_image()
-//            else:
-//                self.update_image()
-//            cw.cwpy.draw(clip=self.rect)
-//
-//        # エネミーまたはプレイヤー(Wsn.2)が中毒効果で死亡していたら、死亡イベント開始
-//        if isinstance(self, (Player, Enemy)) and self.is_dead() and oldalive:
-//            if isinstance(self, Player):
-//                # プレイヤーカードのキーコード・死亡時イベント(Wsn.2)
-//                events = cw.cwpy.sdata.playerevents
-//            else:
-//                events = self.events
-//
-//            if events:
-//                e_eventtarget = None
-//                if fromevent:
-//                    for t in itertools.chain(cw.cwpy.get_pcards(), cw.cwpy.get_ecards(), cw.cwpy.get_fcards()):
-//                        if isinstance(t, cw.character.Character):
-//                            if t.has_coupon(u"＠イベント対象"):
-//                                e_eventtarget = t
-//                                t.remove_coupon(u"＠イベント対象")
-//                                break
-//
-//                try:
-//                    if cw.cwpy.sdata.is_wsnversion('2'):
-//                        # イベント所持者を示すシステムクーポン(Wsn.2)
-//                        self.set_coupon(u"＠イベント対象", 0)
-//                    if fromevent:
-//                        event = events.check_keynum(1)
-//                        if event:
-//                            event.run_scenarioevent()
-//                    else:
-//                        events.start(1, isinsideevent=False)
-//                finally:
-//                    self.remove_coupon(u"＠イベント対象")
-//
-//                    if e_eventtarget:
-//                        e_eventtarget.set_coupon(u"＠イベント対象", 0)
-//
-//    def set_hold_all(self, pocket, value):
-//        self.hold_all[pocket] = value
-//        if pocket == cw.POCKET_SKILL:
-//            type = "SkillCards"
-//        elif pocket == cw.POCKET_ITEM:
-//            type = "ItemCards"
-//        elif pocket == cw.POCKET_BEAST:
-//            type = "BeastCards"
-//        else:
-//            assert False
-//        self.data.edit(type, str(value), "hold_all")
-//
+    public UNK decrease_physical(stype, time);
+    {
+        // """中毒麻痺の時間経過による軽減。""";
+        for _t in xrange(time)  // TODO
+        {
+            uvalue = cw.util.div_vocation(this.get_vocation_val(("vit", "aggressive"))) + this.level + cw.cwpy.dice.roll(2);
+            if (stype == "Poison") {
+                tvalue = this.poison + cw.cwpy.dice.roll(2);
+            } else {
+                tvalue = this.paralyze + cw.cwpy.dice.roll(2);
+            }
+
+            flag = uvalue >= tvalue;
+            dice = cw.cwpy.dice.roll(2);
+            if (dice == 12) {
+                flag = true;
+            }
+            if (dice == 2) {
+                flag = false;
+            }
+
+            if (flag) {
+                if (stype == "Poison") {
+                    this.set_poison(-1);
+                } else {
+                    this.set_paralyze(-1);
+                }
+            }
+        }
+    }
+
+    public UNK set_timeelapse(time=1, fromevent=false);
+    {
+        // """時間経過。"""
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        // 時限クーポン処理
+        this.count_timedcoupon();
+        oldalive = this.is_alive();
+        flag = false; // 反転しながら画像を更新する場合はTrue
+        updateimage = false; // 反転せずに画像を更新する場合はTrue
+
+        // 中毒
+        if (this.is_poison() && !this.is_unconscious()) {
+            this.decrease_physical("Poison", time);
+
+            if (!this.is_poison()) {
+                flag = true;
+                cw.cwpy.advlog.recover_poison(this);
+            } else {
+                cw.cwpy.play_sound("dump");
+                value = 1 * this.poison;
+                n = value / 5;
+                n2 = value % 5 * 2;
+                value = cw.cwpy.dice.roll(n, 10);
+
+                if (n2) {
+                    value += cw.cwpy.dice.roll(1, n2);
+                }
+
+                oldlife = this.life;
+                value = this.set_life(-value);
+                cw.cwpy.advlog.poison_damage(value, this.life, oldlife);
+
+                if (this.status != "reversed" && this.status != "hidden") {
+                    cw.animation.animate_sprite("lateralvibe", battlespeed=cw.cwpy.is_battlestatus());
+                }
+                this.update_image();
+                cw.cwpy.draw(clip=this.rect);
+            }
+        }
+
+        // 麻痺
+        if (this.is_paralyze() && !this.is_petrified() && !this.is_unconscious()) {
+            this.decrease_physical("Paralyze", time);
+            if (!this.is_paralyze()) {
+                cw.cwpy.advlog.recover_paralyze(this);
+                flag = true;
+            }
+            if (this.is_analyzable()) {
+                updateimage = true;
+            }
+        }
+
+        // 束縛
+        if (this.is_bind()) {
+            value = this.bind - time;
+            this.set_bind(value);
+            if (!this.is_bind()) {
+                cw.cwpy.advlog.recover_bind(this);
+                flag = true;
+            }
+            if (this.is_analyzable()) {
+                updateimage = true;
+            }
+        }
+
+        // 沈黙
+        if (this.is_silence()) {
+            value = this.silence - time;
+            this.set_silence(value);
+            if (!this.is_silence()) {
+                cw.cwpy.advlog.recover_silence(this);
+                flag = true;
+            }
+            if (this.is_analyzable()) {
+                updateimage = true;
+            }
+        }
+
+        // 暴露
+        if (this.is_faceup()) {
+            value = this.faceup - time;
+            this.set_faceup(value);
+            if (!this.is_faceup()) {
+                cw.cwpy.advlog.recover_faceup(this);
+                flag = true;
+            }
+            if (this.is_analyzable()) {
+                updateimage = true;
+            }
+        }
+
+        // 魔法無効化
+        if (this.is_antimagic()) {
+            value = this.antimagic - time;
+            this.set_antimagic(value);
+            if (!this.is_antimagic()) {
+                cw.cwpy.advlog.recover_antimagic(this);
+                flag = true;
+            }
+            if (this.is_analyzable()) {
+                updateimage = true;
+            }
+        }
+
+        // 精神状態
+        if (this.mentality_dur > 0) {
+            value = this.mentality_dur - time;
+
+            if (value > 0) {
+                this.set_mentality(this.mentality, value);
+            } else {
+                cw.cwpy.advlog.recover_mentality(this.mentality);
+                this.set_mentality("Normal", 0);
+                flag = true;
+            }
+
+            if (this.is_analyzable()) {
+                updateimage = true;
+            }
+
+        // 行動力
+        if (this.enhance_act_dur > 0) {
+            value = this.enhance_act_dur - time;
+
+            if (value > 0) {
+                this.set_enhance_act(this.enhance_act, value);
+            } else {
+                cw.cwpy.advlog.recover_enhance_act(this);
+                this.set_enhance_act(0, 0);
+                flag = true;
+            }
+
+            if (this.is_analyzable()) {
+                updateimage = true;
+            }
+
+        // 回避力
+        if (this.enhance_avo_dur > 0) {
+            value = this.enhance_avo_dur - time;
+
+            if (value > 0) {
+                this.set_enhance_avo(this.enhance_avo, value);
+            } else {
+                cw.cwpy.advlog.recover_enhance_avo(this);
+                this.set_enhance_avo(0, 0);
+                flag = true;
+            }
+
+            if (this.is_analyzable()) {
+                updateimage = true;
+            }
+        }
+
+        // 抵抗力
+        if (this.enhance_res_dur > 0) {
+            value = this.enhance_res_dur - time;
+
+            if (value > 0) {
+                this.set_enhance_res(this.enhance_res, value);
+            } else {
+                cw.cwpy.advlog.recover_enhance_res(this);
+                this.set_enhance_res(0, 0);
+                flag = true;
+            }
+
+            if (this.is_analyzable()) {
+                updateimage = true;
+            }
+
+        // 防御力
+        if (this.enhance_def_dur > 0) {
+            value = this.enhance_def_dur - time;
+
+            if (value > 0) {
+                this.set_enhance_def(this.enhance_def, value);
+            } else {
+                cw.cwpy.advlog.recover_enhance_def(this);
+                this.set_enhance_def(0, 0);
+                flag = true;
+            }
+
+            if (this.is_analyzable()) {
+                updateimage = true;
+            }
+
+        // 中毒効果で死亡していたら、ステータスを元に戻す
+        if (this.is_unconscious()) {
+            this.set_unconsciousstatus();
+        }
+
+        // 画像更新;
+        if (flag || updateimage) {
+            if (this.status != "reversed" && this.status != "hidden") {
+                if (flag) {
+                    battlespeed = cw.cwpy.is_battlestatus();
+                    cw.animation.animate_sprite("hide", battlespeed=battlespeed);
+                    this.update_image();
+                    cw.animation.animate_sprite("deal", battlespeed=battlespeed);
+                } else {
+                    this.update_image();
+                }
+            } else {
+                this.update_image();
+            }
+            cw.cwpy.draw(clip=this.rect);
+        }
+
+        // エネミーまたはプレイヤー(Wsn.2)が中毒効果で死亡していたら、死亡イベント開始;
+        if (isinstance((Player, Enemy)) && this.is_dead() && oldalive) { // TODO
+            if (isinstance(Player)) { // TODO
+                // プレイヤーカードのキーコード・死亡時イベント(Wsn.2);
+                events = cw.cwpy.sdata.playerevents;
+            } else {
+                events = this.events;
+            }
+
+            if (events) {
+                e_eventtarget = None;
+                if (fromevent) {
+                    for t in itertools.chain(cw.cwpy.get_pcards(), cw.cwpy.get_ecards(), cw.cwpy.get_fcards()) // TODO
+                    {
+                        if (isinstance(t, cw.character.Character)) { // TODO
+                            if (t.has_coupon("＠イベント対象")) {
+                                e_eventtarget = t;
+                                t.remove_coupon("＠イベント対象");
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                try
+                {
+                    if (cw.cwpy.sdata.is_wsnversion('2')) {
+                        // イベント所持者を示すシステムクーポン(Wsn.2);
+                        this.set_coupon("＠イベント対象", 0);
+                    }
+                    if (fromevent) {
+                        event = events.check_keynum(1);
+                        if (event) {
+                            event.run_scenarioevent();
+                        }
+                    } else {
+                        events.start(1, isinsideevent=false);
+                    }
+                }
+                finally
+                {
+                    this.remove_coupon("＠イベント対象");
+
+                    if (e_eventtarget) {
+                        e_eventtarget.set_coupon("＠イベント対象", 0);
+                    }
+                }
+            }
+        }
+    }
+
+    public UNK set_hold_all(pocket, value)
+    {
+        this.hold_all[pocket] = value;
+        if (pocket == cw.POCKET_SKILL) {
+            type = "SkillCards";
+        } else if (pocket == cw.POCKET_ITEM) {
+            type = "ItemCards";
+        } else if (pocket == cw.POCKET_BEAST) {
+            type = "BeastCards";
+        } else {
+            assert false;
+        }
+        this.data.edit(type, str(value), "hold_all");
+    }
 
 }
 class Player : Character {
