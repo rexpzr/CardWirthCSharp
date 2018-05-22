@@ -678,27 +678,33 @@ class Character
         return Character.F.calc_lifeper(life, maxlife) <= 20 && 0 < life;
     }
 
-//    def is_heavyinjured(self):
-//        """
-//        重傷状態かどうかをbool値で返す
-//        """
-//        return Character.calc_heavyinjured(self.life, self.maxlife)
-//
-//    @staticmethod
-//    def calc_injured(life, maxlife):
-//        return bool(life < maxlife and not Character.calc_heavyinjured(life, maxlife) and 0 < life)
-//
-//    def is_injured(self):
-//        """
-//        軽傷状態かどうかをbool値で返す
-//        """
-//        return Character.calc_injured(self.life, self.maxlife)
-//
-//    def is_injuredall(self):
-//        """
-//        負傷状態かどうかをbool値で返す
-//        """
-//        return bool(self.life < self.maxlife)
+    public bool is_heavyinjured()
+    {
+        // """
+        // 重傷状態かどうかをbool値で返す
+        // """
+        return Character.calc_heavyinjured(this.life, this.maxlife);
+    }
+
+    public static bool calc_injured(UNK life,UNK maxlife)   {
+        return (bool)life < maxlife && !Character.calc_heavyinjured(life, maxlife) && 0 < life;
+    }
+
+    public bool is_injured()
+    {
+        // """
+        // 軽傷状態かどうかをbool値で返す
+        // """
+        return Character.calc_injured(this.life, this.maxlife);
+    }
+
+    public bool is_injuredall()
+    {
+        // """
+        // 負傷状態かどうかをbool値で返す
+        // """
+        return (bool)this.life < this.maxlife;
+    }
 //
 //    def is_inactive(self, check_reversed=True):
 //        """
@@ -732,33 +738,42 @@ class Character
 //        生存状態かどうかをbool値で返す
 //        """
 //        return not self.is_dead()
-//
-//    def is_fine(self):
-//        """
-//        健康状態かどうかをbool値で返す
-//        """
-//        return not self.is_injuredall() and not self.is_unconscious()
-//
-//    def is_analyzable(self):
-//        """
-//        各種データが暴露可能かどうかbool値で返す。
-//        EnemyCardのための処理。
-//        デバッグフラグがTrueだったら問答無用で暴露する。
-//        """
-//        if isinstance(self, Enemy):
-//            return cw.cwpy.debug or self.is_faceup()
-//        else:
-//            return True
-//
-//    def is_avoidable(self, use_enhance=True):
-//        """
-//        回避判定可能かどうかbool値で返す。
-//        """
-//        if use_enhance:
-//            return self.is_active() and self.get_enhance_avo() > -10
-//        else:
-//            return self.is_active()
-//
+
+    public UNK is_fine()
+    {
+        // """
+        // 健康状態かどうかをbool値で返す
+        // """
+        return !this.is_injuredall() && !this.is_unconscious();
+    }
+
+    public UNK is_analyzable()
+    {
+        // """
+        // 各種データが暴露可能かどうかbool値で返す。
+        // EnemyCardのための処理。
+        // デバッグフラグがTrueだったら問答無用で暴露する。
+        // """
+        if (isinstance(Enemy))
+        {
+            return cw.cwpy.debug || this.is_faceup();
+        }else{
+            return true;
+        }
+    }
+
+    public UNK is_avoidable(bool use_enhance=true)
+    {
+        // """
+        // 回避判定可能かどうかbool値で返す。
+        // """
+        if (use_enhance)
+        {
+            return this.is_active() && this.get_enhance_avo() > -10;
+        }else{
+            return this.is_active();
+        }
+    }
 //    def is_resistable(self, use_enhance=True):
 //        """
 //        抵抗判定可能かどうかbool値で返す。
@@ -772,204 +787,231 @@ class Character
 //        else:
 //            return not b
 //
-//    def is_reversed(self):
-//        """
-//        隠蔽状態かどうかbool値で返す。
-//        """
-//        return self.reversed
-//
-//    def is_vanished(self):
-//        return self._vanished
-//
-//    def has_beast(self):
-//        """
-//        付帯召喚じゃない召喚獣カードの所持数を返す。
-//        """
-//        return len([h for h in self.get_pocketcards(cw.POCKET_BEAST) if not h.attachment])
-//
-    public UNK is_enhanced_act()
+    public bool is_reversed()
     {
-        return this.enhance_act <> 0 and 0 < this.enhance_act_dur;
+        // """
+        // 隠蔽状態かどうかbool値で返す。
+        // """
+        return this.reversed;
     }
-    public UNK is_enhanced_res()
+
+    public bool is_vanished()
     {
-        return this.enhance_res <> 0 and 0 < this.enhance_res_dur;
+        return this._vanished;
     }
-    public UNK is_enhanced_avo()
+
+    public int has_beast()
     {
-        return this.enhance_avo <> 0 and 0 < this.enhance_avo_dur;
+        // """
+        // 付帯召喚じゃない召喚獣カードの所持数を返す。
+        // """
+        return len([h for h in this.get_pocketcards(cw.POCKET_BEAST) if not h.attachment]) // TODO
     }
-    public UNK is_enhanced_def()
+    public bool is_enhanced_act()
     {
-        return this.enhance_def <> 0 and 0 < this.enhance_def_dur;
+        return this.enhance_act != 0 && 0 < this.enhance_act_dur;
     }
-    public UNK is_upaction()
+    public bool is_enhanced_res()
     {
-        return this.enhance_act > 0 and 0 < this.enhance_act_dur;
+        return this.enhance_res != 0 && 0 < this.enhance_res_dur;
     }
-    public UNK is_upresist()
+    public bool is_enhanced_avo()
+    {
+        return this.enhance_avo != 0 && 0 < this.enhance_avo_dur;
+    }
+    public bool is_enhanced_def()
+    {
+        return this.enhance_def != 0 && 0 < this.enhance_def_dur;
+    }
+    public bool is_upaction()
+    {
+        return this.enhance_act > 0 && 0 < this.enhance_act_dur;
+    }
+    public bool is_upresist()
     { 
-        return this.enhance_res > 0 and 0 < this.enhance_res_dur;
+        return this.enhance_res > 0 && 0 < this.enhance_res_dur;
     }
-    public UNK is_upavoid()
+    public bool is_upavoid()
     {
-        return this.enhance_avo > 0 and 0 < this.enhance_avo_dur;
+        return this.enhance_avo > 0 && 0 < this.enhance_avo_dur;
     }
-    public UNK is_updefense()
+    public bool is_updefense()
     {
-        return this.enhance_def > 0 and 0 < this.enhance_def_dur;
+        return this.enhance_def > 0 && 0 < this.enhance_def_dur;
     }
-    public UNK is_downaction()
+    public bool is_downaction()
     {
-        return this.enhance_act < 0 and 0 < this.enhance_act_dur;
+        return this.enhance_act < 0 && 0 < this.enhance_act_dur;
     }
-    public UNK is_downresist()
+    public bool is_downresist()
     {
-        return this.enhance_res < 0 and 0 < this.enhance_res_dur;
+        return this.enhance_res < 0 && 0 < this.enhance_res_dur;
     }
-    public UNK is_downavoid()
+    public bool is_downavoid()
     {
-        return this.enhance_avo < 0 and 0 < this.enhance_avo_dur;
+        return this.enhance_avo < 0 && 0 < this.enhance_avo_dur;
     }
-    public UNK is_downdefense()
+    public bool is_downdefense()
     {
-        return this.enhance_def < 0 and 0 < this.enhance_def_dur;
+        return this.enhance_def < 0 && 0 < this.enhance_def_dur;
     }
     
-//
-//    def is_effective(self, motion):
-//        """motionが現在のselfに対して有効な効果か。
-//        ターゲットの選択に使用される判定であるため、
-//        実際には有効であっても必ずしもTrueを返さない。
-//        """
-//        if self.is_reversed() or self.is_vanished() or (self.status == "hidden" and not isinstance(self, (Friend, Player))):
-//            return False
-//
-//        if cw.effectmotion.is_noeffect(motion.get("element", ""), self):
-//            return False
-//
-//        mtype = motion.get("type", "")
-//        if mtype == "Heal":
-//            return self.is_injuredall()
-//        elif mtype == "Damage":
-//            return not self.is_unconscious()
-//        elif mtype == "Absorb":
-//            return not self.is_unconscious()
-//        elif mtype == "Paralyze":
-//            return not self.is_unconscious()
-//        elif mtype == "DisParalyze":
-//            return self.is_paralyze()
-//        elif mtype == "Poison":
-//            return not self.is_unconscious()
-//        elif mtype == "DisPoison":
-//            return self.is_poison()
-//        elif mtype == "GetSkillPower":
-//            return not self.is_unconscious()
-//        elif mtype == "LoseSkillPower":
-//            return not self.is_unconscious()
-//        elif mtype in "Sleep":
-//            # CardWirthでは、すでに睡眠状態なら
-//            # さらに大きな時間で上書き可能な状態でも
-//            # ターゲットにしない。
-//            # 混乱・激昂・勇敢・恐慌・呪縛・沈黙
-//            # ・暴露・魔法無効も同様
-//            return not self.is_unconscious() and not self.is_sleep()
-//        elif mtype == "Confuse":
-//            return not self.is_unconscious() and not self.is_confuse()
-//        elif mtype == "Overheat":
-//            return not self.is_unconscious() and not self.is_overheat()
-//        elif mtype == "Brave":
-//            return not self.is_unconscious() and not self.is_brave()
-//        elif mtype == "Panic":
-//            return not self.is_unconscious() and not self.is_panic()
-//        elif mtype == "Normal":
-//            return not self.is_unconscious() and not self.is_normal()
-//        elif mtype == "Bind":
-//            return not self.is_unconscious() and not self.is_bind()
-//        elif mtype == "DisBind":
-//            return self.is_bind()
-//        elif mtype == "Silence":
-//            return not self.is_unconscious() and not self.is_silence()
-//        elif mtype == "DisSilence":
-//            return self.is_silence()
-//        elif mtype == "FaceUp":
-//            return not self.is_unconscious() and not self.is_faceup()
-//        elif mtype == "FaceDown":
-//            return self.is_faceup()
-//        elif mtype == "AntiMagic":
-//            return not self.is_unconscious() and not self.is_antimagic()
-//        elif mtype == "DisAntiMagic":
-//            return self.is_antimagic()
-//        elif mtype == "EnhanceAction":
-//            # 能力ボーナスは時間を見ず、値のみを見て判定する
-//            if self.is_unconscious():
-//                return False
-//            value = motion.getint(".", "value", 0)
-//            if value == 0:
-//                return self.is_enhanced_act()
-//            elif value < 0:
-//                return value < self.get_enhance_act()
-//            elif 0 < value:
-//                return self.get_enhance_act() < value
-//        elif mtype == "EnhanceAvoid":
-//            if self.is_unconscious():
-//                return False
-//            value = motion.getint(".", "value", 0)
-//            if value == 0:
-//                return self.is_enhanced_avo()
-//            elif value < 0:
-//                return value < self.get_enhance_avo()
-//            elif 0 < value:
-//                return self.get_enhance_avo() < value
-//        elif mtype == "EnhanceResist":
-//            if self.is_unconscious():
-//                return False
-//            value = motion.getint(".", "value", 0)
-//            if value == 0:
-//                return self.is_enhanced_res()
-//            elif value < 0:
-//                return value < self.get_enhance_res()
-//            elif 0 < value:
-//                return self.get_enhance_res() < value
-//        elif mtype == "EnhanceDefense":
-//            if self.is_unconscious():
-//                return False
-//            value = motion.getint(".", "value", 0)
-//            if value == 0:
-//                return self.is_enhanced_def()
-//            elif value < 0:
-//                return value < self.get_enhance_def()
-//            elif 0 < value:
-//                return self.get_enhance_def() < value
-//        elif mtype == "VanishCard":
-//            return self.is_active()
-//        elif mtype == "VanishBeast":
-//            return self.has_beast()
-//        elif mtype == "DealAttackCard":
-//            return self.is_active()
-//        elif mtype == "DealPowerfulAttackCard":
-//            return self.is_active()
-//        elif mtype == "DealCriticalAttackCard":
-//            return self.is_active()
-//        elif mtype == "DealFeintCard":
-//            return self.is_active()
-//        elif mtype == "DealDefenseCard":
-//            return self.is_active()
-//        elif mtype == "DealDistanceCard":
-//            return self.is_active()
-//        elif mtype == "DealConfuseCard":
-//            return self.is_active()
-//        elif mtype == "DealSkillCard":
-//            return self.is_active()
-//        elif mtype == "CancelAction": # 1.50
-//            return self.is_active()
-//        elif mtype == "SummonBeast":
-//            return self.can_addbeast()
-//        elif mtype == "NoEffect": # Wsn.2
-//            return not self.is_unconscious()
-//        else:
-//            # VanishTarget: 常に有効
-//            return True
+
+    public bool is_effective(UNK motion)
+    {
+        // """motionが現在のselfに対して有効な効果か。
+        // ターゲットの選択に使用される判定であるため、
+        // 実際には有効であっても必ずしもtrueを返さない。
+        // """
+        if (this.is_reversed() || this.is_vanished() || (this.status == "hidden" && !isinstance((Friend, Player))))
+        {
+            return false;
+        }
+        if (cw.effectmotion.is_noeffect(motion.get("element", "")))
+        {
+            return false;
+        }
+        mtype = motion.get("type", "");
+        if (mtype == "Heal")
+        {
+            return this.is_injuredall();
+        }else if (mtype == "Damage"){
+            return !this.is_unconscious();
+        }else if (mtype == "Absorb"){
+            return !this.is_unconscious();
+        }else if (mtype == "Paralyze"){
+            return !this.is_unconscious();
+        }else if (mtype == "DisParalyze"){
+            return this.is_paralyze();
+        }else if (mtype == "Poison"){
+            return !this.is_unconscious();
+        }else if (mtype == "DisPoison"){
+            return this.is_poison();
+        }else if (mtype == "GetSkillPower"){
+            return !this.is_unconscious();
+        }else if (mtype == "LoseSkillPower"){
+            return !this.is_unconscious();
+        }else if (mtype in "Sleep"){
+            // CardWirthでは、すでに睡眠状態なら
+            // さらに大きな時間で上書き可能な状態でも
+            // ターゲットにしない。
+            // 混乱・激昂・勇敢・恐慌・呪縛・沈黙
+            // ・暴露・魔法無効も同様
+            return !this.is_unconscious() && !this.is_sleep();
+        }else if (mtype == "Confuse"){
+            return !this.is_unconscious() && !this.is_confuse();
+        }else if (mtype == "Overheat"){
+            return !this.is_unconscious() && !this.is_overheat();
+        }else if (mtype == "Brave"){
+            return !this.is_unconscious() && !this.is_brave();
+        }else if (mtype == "Panic"){
+            return !this.is_unconscious() && !this.is_panic();
+        }else if (mtype == "Normal"){
+            return !this.is_unconscious() && !this.is_normal();
+        }else if (mtype == "Bind"){
+            return !this.is_unconscious() && !this.is_bind();
+        }else if (mtype == "DisBind"){
+            return this.is_bind();
+        }else if (mtype == "Silence"){
+            return !this.is_unconscious() && !this.is_silence();
+        }else if (mtype == "DisSilence"){
+            return this.is_silence();
+        }else if (mtype == "FaceUp"){
+            return !this.is_unconscious() && !this.is_faceup();
+        }else if (mtype == "FaceDown"){
+            return this.is_faceup();
+        }else if (mtype == "AntiMagic"){
+            return !this.is_unconscious() && !this.is_antimagic();
+        }else if (mtype == "DisAntiMagic"){
+            return this.is_antimagic();
+        }else if (mtype == "EnhanceAction"){
+            // 能力ボーナスは時間を見ず、値のみを見て判定する
+            if (this.is_unconscious())
+            {
+                return false;
+            }
+            value = motion.getint(".", "value", 0);
+            if (value == 0)
+            {
+                return this.is_enhanced_act();
+            }else if (value < 0){
+                return value < this.get_enhance_act();
+            }else if (0 < value){
+                return this.get_enhance_act() < value;
+            }
+        }else if (mtype == "EnhanceAvoid"){
+            if (this.is_unconscious())
+            {
+                return false;
+            }
+            value = motion.getint(".", "value", 0);
+            if (value == 0)
+            {
+                return this.is_enhanced_avo();
+            }else if (value < 0){
+                return value < this.get_enhance_avo();
+            }else if (0 < value){
+                return this.get_enhance_avo() < value;
+            }
+        }else if (mtype == "EnhanceResist"){
+            if (this.is_unconscious())
+            {
+                return false;
+            }
+            value = motion.getint(".", "value", 0);
+            if (value == 0)
+            {
+                return this.is_enhanced_res();
+            }else if (value < 0){
+                return value < this.get_enhance_res();
+            }else if (0 < value){
+                return this.get_enhance_res() < value;
+            }
+        }else if (mtype == "EnhanceDefense"){
+            if (this.is_unconscious())
+            {
+                return false;
+            }
+            value = motion.getint(".", "value", 0);
+            if (value == 0)
+            {
+                return this.is_enhanced_def();
+            }else if (value < 0){
+                return value < this.get_enhance_def();
+            }else if (0 < value){
+                return this.get_enhance_def() < value;
+            }
+        }else if (mtype == "VanishCard"){
+            return this.is_active();
+        }else if (mtype == "VanishBeast"){
+            return this.has_beast();
+        }else if (mtype == "DealAttackCard"){
+            return this.is_active();
+        }else if (mtype == "DealPowerfulAttackCard"){
+            return this.is_active();
+        }else if (mtype == "DealCriticalAttackCard"){
+            return this.is_active();
+        }else if (mtype == "DealFeintCard"){
+            return this.is_active();
+        }else if (mtype == "DealDefenseCard"){
+            return this.is_active();
+        }else if (mtype == "DealDistanceCard"){
+            return this.is_active();
+        }else if (mtype == "DealConfuseCard"){
+            return this.is_active();
+        }else if (mtype == "DealSkillCard"){
+            return this.is_active();
+        }else if (mtype == "CancelAction"){ // 1.50
+            return this.is_active();
+        }else if (mtype == "SummonBeast"){
+            return this.can_addbeast();
+        }else if (mtype == "NoEffect"){ // Wsn.2
+            return !this.is_unconscious();
+        }else{
+            // VanishTarget: 常に有効
+            return true;
+        }
+     }
 //
 //    #---------------------------------------------------------------------------
 //    #　カード操作
