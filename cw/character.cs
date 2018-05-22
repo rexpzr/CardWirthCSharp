@@ -644,31 +644,31 @@ class Character
         return bool(this.antimagic > 0);;
     }
 
-   public static bool calc_petrified(UNK paralyze)
-   {
-       return paralyze > 20;
-   }
-
-   public bool is_petrified()
-   {
-       // """
-       // 石化状態かどうかをbool値で返す
-       // """
-       return Character.F.calc_petrified(this.paralyze);
-   }
-
-   public bool is_unconscious()
-   {
-       // """
-       // 意識不明状態かどうかをbool値で返す
-       // """
-       return this.life <= 0;
+    public static bool calc_petrified(UNK paralyze)
+    {
+        return paralyze > 20;
     }
 
-   public bool calc_heavyinjured(UNK life, UNK maxlife)
-   {
-       return Character.F.calc_lifeper(life, maxlife) <= 20 && 0 < life;
-   }
+    public bool is_petrified()
+    {
+        // """
+        // 石化状態かどうかをbool値で返す
+        // """
+        return Character.F.calc_petrified(this.paralyze);
+    }
+
+    public bool is_unconscious()
+    {
+        // """
+        // 意識不明状態かどうかをbool値で返す
+        // """
+        return this.life <= 0;
+    }
+
+    public bool calc_heavyinjured(UNK life, UNK maxlife)
+    {
+        return Character.F.calc_lifeper(life, maxlife) <= 20 && 0 < life;
+    }
 
 //    def is_heavyinjured(self):
 //        """
