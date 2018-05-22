@@ -805,7 +805,13 @@ class Character
         // """
         // 付帯召喚じゃない召喚獣カードの所持数を返す。
         // """
-        return len([h for h in this.get_pocketcards(cw.POCKET_BEAST) if not h.attachment]) // TODO
+        int counter = 0;
+        foreach(var h in this.get_pocketcards(cw.POCKET_BEAST)) {
+            if (!h.attachment) {
+                counter++;
+            }
+        }
+        return coutner;
     }
     public bool is_enhanced_act()
     {
@@ -863,6 +869,9 @@ class Character
         // ターゲットの選択に使用される判定であるため、
         // 実際には有効であっても必ずしもtrueを返さない。
         // """
+        int value;
+        string mtype;
+
         if (this.is_reversed() || this.is_vanished() || (this.status == "hidden" && !isinstance((Friend, Player))))
         {
             return false;
