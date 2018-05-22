@@ -152,21 +152,29 @@ class Character
         e = this.data.getfind("Property/Ability/Enhance");
         this.enhance = copy.copy(e.attrib);
 
-        // for key, value in this.physical.iteritems():
-        //     try:
-        //         this.physical[key] = cw.util.numwrap(float(value), 0, 65536)
-        //     except:
-        //         this.physical[key] = 0
-        // for key, value in this.mental.iteritems():
-        //     try:
-        //         this.mental[key] = cw.util.numwrap(float(value), -65536, 65536)
-        //     except:
-        //         this.mental[key] = 0
-        // for key, value in this.enhance.iteritems():
-        //     try:
-        //         this.enhance[key] = cw.util.numwrap(float(value), -10, 10)
-        //     except:
-        //         this.enhance[key] = 0
+        foreach(var item in this.physical) {
+            try {
+                this.physical[item.Key] = cw.util.numwrap((float)item.Value, 0, 65536);
+            } catch(Exception e) {
+                this.physical[item.Key] = 0;
+            }
+        }
+
+        foreach(var item in this.mental) {
+            try {
+                this.mental[item.Key] = cw.util.numwrap((float)item.Value, -65536, 65536);
+            } catch(Exception e) {
+                this.mental[item.Key] = 0;
+            }
+        }
+
+        foreach(var item in this.enhance) {
+            try {
+                this.enhance[item.Key] = cw.util.numwrap((float)item.Value, -10, 10);
+            } catch(Exception e) {
+                this.enhance[item.Key] = 0;
+            }
+        }
 
         // 特性
         e = this.data.getfind("Property/Feature/Type");
