@@ -540,39 +540,48 @@
 //
 //        return s
 //
-//class BranchItemContent(BranchContent):
-//    def __init__(self, data):
-//        BranchContent.__init__(self, data)
-//
-//    def action(self):
-//        """スキル所持分岐コンテント。"""
-//        return self.branch_cards("ItemCard")
-//
-//    def get_status(self):
-//        resid = self.data.getint(".", "id", 0)
-//        name = cw.cwpy.sdata.get_itemname(resid)
-//        if not name is None:
-//            return u"アイテムカード『%s』所持分岐" % (name)
-//        else:
-//            return u"アイテムカードが指定されていません"
-//
-//    def get_childname(self, child):
-//        resid = self.data.getint(".", "id", 0)
-//        scope = self.data.get("targets")
-//        name = cw.cwpy.sdata.get_itemname(resid)
-//
-//        if not name is None:
-//            s = self.textdict.get(scope.lower(), "")
-//
-//            if self.get_contentname(child) == u"○":
-//                s = u"%sが『%s』を所有している" % (s, name)
-//            else:
-//                s = u"%sが『%s』を所有していない" % (s, name)
-//
-//        else:
-//            s = u"アイテムカードが指定されていません"
-//
-//        return s
+class BranchItemContent : BranchContent
+{
+    public BranchItemContent(UNK data) : base(data) {
+    }
+
+    public UNK action() {
+        // """スキル所持分岐コンテント。"""
+        return this.branch_cards("ItemCard");
+    }
+
+    public string get_status() {
+        int resid = this.data.getint(".", "id", 0);
+        string? name = cw.cwpy.sdata.get_itemname(resid);
+        if (name != null) {
+            return String.Format("アイテムカード『{0}』所持分岐", name);
+        } else {
+            return "アイテムカードが指定されていません";
+        }
+    }
+
+    public string get_childname(child) {
+        int resid = self.data.getint(".", "id", 0);
+        UNK scope = self.data.get("targets");
+        UNK name = cw.cwpy.sdata.get_itemname(resid);
+        string s;
+        if (name != null) {
+            s = self.textdict.get(scope.lower(), "");
+
+            if (get_contentname(child) == "○"){
+                s = String.Format("{0}が『{1}』を所有している", s, name);
+            } else {
+                s = String.Format("{0}が『{1}』を所有していない", s, name);
+            }
+
+        } else {
+            s = "アイテムカードが指定されていません";
+        }
+
+        return s;
+    }
+}
+
 //
 //class BranchBeastContent(BranchContent):
 //    def __init__(self, data):
