@@ -134,47 +134,60 @@ class SystemData{
         this._init_sparea_mcards();
     }
 
-//     def _init_xmlpaths(self, xmlonly=False):
-//         self._areas.clear()
-//         self._battles.clear()
-//         self._packs.clear()
-//         self._casts.clear()
-//         self._infos.clear()
-//         self._items.clear()
-//         self._skills.clear()
-//         self._beasts.clear()
-//         dpaths = (cw.util.join_paths(cw.cwpy.skindir, u"Resource/Xml", cw.cwpy.status),
-//                   cw.util.join_paths(u"Data/SkinBase/Resource/Xml", cw.cwpy.status))
+    public void _init_xmlpaths(bool xmlonly=false)    {
+        UNK dpaths;
 
-//         for dpath in dpaths:
-//             for fname in os.listdir(dpath):
-//                 path = cw.util.join_paths(dpath, fname)
+        this._areas.clear();
+        this._battles.clear();
+        this._packs.clear();
+        this._casts.clear();
+        this._infos.clear();
+        this._items.clear();
+        this._skills.clear();
+        this._beasts.clear();
+        dpaths = (cw.util.join_paths(cw.cwpy.skindir, u"Resource/Xml", cw.cwpy.status),
+                  cw.util.join_paths(u"Data/SkinBase/Resource/Xml", cw.cwpy.status))
 
-//                 if os.path.isfile(path) and fname.endswith(".xml"):
-//                     e = xml2element(path, "Property")
-//                     resid = e.getint("Id")
-//                     name = e.gettext("Name")
-//                     if not resid in self._areas:
-//                         self._areas[resid] = (name, path)
+        for (dpath in dpaths){
+            for (fname in os.listdir(dpath)){
+                path = cw.util.join_paths(dpath, fname);
 
-//     def _init_sparea_mcards(self):
-//         """
-//         カード移動操作エリアのメニューカードを作成する。
-//         エリア移動時のタイムラグをなくすための操作。
-//         """
-//         d = {}
+                if (os.path.isfile(path) && fname.endswith(".xml"))
+                {
+                    e = xml2element(path, "Property");
+                    resid = e.getint("Id");
+                    name = e.gettext("Name");
+                    if (!resid in this._areas)
+                    {
+                        this._areas[resid] = (name, path);
+                    }
+                }
+            }
+        }
+    }
 
-//         for key in self._areas.iterkeys():
-//             if key in cw.AREAS_TRADE:
-//                 data = self.get_mcarddata(key, battlestatus=False)
-//                 areaid = cw.cwpy.areaid
-//                 cw.cwpy.areaid = key
-//                 mcards = cw.cwpy.set_mcards(data, False, addgroup=False, setautospread=False)
-//                 cw.cwpy.areaid = areaid
-//                 d[key] = mcards
+    public void _init_sparea_mcards()
+    {
+        // """
+        // カード移動操作エリアのメニューカードを作成する。
+        // エリア移動時のタイムラグをなくすための操作。
+        // """
+        d = {};
 
-//         self.sparea_mcards = d
-
+        for (key in this._areas.iterkeys())
+        {
+            if (key in cw.AREAS_TRADE)
+            {
+                data = this.get_mcarddata(key, battlestatus=false);
+                areaid = cw.cwpy.areaid;
+                cw.cwpy.areaid = key;
+                mcards = cw.cwpy.set_mcards(data, false, addgroup=false, setautospread=false);
+                cw.cwpy.areaid = areaid;
+                d[key] = mcards;
+            }
+        }
+        this.sparea_mcards = d;
+    }
 //     def is_wsnversion(self, wsn_version, cardversion=None):
 //         if cardversion is None:
 //             swsnversion = self.wsn_version
@@ -194,12 +207,11 @@ class SystemData{
     public UNK get_versionhint(UNK frompos=0)
     {
         // """現在有効になっている互換性マークを返す(常に無し)。"""
-        return None;
+        return null;
     }
     public UNK set_versionhint(UNK pos, UNK hint)
     {
         // """互換性モードを設定する(処理無し)。"""
-        pass;
     }
 //     def update_scale(self):
 //         for mcards in self.sparea_mcards.itervalues():
@@ -347,7 +359,7 @@ class SystemData{
 
 //         return "", False
 
-    public UNK get_resdata(UNK isbattle,UNK resid)
+    public UNK get_resdata(bool isbattle, UNK resid)
     {
         if (isbattle)
         {
@@ -358,9 +370,9 @@ class SystemData{
             data = self.get_areadata(resid);
         }
 
-        if (data is None)
+        if (data == null)
         {
-            return None;
+            return null;
         }
 
         return xml2etree(element=data);
@@ -415,7 +427,7 @@ class SystemData{
     {
         return table.keys();
     }
-    public UNK get_areadata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    public UNK get_areadata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=null)
     {
         return this._get_resdata(this._areas, resid, tag, nocache, resname=u"エリア", rootattrs=rootattrs);
     }
@@ -431,7 +443,7 @@ class SystemData{
     {
         return this._get_resids(this._areas);
     }
-    public UNK get_battledata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    public UNK get_battledata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=null)
     {
         return this._get_resdata(this._battles, resid, tag, nocache, resname=u"バトル", rootattrs=rootattrs);
     }
@@ -447,7 +459,7 @@ class SystemData{
     {
         return this._get_resids(this._battles);
     }
-    public UNK get_packagedata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    public UNK get_packagedata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=null)
     {
         return this._get_resdata(this._packs, resid, tag, nocache, resname=u"パッケージ", rootattrs=rootattrs);
     }
@@ -463,7 +475,7 @@ class SystemData{
     {
         return this._get_resids(this._packs);
     }
-    public UNK get_castdata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    public UNK get_castdata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=null)
     {
         return this._get_resdata(this._casts, resid, tag, nocache, resname=u"キャスト", rootattrs=rootattrs);
     }
@@ -479,7 +491,7 @@ class SystemData{
     {
         return this._get_resids(this._casts);
     }
-    public UNK get_skilldata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    public UNK get_skilldata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=null)
     {
         return this._get_resdata(this._skills, resid, tag, nocache, resname=u"特殊技能", rootattrs=rootattrs);
     }
@@ -495,7 +507,7 @@ class SystemData{
     {
         return this._get_resids(this._skills);
     }
-    public UNK get_itemdata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    public UNK get_itemdata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=null)
     {
         return this._get_resdata(this._items, resid, tag, nocache, resname=u"アイテム", rootattrs=rootattrs);
     }
@@ -511,7 +523,7 @@ class SystemData{
     {
         return this._get_resids(this._items);
     }
-    public UNK get_beastdata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    public UNK get_beastdata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=null)
     {
         return this._get_resdata(this._beasts, resid, tag, nocache, resname=u"召喚獣", rootattrs=rootattrs);
     }
@@ -527,7 +539,7 @@ class SystemData{
     {
         return this._get_resids(this._beasts);
     }
-    public UNK get_infodata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=None)
+    public UNK get_infodata(UNK resid, string tag="", bool nocache=false, UNK rootattrs=null)
     {
         return this._get_resdata(this._infos, resid, tag, nocache, resname=u"情報", rootattrs=rootattrs);
     }
