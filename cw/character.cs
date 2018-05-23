@@ -1156,315 +1156,470 @@ class Character
 //    #---------------------------------------------------------------------------
 //    #　戦闘行動関係
 //    #---------------------------------------------------------------------------
-//
-//    def action(self):
-//        """設定している戦闘行動を行う。
-//        BattleEngineからのみ呼ばれる。
-//        """
-//        if self.actiondata:
-//            targets, header, beasts = self.actiondata
-//
-//            # 召喚獣カードの使用
-//            if isinstance(self, cw.sprite.card.FriendCard):
-//                ishidden = self._vanished
-//            else:
-//                ishidden = self.status == "hidden"
-//
-//            if self.is_alive() and not ishidden and self.status <> "reversed":
-//                for targets_b, header_b in beasts[:]:
-//                    inarr = False
-//                    for _targets_c, header_c in self.actiondata[2]:
-//                        if header_c == header_b:
-//                            inarr = True
-//                            break
-//                    if not inarr:
-//                        # カードの効果で召喚獣カードが
-//                        # いなくなっている場合
-//                        continue
-//
-//                    self.use_card(targets_b, header_b)
-//
-//                    # 戦闘勝利チェック
-//                    if cw.cwpy.is_battlestatus() and cw.cwpy.battle.check_win():
-//                        raise cw.battle.BattleWinError()
-//
-//                    if isinstance(self, cw.sprite.card.FriendCard):
-//                        ishidden = self._vanished
-//                    else:
-//                        ishidden = self.status == "hidden"
-//
-//                    # カードの効果で行動が変わっている可能性がある
-//                    if not self.actiondata or ishidden or self.status == "reversed" or not cw.cwpy.is_battlestatus():
-//                        break
-//
-//            # 手札カードの使用
-//            if self.is_alive() and not ishidden and self.status <> "reversed" and self.actiondata and cw.cwpy.is_battlestatus():
-//                targets, header, beasts = self.actiondata
-//                if header and self.is_active() and not ishidden and self.status <> "reversed":
-//                    self.deck.use(header)
-//                    self.use_card(targets, header)
-//
-//    def set_action(self, target, header, beasts=[][:], auto=False):
-//        """
-//        戦闘行動を設定。
-//        auto: 自動手札選択から設定されたかどうか。
-//        """
-//        if auto:
-//            self.clear_action()
-//            self.actiondata = (target, header, beasts)
-//            self.actionautoselected = auto
-//        else:
-//            if self.actiondata:
-//                beasts = self.actiondata[2]
-//
-//            self.clear_action()
-//            self.actiondata = (target, header, beasts)
-//            self.actionautoselected = auto
-//            cw.cwpy.play_sound("page")
-//            assert cw.cwpy.pre_dialogs, "%s, %s" % (self.name, header.name)
-//            if cw.cwpy.pre_dialogs:
-//                cw.cwpy.pre_dialogs.pop()
-//
-//        if cw.cwpy.battle and target and header:
-//            # 召喚獣は個々の選択時に優先行動済みリストへ追加される
-//            self._add_priorityacts(target, header)
-//
-//        self.actionend = False
-//
-//    def _add_priorityacts(self, target, h):
-//        if cw.cwpy.battle and target and h:
-//            for e in self._get_motions(h):
-//                t = e.get("type", "")
-//                if not self._is_bonusedmtype(t):
-//                    continue
-//                if t:
-//                    cw.cwpy.battle.priorityacts.append((t, target, self))
-//
-//    def adjust_action(self):
-//        """
-//        現在の状態に合わせて一部戦闘行動を解除する。
-//        行動不能であれば自律的な行動は行えず、
-//        麻痺・死亡状態であれば召喚獣も動けない。
-//        """
-//        if self.actiondata:
-//            if self.is_unconscious():
-//                self.clear_action()
-//            elif self.is_inactive(check_reversed=False):
-//                _target, _header, beasts = self.actiondata
-//                self.set_action(None, None, beasts, True)
-//
-//        if self.is_inactive(check_reversed=False):
-//            self.deck.throwaway()
-//
-//    def clear_action(self):
-//        self.actiondata = None
-//        self.actionautoselected = False
-//        self.actionend = True
-//        if cw.cwpy.battle:
-//            for key, target, user in cw.cwpy.battle.priorityacts[:]:
-//                if user == self:
-//                    cw.cwpy.battle.priorityacts.remove((key, target, user))
-//
-//    def is_autoselectedpenalty(self, header=None):
-//        """戦闘中にペナルティカードを自動選択した状態か。
-//        headerにNone以外が指定された時は、選択されたペナルティカードが
-//        指定されたheaderと一致する時のみTrueを返す。
-//        """
-//        if cw.cwpy.battle and self.actiondata and self.actionautoselected:
-//            headerp = self.actiondata[1]
-//            return headerp and headerp.penalty and (header is None or header == headerp)
-//        return False
-//
-//    #---------------------------------------------------------------------------
-//    #　判定用
-//    #---------------------------------------------------------------------------
-//
-//    def decide_outcome(self, level, vocation, thresholdbonus=6, enhance=0, subbonus=0):
-//        """
-//        行為判定を行う。成功ならTrue。失敗ならFalseを返す。
-//        level: 判定レベル。
-//        vocation: 適性データ。(身体適性名, 精神適性名)のタプル。
-//        thresholdbonus: アクション元の適性値+行動力強化値。効果コンテントだと6。
-//        enhance: 回避・抵抗判定の場合はボーナス値。
-//        subbonus: 各種判定のサブボーナス(現在は成功率修正のみ)。
-//        """
-//        dice = cw.cwpy.dice.roll(2)
-//        if dice == 12:
-//            return True
-//        elif dice == 2:
-//            return False
-//
-//        udice = cw.cwpy.dice.roll(2)
-//        tdice = dice
-//
-//        thresholdbonus = int(thresholdbonus)
-//        voc = self.get_vocation_val(vocation)
-//        bonus = int(voc + enhance)
-//        uvalue = cw.util.div_vocation(thresholdbonus) + level + subbonus + udice
-//        tvalue = cw.util.div_vocation(bonus) + self.level + tdice
-//        return uvalue <= tvalue
-//
-//    def decide_misfire(self, level):
-//        """
-//        カードの不発判定を行う。成功ならTrue。失敗ならFalseを返す。
-//        level: 判定レベル(カードの技能レベル)。
-//        """
-//        dice = cw.cwpy.dice.roll(2)
-//        threshold = level - self.level - 1
-//
-//        if dice == 12:
-//            flag = True
-//        elif dice >= threshold:
-//            flag = True
-//        else:
-//            flag = False
-//
-//        return flag
-//
-//    #---------------------------------------------------------------------------
-//    #　戦闘行動設定関連
-//    #---------------------------------------------------------------------------
-//
-//    def decide_actionorder(self):
-//        """
-//        行動順位を判定する数値をself.actionorderに設定。
-//        敏捷度と大胆性で判定。レベル・行動力は関係なし。
-//        FIXME: これによって決定される行動順はCardWirthと若干異なる
-//        """
-//        vocation_val = int(self.get_vocation_val(("agl", "uncautious")))
-//        d = cw.cwpy.dice.roll(2, 6)
-//        self.actionorder = int((vocation_val+1) * 1.4) + d
-//        return self.actionorder
-//
-//    def decide_action(self):
-//        """
-//        自動手札選択。
-//        """
-//        self.clear_action()
-//        if self.is_dead() or not cw.cwpy.status == "ScenarioBattle":
-//            return
-//
-//        # 召喚獣カード
-//        beasts = []
-//
-//        for header in self.get_pocketcards(cw.POCKET_BEAST):
-//            if header.is_autoselectable():
-//                targets, effectivetargets = header.get_targets()
-//
-//                if effectivetargets:
-//                    # 優先度の高いターゲットが存在する場合はそちらを優先選択する
-//                    bonus, effectivetargets = self._get_targetingbonus_and_targets(header, effectivetargets)
-//
-//                    if not header.allrange and len(targets) > 1:
-//                        targets = [cw.cwpy.dice.choice(effectivetargets)]
-//
-//                    beasts.append((targets, header))
-//                    # 優先行動済みリストへ追加する
-//                    self._add_priorityacts(targets, header)
-//
-//        # 行動不能時は召喚獣のみ
-//        if self.is_inactive():
-//            self.set_action(None, None, beasts, True)
-//            return
-//
-//        # 使用するカード
-//        headers = []
-//
-//        for header in self.deck.hand:
-//            if header.is_autoselectable():
-//                targets, effectivetargets = header.get_targets()
-//
-//                if effectivetargets or header.target == "None":
-//                    if not header.allrange:
-//                        targets = effectivetargets
-//
-//                    headers.append((targets, header))
-//
-//        targets, header = self.decide_usecard(headers)
-//
-//        if header and not header.allrange and len(targets) > 1:
-//            targets = [cw.cwpy.dice.choice(targets)]
-//
-//        # 行動設定
-//        self.set_action(targets, header, beasts, True)
-//
-//    def decide_usecard(self, headers):
-//        """
-//        使用可能な手札のいずれかを自動選択する。
-//        """
-//        # 手札交換は次の特殊処理を行う
-//        #  * 常に最後に判定する
-//        #  * 適性値を-6する
-//        seq = [] # 手札交換以外のカード
-//        exchange = [] # 手札交換
-//        for t in headers:
-//            header = t[1]
-//            if header.type == "ActionCard" and header.id == 0:
-//                exchange.append(t)
-//            else:
-//                seq.append(t)
-//        assert len(seq)+len(exchange) == len(headers)
-//
-//        # カードを選択する(手札交換以外)
-//
-//        # 選択値
-//        # カードごとに決定し、これまでの最大値を上回れば選択
-//        maxd = -2147483647
-//        # 選択されたカード
-//        selected = (None, None)
-//        for i, t in enumerate(itertools.chain(seq, exchange)):
-//            header = t[1]
-//
-//            # 適性値
-//            vocation = int(header.get_vocation_val(self))
-//            if len(seq) <= i:
-//                vocation -= 6 # 手札交換なので-6
-//            else:
-//                vocation = max(0, vocation)
-//
-//            # 優先選択ボーナス
-//            bonus, targs = self._get_targetingbonus_and_targets(header, t[0])
-//
-//            # 選択値を計算
-//            d = cw.cwpy.dice.roll()
-//            d = (1 + vocation) // 2 + d + bonus
-//            if maxd < d:
-//                # 選択する
-//                selected = (targs, header)
-//                maxd = d
-//
-//        return selected
-//
-//    def _get_motions(self, header):
-//        if header.type == "ActionCard" and header.id == 7:
-//            # 逃走の場合は"VanishTarget"を"Runaway"というボーナス判定用特殊効果に置換する
-//            return [{"type":"Runaway"}]
-//        else:
-//            return header.carddata.getfind("Motions").getchildren()
-//
-//    def _is_bonusedmtype(self, mtype):
-//        return mtype in ("Runaway", "Heal")
-//
-//    def _get_targetingbonus_and_targets(self, header, targets):
-//        bonus = -2147483647
-//        maxbonustargs = []
-//        # 最大ボーナスを取得
-//        motions = self._get_motions(header)
-//        for motion in motions:
-//            mtype = motion.get("type", "")
-//            if not self._is_bonusedmtype(mtype):
-//                continue
-//            for targ in targets:
-//                b = targ.get_targetingbonus(mtype)
-//                if bonus == b:
-//                    maxbonustargs.append(targ)
-//                elif bonus < b:
-//                    maxbonustargs = [targ]
-//                    bonus = b
-//
-//        if bonus == -2147483647:
-//            return 0, targets
-//        return bonus, targets if header.allrange else maxbonustargs
+
+    public UNK action()
+    {
+        // """設定している戦闘行動を行う。
+        // BattleEngineからのみ呼ばれる。
+        // """
+        UNK targets;
+        UNK header;
+        UNK beasts;
+        bool is_hidden;
+        bool inarr;
+        if (this.actiondata)
+        {
+            // targets, header, beasts = this.actiondata
+            targets = this.actiondata;
+            header = this.actiondata;
+            beasts = this.actiondata;
+
+            // 召喚獣カードの使用
+            if (isinstance(self, cw.sprite.card.FriendCard))
+            {
+                ishidden = this._vanished;
+            }else{
+                ishidden = this.status == "hidden";
+            }
+
+            if (this.is_alive() && !ishidden && this.status != "reversed")
+
+            {
+                for (targets_b, header_b in beasts[:])
+                {
+                    inarr = false;
+                    for (_targets_c, header_c in this.actiondata[2])
+                    {
+                        if (header_c == header_b)
+                        {
+                            inarr = true
+                            break;
+                        }
+                    }
+                    if (!inarr)
+                    {
+                        // カードの効果で召喚獣カードが
+                        // いなくなっている場合
+                        continue; // TODO
+                    }
+                    this.use_card(targets_b, header_b);
+
+                    // 戦闘勝利チェック
+                    if (cw.cwpy.is_battlestatus() && cw.cwpy.battle.check_win())
+                    {
+                        //raise cw.battle.BattleWinError(); //TODO
+                    }
+
+                    if (isinstance(self, cw.sprite.card.FriendCard))
+
+                    {
+                        ishidden = this._vanished;
+                    }else{
+                        ishidden = this.status == "hidden";
+                    }
+
+                    // カードの効果で行動が変わっている可能性がある
+                    if (!this.actiondata || ishidden || this.status == "reversed" || !cw.cwpy.is_battlestatus())
+                    {
+                        break;
+                    }
+                }
+            // 手札カードの使用
+            if (this.is_alive() && !ishidden && this.status != "reversed" && this.actiondata && cw.cwpy.is_battlestatus())
+            {
+                //targets, header, beasts = this.actiondata //TODO
+                targets = this.actiondata;
+                header = this.actiondata;
+                beasts = this.actiondata;                
+                if (header && this.is_active() && !ishidden && this.status != "reversed")
+                {
+                    this.deck.use(header);
+                    this.use_card(targets, header);
+                }
+            }
+
+
+    public void set_action(UNK target,UNK header,UNK beasts=[][:],bool auto=false) //TODO
+    {
+        // """
+        // 戦闘行動を設定。
+        // auto: 自動手札選択から設定されたかどうか。
+        // """
+        if (auto)
+        {
+            this.clear_action();
+            this.actiondata = (target, header, beasts);
+            this.actionautoselected = auto;
+        }else{
+            if (this.actiondata)
+            {
+                beasts = this.actiondata[2];
+            }
+            this.clear_action();
+            this.actiondata = (target, header, beasts);
+            this.actionautoselected = auto;
+            cw.cwpy.play_sound("page");
+            // assert cw.cwpy.pre_dialogs, "%s, %s" % (this.name, header.name) //TODO 
+            if (cw.cwpy.pre_dialogs)
+            {
+                cw.cwpy.pre_dialogs.pop();
+            }
+        }
+        if (cw.cwpy.battle && target && header)
+        {
+            // 召喚獣は個々の選択時に優先行動済みリストへ追加される
+            this._add_priorityacts(target, header);
+        }
+        this.actionend = false;
+    }
+
+    public void _add_priorityacts(UNK target, UNK h)
+    {
+        if (cw.cwpy.battle && target && h)
+        {
+            foreach (var e in this._get_motions(h))
+            {
+                t = e.get("type", "");
+                if (!this._is_bonusedmtype(t))
+                {
+                    continue;
+                }
+                if (t)
+                {
+                    cw.cwpy.battle.priorityacts.append((t, target));
+                }
+            }
+        }
+    }
+
+    public void adjust_action()
+    {
+        // """
+        // 現在の状態に合わせて一部戦闘行動を解除する。
+        // 行動不能であれば自律的な行動は行えず、
+        // 麻痺・死亡状態であれば召喚獣も動けない。
+        // """
+        UNK _target;
+        UNK _header;
+        UNK beast;
+
+        if (this.actiondata)
+        {
+            if (this.is_unconscious())
+            {
+                this.clear_action();
+            } else if (this.is_inactive(check_reversed=false)){
+                // _target, _header, beasts = this.actiondata
+                _target = this.actiondata;
+                _header = this.actiondata;
+                beasts = this.actiondata;
+                this.set_action(null, null, beasts, true);
+            }
+        }
+
+        if (this.is_inactive(check_reversed=false))
+        {
+            this.deck.throwaway();
+        }
+    }
+
+    public void clear_action()
+    {
+        this.actiondata = null;
+        this.actionautoselected = false;
+        this.actionend = true;
+        if (cw.cwpy.battle)
+        {
+            for (key, target, user in cw.cwpy.battle.priorityacts[:])
+            {
+                if (user == self)
+                {
+                    cw.cwpy.battle.priorityacts.remove((key, target, user));
+                }
+            }
+        }
+    }
+
+    public bool is_autoselectedpenalty(UNK header=null)
+    {
+        // """戦闘中にペナルティカードを自動選択した状態か。
+        // headerにnull以外が指定された時は、選択されたペナルティカードが
+        // 指定されたheaderと一致する時のみTrueを返す。
+        // """
+        List<UNK> headerp; 
+        if (cw.cwpy.battle && this.actiondata && this.actionautoselected)
+        {
+            headerp = this.actiondata[1];
+            return headerp && headerp.penalty && (header == null || header == headerp);
+        }
+        return false;
+    }
+
+    //---------------------------------------------------------------------------
+    //　判定用
+    //---------------------------------------------------------------------------
+
+    public bool decide_outcome(UNK level, UNK vocation, UNK thresholdbonus=6, UNK enhance=0, UNK subbonus=0)
+    {
+        // """
+        // 行為判定を行う。成功ならTrue。失敗ならFalseを返す。
+        // level: 判定レベル。
+        // vocation: 適性データ。(身体適性名, 精神適性名)のタプル。
+        // thresholdbonus: アクション元の適性値+行動力強化値。効果コンテントだと6。
+        // enhance: 回避・抵抗判定の場合はボーナス値。
+        // subbonus: 各種判定のサブボーナス(現在は成功率修正のみ)。
+        // """
+        UNK dice;
+        UNK udice;
+        UNK tdice;
+        UNK voc;
+        UNK bonus;
+        UNK uvalue;
+        UNK tvalue;
+
+        dice = cw.cwpy.dice.roll(2);
+        if (dice == 12)
+        {
+            return true;
+        }else if (dice == 2){
+            return false;
+        }
+        udice = cw.cwpy.dice.roll(2);
+        tdice = dice;
+
+        thresholdbonus = int(thresholdbonus);
+        voc = self.get_vocation_val(vocation);
+        bonus = int(voc + enhance);
+        uvalue = cw.util.div_vocation(thresholdbonus) + level + subbonus + udice;
+        tvalue = cw.util.div_vocation(bonus) + self.level + tdice;
+        return uvalue <= tvalue;
+    }
+
+    public bool decide_misfire(UNK level)
+    {
+        // """
+        // カードの不発判定を行う。成功ならtrue。失敗ならfalseを返す。
+        // level: 判定レベル(カードの技能レベル)。
+        // """
+        UNK dice;
+        UNK threshold;
+        bool flag;
+
+        dice = cw.cwpy.dice.roll(2);
+        threshold = level - self.level - 1;
+
+        if (dice == 12)
+        {
+            flag = true;
+        }else if (dice >= threshold){
+            flag = true;
+        }else{
+            flag = false;
+        }
+
+        return flag;
+    }
+
+    //---------------------------------------------------------------------------
+    //　戦闘行動設定関連
+    //---------------------------------------------------------------------------
+
+    public UNK decide_actionorder()
+    {
+        // """
+        // 行動順位を判定する数値をthis.actionorderに設定。
+        // 敏捷度と大胆性で判定。レベル・行動力は関係なし。
+        // FIXME: これによって決定される行動順はCardWirthと若干異なる
+        // """
+        vocation_val = int(this.get_vocation_val(("agl", "uncautious")));
+        d = cw.cwpy.dice.roll(2, 6);
+        this.actionorder = int((vocation_val+1) * 1.4) + d;
+        return this.actionorder;
+    }
+
+    public UNK decide_action()
+    {
+        // """
+        // 自動手札選択。
+        // """
+        List<UNK> beasts;
+        UNK targets;
+        UNK effectivetargets;
+        UNK bonus;
+        List<UNK> header;
+
+        this.clear_action()
+        if (this.is_dead() || !cw.cwpy.status == "ScenarioBattle")
+        {
+            return;//TODO
+        }
+        // 召喚獣カード
+        beasts = [];
+        for (header in this.get_pocketcards(cw.POCKET_BEAST))
+        {
+            if (header.is_autoselectable())
+            {
+                targets = header.get_targets();
+                effectivetargets = header.get_targets();
+
+                if (effectivetargets)
+                {
+                    // 優先度の高いターゲットが存在する場合はそちらを優先選択する
+                    bonus = this._get_targetingbonus_and_targets(header, effectivetargets)
+                    effectivetargets = this._get_targetingbonus_and_targets(header, effectivetargets)
+
+                    if (!header.allrange && len(targets) > 1)
+                    {
+                        targets = [cw.cwpy.dice.choice(effectivetargets)];
+                    }
+                    beasts.append((targets, header));
+                    // 優先行動済みリストへ追加する
+                    this._add_priorityacts(targets, header);
+                }
+            }
+        }
+        // 行動不能時は召喚獣のみ
+        if (this.is_inactive())
+        {
+            this.set_action(null, null, beasts, true);
+            return;
+        }
+        // 使用するカード
+        headers = [];
+
+        for (header in this.deck.hand)
+        {
+            if (header.is_autoselectable())
+            {
+                targets = header.get_targets();
+                effectivetargets = header.get_targets();
+
+                if (effectivetargets || header.target == "None")
+                {
+                    if (!header.allrange)
+                    {
+                        targets = effectivetargets;
+                    }
+                    headers.append((targets, header));
+                }
+            }
+        }
+        targets = this.decide_usecard(header)
+        header = this.decide_usecard(header)
+
+        if (header && !header.allrange && len(targets) > 1)
+        {
+            targets = [cw.cwpy.dice.choice(targets)];
+        }
+
+        // 行動設定
+        this.set_action(targets, header, beasts, true);
+    }
+
+    public UNK decide_usecard(UNK headers)
+    {
+        // """
+        // 使用可能な手札のいずれかを自動選択する。
+        // """
+        // 手札交換は次の特殊処理を行う
+        //  * 常に最後に判定する
+        //  * 適性値を-6する
+        seq = []; // 手札交換以外のカード
+        exchange = []; // 手札交換
+        for (t in headers)
+        {
+            header = t[1];
+            if (header.type == "ActionCard" && header.id == 0)
+            {
+                exchange.append(t);
+            }else{
+                seq.append(t);
+            }
+        }
+        assert len(seq)+len(exchange) == len(headers);
+
+        // カードを選択する(手札交換以外)
+
+        // 選択値
+        // カードごとに決定し、これまでの最大値を上回れば選択
+        maxd = -2147483647;
+        // 選択されたカード
+        selected = (null, null);
+        for (i, t in enumerate(itertools.chain(seq, exchange)))
+        {
+            header = t[1];
+
+            // 適性値
+            vocation = (int)header.get_vocation_val();
+            if (seq.Count <= i) //if (len(seq) <= i)
+            {
+                vocation -= 6; // 手札交換なので-6
+            }else{
+                vocation = max(0, vocation);
+            }
+
+            // 優先選択ボーナス
+            bouns = this._get_targetingbonus_and_targets(header, t[0])
+            targs = this._get_targetingbonus_and_targets(header, t[0])
+            
+            // 選択値を計算
+            d = cw.cwpy.dice.roll();
+            d = (1 + vocation); // 2 + d + bonus
+            if (maxd < d)
+            {
+                // 選択する
+                selected = (targs, header);
+                maxd = d;
+            }
+        }
+        return selected;
+    }
+    
+    public UNK _get_motions(UNK header)    {
+        if (header.type == "ActionCard" and header.id == 7)
+        {
+            // 逃走の場合は"VanishTarget"を"Runaway"というボーナス判定用特殊効果に置換する
+            return [{"type":"Runaway"}];//TODO
+        }else{
+            return header.carddata.getfind("Motions").getchildren();
+        }
+    }
+
+    public UNK _is_bonusedmtype(UNK mtype)
+    {
+        return mtype in ("Runaway", "Heal");//TODO
+    }
+
+    public UNK _get_targetingbonus_and_targets(UNK header, UNK targets)
+    {
+        bonus = -2147483647;
+        maxbonustargs = [];
+        // 最大ボーナスを取得
+        motions = self._get_motions(header);
+        for (motion in motions)
+        {
+            mtype = motion.get("type", "")
+            if (not self._is_bonusedmtype(mtype))
+            {
+                continue;
+            }
+            for (targ in targets){
+                b = targ.get_targetingbonus(mtype);
+                if (bonus == b)
+                {
+                    maxbonustargs.append(targ);
+                }else if (bonus < b){
+                    maxbonustargs = [targ];
+                    bonus = b;
+                }
+            }
+        }
+        if (bonus == -2147483647)
+        {
+            return 0, targets;//TODO
+        }
+        return bonus, targets if header.allrange else maxbonustargs;//TODO
+    }
 //
 //    #---------------------------------------------------------------------------
 //    #　状態取得用
@@ -3189,8 +3344,9 @@ class Player : Character {
        Character.set_name(name);
        if (cw.cwpy.ydata)
        {
-           // for header in cw.cwpy.ydata.partyrecord:
-           //     header.rename_member(self.data.fpath, name)
+           for (header in cw.cwpy.ydata.partyrecord){
+               header.rename_member(self.data.fpath, name);
+           }
        }
        cw.cwpy.background.reload(false, nocheckvisible=true);
    }
@@ -3253,13 +3409,17 @@ class AlbumPage
         // "＠"で始まる特殊クーポンの
         // 辞書(key=クーポン名, value=クーポン得点)を返す。
         // """
+        Dictionary<string, UNK> d;
         d = {};
 
-        // for e in this.data.getfind("Property/Coupons"):
-        //     coupon = e.text
-        //     if coupon and coupon.startswith(u"＠"):
-        //         d[coupon] = int(e.get("value", "0"))
-
+        for (e in this.data.getfind("Property/Coupons"))
+        {
+            coupon = e.text
+            if (coupon && coupon.startswith(u"＠"))
+            {
+                d[coupon] = (int)e.get("value", "0")
+            }
+        }
         return d;
     }
 }
