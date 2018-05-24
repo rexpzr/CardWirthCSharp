@@ -474,79 +474,104 @@ class Character
       this.data.edit("Property/Ability/Enhance", str(value), name);
       this.enhance[name] = value;
   }
-//
-//    def get_cardpocket(self):
-//        flag = bool(self.data.getroot().tag == "CastCard")
-//        maxnums = self.get_cardpocketspace()
-//        paths = ("SkillCards", "ItemCards", "BeastCards")
-//        cardpocket = []
-//
-//        for maxn, path in zip(maxnums, paths):
-//            headers = []
-//
-//            pe = self.data.find(path)
-//            if not pe is None:
-//                for e in pe:
-//                    if maxn <= len(headers):
-//                        # 最大所持数を越えたカードは消去
-//                        break
-//                    e = cw.cwpy.sdata.get_carddata(e, inusecard=False)
-//                    if e is None:
-//                        continue
-//                    header = cw.header.CardHeader(owner=self, carddata=e,
-//                                                                from_scenario=flag)
-//                    headers.append(header)
-//
-//                # 参照先に差し替えられている可能性があるので
-//                # ここでpeの子要素を入れ替える
-//                for e in list(pe):
-//                    pe.remove(e)
-//                for header in headers:
-//                    pe.append(header.carddata)
-//
-//            cardpocket.append(headers[:maxn])
-//
-//        return tuple(cardpocket)
-//
-//    def get_keycodes(self, skill=True, item=True, beast=True):
-//        """所持カードのキーコード一覧を返す。"""
-//        s = set()
-//        seq = []
-//        if skill:
-//            seq.append(self.get_pocketcards(cw.POCKET_SKILL))
-//        if item:
-//            seq.append(self.get_pocketcards(cw.POCKET_ITEM))
-//        if beast:
-//            seq.append(self.get_pocketcards(cw.POCKET_BEAST))
-//
-//        for header in seq:
-//            s.update(header.get_keycodes())
-//
-//        s.discard("")
-//        return s
-//
-//    def has_keycode(self, keycode, skill=True, item=True, beast=True, hand=True):
-//        """指定されたキーコードを所持しているか。"""
-//        if hand and self.deck:
-//            # 戦闘時の手札(Wsn.2)
-//            for header in self.deck.get_hand(self):
-//                if keycode in header.get_keycodes():
-//                    return True
-//        if skill:
-//            for header in self.get_pocketcards(cw.POCKET_SKILL):
-//                if keycode in header.get_keycodes():
-//                    return True
-//        if item:
-//            for header in self.get_pocketcards(cw.POCKET_ITEM):
-//                if keycode in header.get_keycodes():
-//                    return True
-//        if beast:
-//            for header in self.get_pocketcards(cw.POCKET_BEAST):
-//                if keycode in header.get_keycodes():
-//                    return True
-//
-//        return False
-//
+
+    public UNK get_cardpocket() {
+        bool flag = (bool)(this.data.getroot().tag == "CastCard");
+        UNK maxnums = this.get_cardpocketspace();
+        UNK paths = ("SkillCards", "ItemCards", "BeastCards"); //TODO
+        var cardpocket = new List<UNK>();
+
+        foreach(var maxn, path in zip(maxnums, paths)) { //TODO
+            var headers = new List<UNK>();
+
+            pe = this.data.find(path);
+            if (pe != null) {
+                foreach(var e in pe) {
+                    if (maxn <= len(headers)) {
+                        // 最大所持数を越えたカードは消去
+                        break;
+                    }
+                    e = cw.cwpy.sdata.get_carddata(e, inusecard=false); //TODO
+                    if (e == null) {
+                        continue;
+                    }
+                    header = cw.header.CardHeader(owner=self, carddata=e, from_scenario=flag); //TODO
+                    headers.Add(header);
+                }
+
+                // 参照先に差し替えられている可能性があるので
+                // ここでpeの子要素を入れ替える
+                foreach(var e in list(pe)) { //TODO
+                    pe.Remove(e); //TODO
+                }
+                foreach(var header in headers) {
+                    pe.Add(header.carddata);
+                }
+            }
+
+            cardpocket.append(headers[:maxn]);
+        }
+
+        return tuple(cardpocket);
+    }
+
+    public UNK get_keycodes(bool skill=true, bool item=true, bool beast=true)) {
+        """所持カードのキーコード一覧を返す。"""
+        s = set(); //TODO
+        List<UNK> seq = new List<UNK>(); //TODO
+        if (skill) {
+            seq.Add(this.get_pocketcards(cw.POCKET_SKILL));
+        }
+        if (item) {
+            seq.Add(this.get_pocketcards(cw.POCKET_ITEM));
+        }
+        if (beast) {
+            seq.Add(this.get_pocketcards(cw.POCKET_BEAST));
+        }
+
+        foreach(var header in seq) {
+            s.update(header.get_keycodes());
+        }
+
+        s.discard("");
+        return s;
+    }
+
+    public bool has_keycode(UNK keycode, bool skill=true, bool item=true, bool beast=true, bool hand=true)) {
+        """指定されたキーコードを所持しているか。"""
+        if (hand && this.deck) {
+            // 戦闘時の手札(Wsn.2);
+            foreach(var header in this.deck.get_hand(self)) {
+                if (keycode in header.get_keycodes()) { //TODO
+                    return true;
+                }
+            }
+        }
+        if (skill) {
+            foreach(var header in this.get_pocketcards(cw.POCKET_SKILL)) {
+                if (keycode in header.get_keycodes()) { //TODO
+                    return true;
+                }
+            }
+        }
+        if (item) {
+            foreach(var header in this.get_pocketcards(cw.POCKET_ITEM)) {
+                if (keycode in header.get_keycodes()) { //TODO
+                    return true;
+                }
+            }
+        }
+        if (beast) {
+            foreach(var header in this.get_pocketcards(cw.POCKET_BEAST)) {
+                if (keycode in header.get_keycodes()) { //TODO
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
    public virtual UNK lost(){
        // """
        // 対象消去やゲームオーバー時に呼ばれる。
