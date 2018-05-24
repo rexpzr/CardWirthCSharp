@@ -3352,18 +3352,19 @@ class Player : Character {
    }
 
 }
-   
 
-//
-//def calc_maxlife(vit, minval, level):
-//    """能力値から体力の最大値を計算する。"""
-//    vit = max(1, vit)
-//    minval = max(1, minval)
-//    level = max(1, level)
-//    return int((float(vit) / 2.0 + 4) * (level + 1) + float(minval) / 2.0)
-//assert calc_maxlife(8, 5, 10) == 90
-//assert calc_maxlife(9, 5, 10) == 96
-//
+public static F
+{
+    public static int calc_maxlife(int vit, int minval, int level)
+    {
+        // """能力値から体力の最大値を計算する。"""
+        vit = max(1, vit);
+        minval = max(1, minval);
+        level = max(1, level);
+        return int((float(vit) / 2.0 + 4) * (level + 1) + float(minval) / 2.0);
+    }
+}
+
 class Enemy : Character
 {
     public UNK is_dead()
