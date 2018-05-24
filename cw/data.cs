@@ -188,38 +188,53 @@ class SystemData{
         }
         this.sparea_mcards = d;
     }
-//     def is_wsnversion(self, wsn_version, cardversion=None):
-//         if cardversion is None:
-//             swsnversion = self.wsn_version
-//         else:
-//             swsnversion = cardversion
 
-//         if not swsnversion:
-//             return not wsn_version
-//         else:
-//             try:
-//                 ivs = int(swsnversion)
-//                 ivd = int(wsn_version)
-//                 return ivd <= ivs
-//             except:
-//                 return False
+    public bool is_wsnversion(bool wsn_version, UNK? cardversion=null)
+    {
+        bool swsnversion;
+        if (cardversion == null) {
+            swsnversion = self.wsn_version;
+        } else {
+            swsnversion = cardversion;
+        }
+
+        if (!swsnversion) {
+            return !wsn_version;
+        } else {
+            try {
+                int ivs = int(swsnversion);
+                int ivd = int(wsn_version);
+                return ivd <= ivs
+            } catch {
+                return false;
+            }
+        }
+    }
 
     public UNK get_versionhint(UNK frompos=0)
     {
         // """現在有効になっている互換性マークを返す(常に無し)。"""
         return null;
     }
+
     public UNK set_versionhint(UNK pos, UNK hint)
     {
         // """互換性モードを設定する(処理無し)。"""
     }
-//     def update_scale(self):
-//         for mcards in self.sparea_mcards.itervalues():
-//             for mcard in mcards:
-//                 mcard.update_scale()
-//         for log in self.backlog:
-//             if log.specialchars:
-//                 log.specialchars.reset()
+
+    public void update_scale()
+    {
+        foreach(var mcards in self.sparea_mcards.itervalues()) {
+            foreach(var mcard in mcards) {
+                mcard.update_scale();
+            }
+        }
+        foreach(var log in self.backlog) {
+            if (log.specialchars) {
+                log.specialchars.reset();
+            }
+        }
+    }
 
 //     def sweep_resourcecache(self, size):
 //         """新しくキャッシュを追加した時にメモリが不足しそうであれば
