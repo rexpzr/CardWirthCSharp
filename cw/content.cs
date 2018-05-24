@@ -6,214 +6,296 @@
 //import cw
 //
 //
-//class EventContentBase(object):
-//    def __init__(self, data):
-//        self.data = data
-//        self._author = None
-//        self._scenario = None
-//        self._inusecard = False
-//
-//    def action(self):
-//        return 0
-//
-//    def can_action(self):
-//        return True
-//
-//    def get_status(self):
-//        return self.data.tag + self.data.get("type", "")
-//
-//    def get_childname(self, child):
-//        return self.get_contentname(child)
-//
-//    def get_contentname(self, child, default=""):
-//        if child.tag == "ContentsLine":
-//            return child[0].get("name", default)
-//        else:
-//            return child.get("name", default)
-//
-//    def get_children(self):
-//        event = cw.cwpy.event.get_event()
-//        if not event:
-//            return ()
-//        line_index = event.line_index
-//        if self.data.cwxparent.tag == "ContentsLine" and line_index+1 < len(self.data.cwxparent):
-//            elements = (self.data.cwxparent[line_index+1],)
-//        else:
-//            elements = self.data.find("Contents")
-//            if elements is None:
-//                elements = ()
-//        return elements
-//
-//    def get_children_num(self):
-//        event = cw.cwpy.event.get_event()
-//        if not event:
-//            return 0
-//        line_index = event.line_index
-//        if self.data.cwxparent.tag == "ContentsLine" and line_index+1 < len(self.data.cwxparent):
-//            return 1
-//        else:
-//            elements = self.data.find("Contents")
-//            if not elements is None:
-//                return len(elements)
-//        return 0
-//
-//    def get_transitiontype(self):
-//        """トランジション効果のデータのタプル((効果名, 速度))を返す。
-//        ChangeBgImage, ChangeArea, Redisplayコンテント参照。
-//        """
-//        tname = self.data.get("transition", "Default")
-//        if tname == "Default":
-//            tspeed = "Default"
-//        else:
-//            tspeed = self.data.get("transitionspeed", "Default")
-//            try:
-//                tspeed = int(tspeed)
-//            except:
-//                pass
-//
-//        return (tname, tspeed)
-//
-//    def init_values(self):
-//        if self._init_values:
-//            return
-//        self._init_values = True
-//        self.initvalue = self.data.getint(".", "initialValue", 0)
-//        self.coupons = {}
-//        for e in self.data.getfind("Coupons", raiseerror=False):
-//            self.coupons[e.text] = self.coupons.get(e.text, 0) + e.getint(".", "value", 0)
-//
-//    def get_valuedmember(self, mode="unreversed", silenced_member=True):
-//        """評価値が最大になるメンバを返す(1.50)。
-//        これを使用するイベントコンテントは
-//        self._init_valuesをFalseで初期化しておくこと。
-//        """
-//        if not self._init_values:
-//            self.init_values()
-//
-//        values = {}
-//        maxvalue = 0
-//        for pcard in cw.cwpy.get_pcards(mode):
-//            if not silenced_member and pcard.is_silence():
-//                continue
-//            value = self.initvalue
-//            for name, cvalue in self.coupons.iteritems():
-//                if pcard.has_coupon(name):
-//                    value += cvalue
-//            values[pcard] = value
-//            maxvalue = max(value, maxvalue)
-//
-//        if maxvalue <= 0:
-//            return None
-//
-//        seq = []
-//        for pcard, value in values.iteritems():
-//            if value == maxvalue:
-//                seq.append(pcard)
-//        return cw.cwpy.dice.choice(seq)
-//
-//    def is_differentscenario(self):
-//        """実行中のイベントがカードの使用時イベントであり、
-//        使用中のカードが現在プレイ中のシナリオと異なる
-//        シナリオから持ち出されたものであればTrueを返す。
-//        """
-//        if self._scenario is None:
-//            if cw.cwpy.is_playingscenario():
-//                inusecard = cw.cwpy.event.get_inusecard()
-//                if inusecard and cw.cwpy.event.in_inusecardevent:
-//                    self._scenario = inusecard.scenario
-//                    self._author = inusecard.author
-//                    self._inusecard = True
-//                else:
-//                    self._scenario = ""
-//                    self._author = ""
-//                    self._inusecard = False
-//            else:
-//                self._scenario = ""
-//                self._author = ""
-//                self._inusecard = False
-//        return self._inusecard and (self._scenario <> cw.cwpy.sdata.name or self._author <> cw.cwpy.sdata.author)
-//
-//    def update_bg_after(self):
-//        # 背景更新中、ユーザ操作によりスケール変更のイベントが発生する
-//        # 可能性があるため、後続のイベントへ進む前に全て消化する
-//        if not cw.cwpy.event.is_stoped():
-//            cw.cwpy.input()
-//            cw.cwpy.eventhandler.run()
-//            while pygame.event.peek(pygame.locals.USEREVENT) and not not cw.cwpy.event.is_stoped():
-//                cw.cwpy.input()
-//                cw.cwpy.eventhandler.run()
-//
-//    @property
-//    def textdict(self):
-//        return {
-//            # 対象範囲
-//            "backpack" : u"荷物袋",
-//            "partyandbackpack" : u"パーティ全体(荷物袋含む)",
-//            "field" : u"フィールド全体",
-//            "couponholder" : u"称号所有者", # Wsn.2
-//            "cardtarget" : u"カードの使用対象", # Wsn.2
-//            # 対象メンバ
-//            "random" : u"ランダムメンバ",
-//            "selected" : u"選択中メンバ",
-//            "unselected" : u"選択外メンバ",
-//            "inusecard" : u"使用中カード",
-//            "party" : u"パーティ全体",
-//            "enemy" : u"敵全体",
-//            "npc" : u"同行キャスト全体",
-//            "valued" : u"評価メンバ",
-//            # 身体能力
-//            "dex" : u"器用度",
-//            "agl" : u"敏捷度",
-//            "int" : u"知力",
-//            "str" : u"筋力",
-//            "vit" : u"生命力",
-//            "min" : u"精神力",
-//            # 精神能力
-//            "mental_aggressive" : u"好戦性",
-//            "mental_unaggressive" : u"平和性",
-//            "mental_cheerful" : u"社交性",
-//            "mental_uncheerful" : u"内向性",
-//            "mental_brave" : u"勇猛性",
-//            "mental_unbrave" : u"臆病性",
-//            "mental_cautious" : u"慎重性",
-//            "mental_uncautious" : u"大胆性",
-//            "mental_trickish" : u"狡猾性",
-//            "mental_untrickish" : u"正直性",
-//            # ステータス
-//            "active" : u"行動可能",
-//            "inactive" : u"行動不可",
-//            "alive" : u"生存",
-//            "dead" : u"非生存",
-//            "fine" : u"健康",
-//            "injured" : u"負傷",
-//            "heavyinjured" : u"重傷",
-//            "unconscious" : u"意識不明",
-//            "poison" : u"中毒",
-//            "sleep" : u"眠り",
-//            "bind" : u"呪縛",
-//            "paralyze" : u"麻痺／石化",
-//            "confuse" : u"混乱", # 1.30
-//            "overheat" : u"激昂", # 1.30
-//            "brave" : u"勇敢", # 1.30
-//            "panic" : u"恐慌", # 1.30
-//            "silence" : u"沈黙", # 1.50
-//            "faceup" : u"暴露", # 1.50
-//            "antimagic" : u"魔法無効化", # 1.50
-//            "upaction" : u"行動力上昇", # 1.50
-//            "upavoid" : u"回避力上昇", # 1.50
-//            "upresist" : u"抵抗力上昇", # 1.50
-//            "updefense" : u"防御力上昇", # 1.50
-//            "downaction" : u"行動力低下", # 1.50
-//            "downavoid" : u"回避力低下", # 1.50
-//            "downresist" : u"抵抗力低下", # 1.50
-//            "downdefense" : u"防御力低下", # 1.50
-//            # カード種別
-//            "all" : u"全てのカード", # 1.50
-//            "skill" : u"特殊技能カード", # 1.50
-//            "item" : u"アイテムカード", # 1.50
-//            "beast" : u"召喚獣カード", # 1.50
-//        }
-//
+
+class EventContentBase
+{
+    UNK data;
+    UNK _author;
+    UNK _scenario;
+    bool _inusecard;
+
+    public EventContentBase(UNK data)
+    {
+        this.data = data;
+        this._author = null;
+        this._scenario = null;
+        this._inusecard = false;
+    }
+
+    public UNK action()
+    {
+        return 0;
+    }
+
+    public bool can_action()
+    {
+        return true;
+    }
+
+    public string get_status()
+    {
+        return this.data.tag + this.data.get("type", "");
+    }
+
+    public UNK get_childname(UNK child)
+    {
+        return this.get_contentname(child);
+    }
+
+    public UNK get_contentname(UNK child, string default="")
+    {
+        if (child.tag == "ContentsLine")
+        {
+            return child[0].get("name", default);
+        }else{
+            return child.get("name", default);
+        }
+    }
+
+    public UNK get_children()
+    {
+        UNK event;
+        event = cw.cwpy.event.get_event();
+        if (!event)
+        {
+            return ();
+        }
+        line_index = event.line_index;
+        if (this.data.cwxparent.tag == "ContentsLine" && line_index+1 < this.data.cwxparent.Count)
+        {
+            elements = (this.data.cwxparent[line_index+1],);
+        }else{
+            elements = this.data.find("Contents");
+            if (elements == null)
+            {
+                elements = ();
+            }
+        }
+        return elements;
+    }
+
+    public int get_children_num()
+    {
+        event = cw.cwpy.event.get_event();
+        if (!event)
+        {
+            return 0;
+        }
+        line_index = event.line_index;
+        if (this.data.cwxparent.tag == "ContentsLine" && line_index+1 < len(this.data.cwxparent))
+        {
+            return 1;
+        }else{
+            elements = this.data.find("Contents");
+            if (!elements == null)
+            {
+                return elements.Count;
+            }
+        return 0;
+        }
+    }
+
+    public UNK get_transitiontype()
+    {
+        // """トランジション効果のデータのタプル((効果名, 速度))を返す。
+        // ChangeBgImage, ChangeArea, Redisplayコンテント参照。
+        // """
+        tname = this.data.get("transition", "Default");
+        if (tname == "Default")
+        {
+            tspeed = "Default";
+        }else{
+            tspeed = this.data.get("transitionspeed", "Default");
+            try{
+                tspeed = (int)tspeed;
+            } catch(Exception e) {
+                // pass
+            }
+        }
+        return (tname, tspeed);
+    }
+
+    public void init_values()
+    {
+        if (this._init_values)
+        {
+            return;
+        }
+        this._init_values = true;
+        this.initvalue = this.data.getint(".", "initialValue", 0);
+        this.coupons = {};
+        foreach (var e in this.data.getfind("Coupons", raiseerror=false))
+        {
+            this.coupons[e.text] = this.coupons.get(e.text, 0) + e.getint(".", "value", 0);
+        }
+    }
+
+    public UNK get_valuedmember(string mode="unreversed", bool silenced_member=true)
+    {
+        // """評価値が最大になるメンバを返す(1.50)。
+        // これを使用するイベントコンテントは
+        // this._init_valuesをfalseで初期化しておくこと。
+        // """
+        if (!this._init_values)
+        {
+            this.init_values();
+        }
+        values = {};
+        maxvalue = 0;
+        foreach (var pcard in cw.cwpy.get_pcards(mode))
+        {
+            if (!silenced_member && pcard.is_silence())
+            {
+                continue;
+            }
+            value = this.initvalue;
+            foreach (name, cvalue in this.coupons.iteritems())//TODO
+            {
+                if (pcard.has_coupon(name))
+                {
+                    value += cvalue;
+                }
+            }
+            values[pcard] = value;
+            maxvalue = max(value, maxvalue);
+        }
+        if (maxvalue <= 0)
+        {
+            return null;
+        }
+
+        seq = [];
+        foreach (pcard, value in values.iteritems())
+        {
+            if (value == maxvalue)
+            {
+                seq.append(pcard);
+            }
+        }
+        return cw.cwpy.dice.choice(seq);
+    }
+
+    public bool is_differentscenario()
+    {
+        // """実行中のイベントがカードの使用時イベントであり、
+        // 使用中のカードが現在プレイ中のシナリオと異なる
+        // シナリオから持ち出されたものであればtrueを返す。
+        // """
+        if (this._scenario == null)
+        {
+            if (cw.cwpy.is_playingscenario())
+            {
+                inusecard = cw.cwpy.event.get_inusecard();
+                if (inusecard && cw.cwpy.event.in_inusecardevent)
+                {
+                    this._scenario = inusecard.scenario;
+                    this._author = inusecard.author;
+                    this._inusecard = true;
+                }else{
+                    this._scenario = "";
+                    this._author = "";
+                    this._inusecard = false;
+                }
+            }else{
+                this._scenario = "";
+                this._author = "";
+                this._inusecard = false;
+            }
+        }
+        return this._inusecard && (this._scenario != cw.cwpy.sdata.name || this._author != cw.cwpy.sdata.author);
+    }
+
+    public UNK update_bg_after()
+    {
+        // 背景更新中、ユーザ操作によりスケール変更のイベントが発生する
+        // 可能性があるため、後続のイベントへ進む前に全て消化する
+        if (!cw.cwpy.event.is_stoped())
+        {
+            cw.cwpy.input();
+            cw.cwpy.eventhandler.run();
+            //while pygame.event.peek(pygame.locals.USEREVENT) and not not cw.cwpy.event.is_stoped():
+            while (pygame.event.peek(pygame.locals.USEREVENT) && not not cw.cwpy.event.is_stoped())//TODO
+            {
+                cw.cwpy.input();
+                cw.cwpy.eventhandler.run();
+            }
+        }
+    }
+
+    @property //TODO
+    public UNK textdict()
+    {
+        return {
+            // 対象範囲
+            "backpack" : u"荷物袋",
+            "partyandbackpack" : u"パーティ全体(荷物袋含む)",
+            "field" : u"フィールド全体",
+            "couponholder" : u"称号所有者", // Wsn.2
+            "cardtarget" : u"カードの使用対象", // Wsn.2
+            // 対象メンバ
+            "random" : u"ランダムメンバ",
+            "selected" : u"選択中メンバ",
+            "unselected" : u"選択外メンバ",
+            "inusecard" : u"使用中カード",
+            "party" : u"パーティ全体",
+            "enemy" : u"敵全体",
+            "npc" : u"同行キャスト全体",
+            "valued" : u"評価メンバ",
+            // 身体能力
+            "dex" : u"器用度",
+            "agl" : u"敏捷度",
+            "int" : u"知力",
+            "str" : u"筋力",
+            "vit" : u"生命力",
+            "min" : u"精神力",
+            // 精神能力
+            "mental_aggressive" : u"好戦性",
+            "mental_unaggressive" : u"平和性",
+            "mental_cheerful" : u"社交性",
+            "mental_uncheerful" : u"内向性",
+            "mental_brave" : u"勇猛性",
+            "mental_unbrave" : u"臆病性",
+            "mental_cautious" : u"慎重性",
+            "mental_uncautious" : u"大胆性",
+            "mental_trickish" : u"狡猾性",
+            "mental_untrickish" : u"正直性",
+            // ステータス
+            "active" : u"行動可能",
+            "inactive" : u"行動不可",
+            "alive" : u"生存",
+            "dead" : u"非生存",
+            "fine" : u"健康",
+            "injured" : u"負傷",
+            "heavyinjured" : u"重傷",
+            "unconscious" : u"意識不明",
+            "poison" : u"中毒",
+            "sleep" : u"眠り",
+            "bind" : u"呪縛",
+            "paralyze" : u"麻痺／石化",
+            "confuse" : u"混乱", // 1.30
+            "overheat" : u"激昂", // 1.30
+            "brave" : u"勇敢", // 1.30
+            "panic" : u"恐慌", // 1.30
+            "silence" : u"沈黙", // 1.50
+            "faceup" : u"暴露", // 1.50
+            "antimagic" : u"魔法無効化", // 1.50
+            "upaction" : u"行動力上昇", // 1.50
+            "upavoid" : u"回避力上昇", // 1.50
+            "upresist" : u"抵抗力上昇", // 1.50
+            "updefense" : u"防御力上昇", // 1.50
+            "downaction" : u"行動力低下", // 1.50
+            "downavoid" : u"回避力低下", // 1.50
+            "downresist" : u"抵抗力低下", // 1.50
+            "downdefense" : u"防御力低下", // 1.50
+            // カード種別
+            "all" : u"全てのカード", // 1.50
+            "skill" : u"特殊技能カード", // 1.50
+            "item" : u"アイテムカード", // 1.50
+            "beast" : u"召喚獣カード", // 1.50
+        };
+    }
+}
+
 //#-------------------------------------------------------------------------------
 //# Branch系コンテント
 //#-------------------------------------------------------------------------------
