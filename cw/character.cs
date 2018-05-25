@@ -1645,196 +1645,248 @@ class Character
         }
         return bonus, targets if header.allrange else maxbonustargs;//TODO
     }
-//
-//    #---------------------------------------------------------------------------
-//    #　状態取得用
-//    #---------------------------------------------------------------------------
-//
-//    def get_targetingbonus(self, mtype):
-//        """
-//        効果のターゲットとして選ばれやすくなるボーナス値を返す。
-//        現在は"Heal"タイプに対する体力減時ボーナスと
-//        "Runaway"(逃走効果に対する特殊タイプ)に対する重傷時ボーナスのみ。
-//        mtype: 効果タイプ。
-//        """
-//        bonus = 0
-//        if mtype == "Heal":
-//            per = self.get_lifeper()
-//            if 50 <= per:
-//                bonus = -1
-//            elif 33 <= per:
-//                bonus = 0
-//            elif 25 <= per:
-//                bonus = 1
-//            elif 20 <= per:
-//                bonus = 2
-//            elif 16 <= per:
-//                bonus = 3
-//            elif 14 <= per:
-//                bonus = 4
-//            elif 12 <= per:
-//                bonus = 5
-//            elif 1 <= per:
-//                bonus = 6 + (11 - per)
-//            else:
-//                bonus = 100
-//
-//        elif mtype == "Runaway":
-//            per = self.get_lifeper()
-//            if 50 <= per:
-//                bonus = 3
-//            elif 33 <= per:
-//                bonus = 4
-//            elif 25 <= per:
-//                bonus = 5
-//            elif 20 <= per:
-//                bonus = 6
-//            elif 16 <= per:
-//                bonus = 7
-//            elif 14 <= per:
-//                bonus = 8
-//            elif 12 <= per:
-//                bonus = 9
-//            else:
-//                bonus = 10 + (11 - per)
-//
-//        if cw.cwpy.battle:
-//            # すでにその行動のターゲットになっている場合はボーナスを入れず、
-//            # ターゲット回数分をペナルティとする(選択されにくくなる)
-//            targeting = 0
-//            for s, tarr, _user in cw.cwpy.battle.priorityacts:
-//                if mtype == s:
-//                    if isinstance(tarr, cw.character.Character):
-//                        if tarr == self:
-//                            targeting += 1
-//                    elif self in tarr:
-//                        targeting += 1
-//            if targeting:
-//                bonus = min(0, bonus)
-//                if mtype == "Heal":
-//                    bonus -= targeting
-//
-//        return bonus
-//
-//    def get_pocketcards(self, index):
-//        """
-//        所持しているカードを返す。
-//        index: カードの種類。
-//        """
-//        return self.cardpocket[index]
-//
-//    def get_cardpocketspace(self):
-//        """
-//        最大所持カード枚数を
-//        (スキルカード, アイテムカード, 召喚獣カード)のタプルで返す
-//        """
-//        maxskillnum = self.level / 2 + self.level % 2 + 2
-//        maxskillnum = cw.util.numwrap(maxskillnum, 1, 10)
-//        maxbeastnum = (self.level + 2) / 4
-//
-//        if (self.level + 2) % 4:
-//            maxbeastnum += 1
-//
-//        maxbeastnum = cw.util.numwrap(maxbeastnum, 1, 10)
-//        return (maxskillnum, maxskillnum, maxbeastnum)
-//
-//    @staticmethod
-//    def calc_lifeper(life, maxlife):
-//        return int(100.0 * life // maxlife + 0.5)
-//
-//    def get_lifeper(self):
-//        """
-//        ライフのパーセンテージを返す。
-//        """
-//        return Character.calc_lifeper(self.life, self.maxlife)
-//
-//    def get_bonus(self, vocation, enhance_act=True):
-//        """
-//        適性値と行動力強化値を合計した、行為判定用のボーナス値を返す。
-//        vocation: 適性データ。(身体適性名, 精神適性名)のタプル。
-//        enhance_act: 行動力修正の影響を受けるか。
-//        """
-//        value = self.get_vocation_val(vocation)
-//        if enhance_act:
-//            value += self.get_enhance_act()
-//        return value
-//
-//    def get_vocation_val(self, vocation):
-//        """
-//        適性値(身体適性値 + 精神適性値)を返す。
-//        引数のvocationは(身体適性名, 精神適性名)のタプル。
-//        """
-//        vo = vocation
-//        voc = self._voc_tbl.get(vo, None)
-//        if not voc is None:
-//            return voc
-//        vocation = (vocation[0].lower(), vocation[1].lower())
-//        physical = vocation[0]
-//        mental = vocation[1].replace("un", "", 1)
-//        physical = self.physical.get(physical)
-//        mental = self.mental.get(mental)
-//
-//        if vocation[1].find("un") > -1:
-//            mental = -mental
-//
-//        if int(mental) <> mental:
-//            if mental < 0:
-//                mental += 0.5
-//            else:
-//                mental -= 0.5
-//            mental = int(mental)
-//
-//        voc = int(physical + mental)
-//        voc = cw.util.numwrap(voc, -65536, 65536)
-//        self._voc_tbl[vo] = voc
-//        return voc
-//
-//    def _clear_vocationcache(self):
-//        """能力値のキャッシュをクリアする。"""
-//        self._voc_tbl = {}
-//
-//    def get_enhance_act(self):
-//        """
-//        行動力強化値を返す。行動力は効果コンテントによる強化値だけ。
-//        """
-//        return cw.util.numwrap(self.enhance_act, -10, 10)
-//
-//    def get_enhance_def(self):
-//        """
-//        初期・状態・カードによる防御力修正の計算結果を返す。
-//        単体で+10の修正がない場合は、合計値が+10を越えていても+9を返す。
-//        """
-//        return self._get_enhance_impl("defense", self.enhance_def, 2)
-//
-//    def get_enhance_res(self):
-//        """
-//        初期・状態・カードによる抵抗力修正の計算結果を返す。
-//        """
-//        return self._get_enhance_impl("resist", self.enhance_res, 1)
-//
-//    def get_enhance_avo(self):
-//        """
-//        初期・状態・カードによる回避力修正の計算結果を返す。
-//        """
-//        return self._get_enhance_impl("avoid", self.enhance_avo, 0)
-//
-//    def _calc_enhancevalue(self, header, value):
-//        """使用・所持ボーナス値に適性による補正を加える。
-//        BUG: CardWirthではアイテムの所持ボーナスに限り
-//              最低適性(level=0)の時に補正係数が50%となるが、
-//             それ以外の全てのパターンではそのような計算が
-//             行われないため、バグと思われる
-//        """
-//        if value <= 0:
-//            return value
-//        level = header.get_vocation_level(self, enhance_act=False)
-//        if level <= 2:
-//            value2 = cw.util.numwrap(value, -10, 10)
-//        else:
-//            value2 = cw.util.numwrap(value * 150 / 100, -10, 10)
-//
-//        return value2
-//
+
+    //---------------------------------------------------------------------------
+    //　状態取得用
+    //---------------------------------------------------------------------------
+
+    public UNK get_targetingbonus(UNK mtype)
+    {
+        // """
+        // 効果のターゲットとして選ばれやすくなるボーナス値を返す。
+        // 現在は"Heal"タイプに対する体力減時ボーナスと
+        // "Runaway"(逃走効果に対する特殊タイプ)に対する重傷時ボーナスのみ。
+        // mtype: 効果タイプ。
+        // """
+        bonus = 0;
+        if (mtype == "Heal")
+        {
+            per = this.get_lifeper();
+            if (50 <= per)
+            {
+                bonus = -1;
+            }else if (33 <= per){
+                bonus = 0;
+            }else if (25 <= per){
+                bonus = 1;
+            }else if (20 <= per){
+                bonus = 2;
+            }else if (16 <= per){
+                bonus = 3;
+            }else if (14 <= per){
+                bonus = 4;
+            }else if (12 <= per){
+                bonus = 5;
+            }else if (1 <= per){
+                bonus = 6 + (11 - per);
+            }else{
+                bonus = 100;
+            }
+        }else if (mtype == "Runaway"){
+            per = this.get_lifeper();
+            if (50 <= per)
+            {
+                bonus = 3;
+            }else if (33 <= per){
+                bonus = 4;
+            }else if (25 <= per){
+                bonus = 5;
+            }else if (20 <= per){
+                bonus = 6;
+            }else if (16 <= per){
+                bonus = 7;
+            }else if (14 <= per){
+                bonus = 8;
+            }else if (12 <= per){
+                bonus = 9;
+            }else{
+                bonus = 10 + (11 - per);
+            }
+        }
+        if (cw.cwpy.battle)
+        {
+            // すでにその行動のターゲットになっている場合はボーナスを入れず、
+            // ターゲット回数分をペナルティとする(選択されにくくなる)
+            targeting = 0;
+            foreach (s, tarr, _user in cw.cwpy.battle.priorityacts)
+            {
+                if (mtype == s)
+                {
+                    if (isinstance(tarr, cw.character.Character))
+                    {
+                        if (tarr == this) // TODO
+                        {
+                            targeting += 1;
+                        }
+                    }else if (this in tarr){ // TODO
+                        targeting += 1;
+                    }
+                }
+            }
+            if (targeting)
+            {
+                bonus = min(0, bonus);
+                if (mtype == "Heal")
+                {
+                    bonus -= targeting;
+                }
+            }
+        }
+        return bonus;
+    }
+
+    public UNK get_pocketcards(UNK index)
+    {
+        // """
+        // 所持しているカードを返す。
+        // index: カードの種類。
+        // """
+        return this.cardpocket[index];
+    }
+    public UNK get_cardpocketspace()
+    {
+        // """
+        // 最大所持カード枚数を
+        // (スキルカード, アイテムカード, 召喚獣カード)のタプルで返す
+        // """
+        maxskillnum = this.level / 2 + this.level % 2 + 2;
+        maxskillnum = cw.util.numwrap(maxskillnum, 1, 10);
+        maxbeastnum = (this.level + 2) / 4;
+
+        if ((this.level + 2) % 4)
+        {
+            maxbeastnum += 1;
+        }
+        maxbeastnum = cw.util.numwrap(maxbeastnum, 1, 10);
+        return (maxskillnum, maxskillnum, maxbeastnum);
+    }
+
+    public static int calc_lifeper(UNK life, UNK maxlife)
+    {
+        return (int)(100.0 * life / maxlife + 0.5);
+    }
+
+    public UNK get_lifeper()
+    {
+        // """
+        // ライフのパーセンテージを返す。
+        // """
+        return Character.calc_lifeper(this.life, this.maxlife);
+    }
+
+    public UNK get_bonus(UNK vocation, bool enhance_act=true)
+    {
+        // """
+        // 適性値と行動力強化値を合計した、行為判定用のボーナス値を返す。
+        // vocation: 適性データ。(身体適性名, 精神適性名)のタプル。
+        // enhance_act: 行動力修正の影響を受けるか。
+        // """
+        value = this.get_vocation_val(vocation);
+        if (enhance_act)
+        {
+            value += this.get_enhance_act();
+        return value;
+    }
+
+    public UNK get_vocation_val(UNK vocation)
+    {
+        // """
+        // 適性値(身体適性値 + 精神適性値)を返す。
+        // 引数のvocationは(身体適性名, 精神適性名)のタプル。
+        // """
+        vo = vocation;
+        voc = this._voc_tbl.get(vo, None);
+        if (not voc == null)
+        {
+            return voc;
+        }
+        vocation = (vocation[0].lower(), vocation[1].lower());
+        physical = vocation[0];
+        mental = vocation[1].replace("un", "", 1);
+        physical = this.physical.get(physical);
+        mental = this.mental.get(mental);
+
+        if (vocation[1].find("un") > -1);
+        {
+            mental = -mental;
+        }
+        if ((int)(mental) != mental);
+        {
+            if (mental < 0)
+            {
+                mental += 0.5;
+            }else{
+                mental -= 0.5;
+            }
+            mental = (int)(mental);
+        }
+        voc = (int)(physical + mental);
+        voc = cw.util.numwrap(voc, -65536, 65536);
+        this._voc_tbl[vo] = voc;
+        return voc;
+    }
+
+    public UNK _clear_vocationcache()
+    {
+        // """能力値のキャッシュをクリアする。"""
+        this._voc_tbl = {};
+    }
+
+    public UNK get_enhance_act()
+    {
+        // """
+        // 行動力強化値を返す。行動力は効果コンテントによる強化値だけ。
+        // """
+        return cw.util.numwrap(this.enhance_act, -10, 10);
+    }
+
+    public UNK get_enhance_def()
+    {
+        // """
+        // 初期・状態・カードによる防御力修正の計算結果を返す。
+        // 単体で+10の修正がない場合は、合計値が+10を越えていても+9を返す。
+        // """
+        return this._get_enhance_impl("defense", this.enhance_def, 2);
+    }
+
+    public UNK get_enhance_res()
+    {
+        // """
+        // 初期・状態・カードによる抵抗力修正の計算結果を返す。
+        // """
+        return this._get_enhance_impl("resist", this.enhance_res, 1);
+    }
+
+    public UNK get_enhance_avo()
+    {
+        // """
+        // 初期・状態・カードによる回避力修正の計算結果を返す。
+        // """
+        return this._get_enhance_impl("avoid", this.enhance_avo, 0);
+    }
+
+    public UNK _calc_enhancevalue(UNK header, UNK value)
+    {
+        // """使用・所持ボーナス値に適性による補正を加える。
+        // BUG: CardWirthではアイテムの所持ボーナスに限り
+        //       最低適性(level=0)の時に補正係数が50%となるが、
+        //      それ以外の全てのパターンではそのような計算が
+        //      行われないため、バグと思われる
+        // """
+        if (value <= 0)
+        {
+            return value;
+        }
+        level = header.get_vocation_level(UNK enhance_act=false);
+        if (level <= 2)
+        {
+            value2 = cw.util.numwrap(value, -10, 10);
+        }else{
+            value2 = cw.util.numwrap(value * 150 / 100, -10, 10);
+        }
+        return value2;
+    }
+    
 //    def _get_enhance_impl(self, name, initvalue, enhindex):
 //        """
 //        現在かけられている全ての能力修正値の合計を返す(ただし単純な加算ではない)。
