@@ -65,3 +65,15 @@ public static class F
 | ノット（ブール演算） | ```not``` | ```!```|
 | 異なる（比較演算） | ```<>``` | ```!=```|
 | nullチェック | ```if hoge is None:``` | ```if (hoge == null) {```|
+
+## 進捗
+
+| C#ファイル | 第一段階 |
+----|----|---- 
+| ./cw/battle.cs | O |
+| ./cw/character.cs | X |
+| ./cw/content.cs | X |
+| ./cw/data.cs | X |
+| ./cw/deck.cs | X |
+| ./cw/dice.cs | O |
+| ./cw/features.cs | O |
