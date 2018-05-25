@@ -69,7 +69,7 @@ public static class F
 ## 進捗
 
 | C#ファイル | 第一段階 |
-----|----|---- 
+----|----
 | ./cw/battle.cs | O |
 | ./cw/character.cs | X |
 | ./cw/content.cs | X |
