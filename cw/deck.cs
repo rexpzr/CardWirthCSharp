@@ -6,7 +6,7 @@ class Deck
     private bool _throwaway;
     private UNK? _used;
 
-    public Deck(unknown ccard)
+    public Deck(UNK ccard)
     {
         // 手札
         this.hand = new List<UNK>();

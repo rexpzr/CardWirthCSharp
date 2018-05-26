@@ -222,77 +222,79 @@ class EventContentBase
         }
     }
 
-    @property //TODO
-    public UNK textdict()
+    public Dictionary<string, string> textdict
     {
-        return {
+        get {
+            return new Dictionary<string, string>()
+            {
             // 対象範囲
-            "backpack" : u"荷物袋",
-            "partyandbackpack" : u"パーティ全体(荷物袋含む)",
-            "field" : u"フィールド全体",
-            "couponholder" : u"称号所有者", // Wsn.2
-            "cardtarget" : u"カードの使用対象", // Wsn.2
+            {"backpack", "荷物袋"},
+            {"partyandbackpack", "パーティ全体(荷物袋含む)"},
+            {"field", "フィールド全体"},
+            {"couponholder", "称号所有者"}, // Wsn.2
+            {"cardtarget", "カードの使用対象"}, // Wsn.2
             // 対象メンバ
-            "random" : u"ランダムメンバ",
-            "selected" : u"選択中メンバ",
-            "unselected" : u"選択外メンバ",
-            "inusecard" : u"使用中カード",
-            "party" : u"パーティ全体",
-            "enemy" : u"敵全体",
-            "npc" : u"同行キャスト全体",
-            "valued" : u"評価メンバ",
+            {"random", "ランダムメンバ"},
+            {"selected", "選択中メンバ"},
+            {"unselected", "選択外メンバ"},
+            {"inusecard", "使用中カード"},
+            {"party", "パーティ全体"},
+            {"enemy", "敵全体"},
+            {"npc", "同行キャスト全体"},
+            {"valued", "評価メンバ"},
             // 身体能力
-            "dex" : u"器用度",
-            "agl" : u"敏捷度",
-            "int" : u"知力",
-            "str" : u"筋力",
-            "vit" : u"生命力",
-            "min" : u"精神力",
+            {"dex", "器用度"},
+            {"agl", "敏捷度"},
+            {"int", "知力"},
+            {"str", "筋力"},
+            {"vit", "生命力"},
+            {"min", "精神力"},
             // 精神能力
-            "mental_aggressive" : u"好戦性",
-            "mental_unaggressive" : u"平和性",
-            "mental_cheerful" : u"社交性",
-            "mental_uncheerful" : u"内向性",
-            "mental_brave" : u"勇猛性",
-            "mental_unbrave" : u"臆病性",
-            "mental_cautious" : u"慎重性",
-            "mental_uncautious" : u"大胆性",
-            "mental_trickish" : u"狡猾性",
-            "mental_untrickish" : u"正直性",
+            {"mental_aggressive", "好戦性"},
+            {"mental_unaggressive", "平和性"},
+            {"mental_cheerful", "社交性"},
+            {"mental_uncheerful", "内向性"},
+            {"mental_brave", "勇猛性"},
+            {"mental_unbrave", "臆病性"},
+            {"mental_cautious", "慎重性"},
+            {"mental_uncautious", "大胆性"},
+            {"mental_trickish", "狡猾性"},
+            {"mental_untrickish", "正直性"},
             // ステータス
-            "active" : u"行動可能",
-            "inactive" : u"行動不可",
-            "alive" : u"生存",
-            "dead" : u"非生存",
-            "fine" : u"健康",
-            "injured" : u"負傷",
-            "heavyinjured" : u"重傷",
-            "unconscious" : u"意識不明",
-            "poison" : u"中毒",
-            "sleep" : u"眠り",
-            "bind" : u"呪縛",
-            "paralyze" : u"麻痺／石化",
-            "confuse" : u"混乱", // 1.30
-            "overheat" : u"激昂", // 1.30
-            "brave" : u"勇敢", // 1.30
-            "panic" : u"恐慌", // 1.30
-            "silence" : u"沈黙", // 1.50
-            "faceup" : u"暴露", // 1.50
-            "antimagic" : u"魔法無効化", // 1.50
-            "upaction" : u"行動力上昇", // 1.50
-            "upavoid" : u"回避力上昇", // 1.50
-            "upresist" : u"抵抗力上昇", // 1.50
-            "updefense" : u"防御力上昇", // 1.50
-            "downaction" : u"行動力低下", // 1.50
-            "downavoid" : u"回避力低下", // 1.50
-            "downresist" : u"抵抗力低下", // 1.50
-            "downdefense" : u"防御力低下", // 1.50
+            {"active", "行動可能"},
+            {"inactive", "行動不可"},
+            {"alive", "生存"},
+            {"dead", "非生存"},
+            {"fine", "健康"},
+            {"injured", "負傷"},
+            {"heavyinjured", "重傷"},
+            {"unconscious", "意識不明"},
+            {"poison", "中毒"},
+            {"sleep", "眠り"},
+            {"bind", "呪縛"},
+            {"paralyze", "麻痺／石化"},
+            {"confuse", "混乱"}, // 1.30
+            {"overheat", "激昂"}, // 1.30
+            {"brave", "勇敢"}, // 1.30
+            {"panic", "恐慌"}, // 1.30
+            {"silence", "沈黙"}, // 1.50
+            {"faceup", "暴露"}, // 1.50
+            {"antimagic", "魔法無効化"}, // 1.50
+            {"upaction", "行動力上昇"}, // 1.50
+            {"upavoid", "回避力上昇"}, // 1.50
+            {"upresist", "抵抗力上昇"}, // 1.50
+            {"updefense", "防御力上昇"}, // 1.50
+            {"downaction", "行動力低下"}, // 1.50
+            {"downavoid", "回避力低下"}, // 1.50
+            {"downresist", "抵抗力低下"}, // 1.50
+            {"downdefense", "防御力低下"}, // 1.50
             // カード種別
-            "all" : u"全てのカード", // 1.50
-            "skill" : u"特殊技能カード", // 1.50
-            "item" : u"アイテムカード", // 1.50
-            "beast" : u"召喚獣カード", // 1.50
-        };
+            {"all", "全てのカード"}, // 1.50
+            {"skill", "特殊技能カード"}, // 1.50
+            {"item", "アイテムカード"}, // 1.50
+            {"beast", "召喚獣カード"} // 1.50
+            };
+        }
     }
 }
 
