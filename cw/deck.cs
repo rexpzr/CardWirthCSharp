@@ -186,32 +186,41 @@ class Deck
 //
 //        self._update_skillpower(ccard)
 //
-//    def lose_skillpower(self, ccard, losevalue):
-//        # 現在handにある分は除去しなくてよい
-//        talon = []
-//        skilltable = {}
-//
-//        def remove_skill(header, seq):
-//            if header.type == "SkillCard":
-//                orig = header.ref_original()
-//                removecount = skilltable.get(orig, 0)
-//                if removecount < losevalue:
-//                    skilltable[orig] = removecount + 1
-//                    return
-//            seq.append(header)
-//
-//        for header in self.talon:
-//            remove_skill(header, talon)
-//        self.talon = talon
-//        self.shuffle()
-//        if self._throwaway:
-//            # 手札喪失が予約されている場合に限りhandからも除去
-//            hand = []
-//            for header in self.hand:
-//                remove_skill(header, hand)
-//            self.hand = hand
-//
-//        self._update_skillpower(ccard)
+
+    private void lose_skillpower__remove_skill(Dictionary<UNK, int> skilltable, UNK losevalue, UNK header, UNK seq) {
+        if (header.type == "SkillCard") {
+            UNK orig = header.ref_original();
+            int removecount = skilltable.get(orig, 0);
+            if (removecount < losevalue) {
+              skilltable[orig] = removecount + 1;
+              return;
+            }
+        }
+        seq.append(header);
+    }
+
+    public void lose_skillpower(UNK ccard, UNK losevalue)
+    {
+        // 現在handにある分は除去しなくてよい
+        var talon = new List<UNK>();
+        var skilltable = new Dictionary<UNK, int>();
+
+        foreach (var header in this.talon) {
+            lose_skillpower__remove_skill(skilltable, losevalue, header, talon);
+        }
+        this.talon = talon;
+        this.shuffle();
+        if (self._throwaway) {
+            // 手札喪失が予約されている場合に限りhandからも除去
+            var hand = new List<UNK>();
+            foreach (var header in self.hand) {
+                lose_skillpower__remove_skill(skilltable, losevalue, header, hand);
+            }
+            this.hand = hand;
+        }
+
+        this._update_skillpower(ccard);
+    }
 //
 //    def _update_skillpower(self, ccard):
 //        # 手札と山札にある数によってスキルカードの使用回数を更新する
