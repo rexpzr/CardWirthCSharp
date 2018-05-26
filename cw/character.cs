@@ -256,110 +256,160 @@ class Character
         return cw.image.get_imageinfos(data);
     }
 
-//    def set_images(self, paths):
-//        """このキャラクターのカード画像を
-//        cw.image.ImageInfoのlistで指定した内容に差し替える。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        etree = None
-//        eimg = None
-//        infos = self.get_imagepaths()
-//        can_loaded_scaledimage = self.data.getattr(".", "scaledimage", False)
-//        if infos:
-//            if cw.cwpy.is_playingscenario():
-//                # メッセージログのイメージが変化しないように
-//                # ファイル上書き前に読み込んでおく
-//                for info in infos:
-//                    if not info.path:
-//                        continue
-//                    fpath = info.path
-//                    fname = os.path.basename(fpath)
-//                    fpath2 = cw.util.join_yadodir(fpath)
-//                    if os.path.isfile(fpath2):
-//                        cw.sprite.message.store_messagelogimage(fpath2, can_loaded_scaledimage)
-//
-//                # F9のためにシナリオ突入時の画像の記録を取る
-//                name = os.path.splitext(os.path.basename(self.data.fpath))[0]
-//                log = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Face/Log.xml")
-//                if os.path.isfile(log):
-//                    etree = cw.data.xml2etree(log)
-//                else:
-//                    e = cw.data.make_element("FaceLog", "")
-//                    etree = cw.data.xml2etree(element=e)
-//                    etree.fpath = log
-//                for e in etree.getfind(".", raiseerror=False):
-//                    member = e.getattr(".", "member")
-//                    if member == name:
-//                        # すでに記録済み
-//                        eimg = e
-//                        break
-//                else:
-//                    e = cw.data.make_element("ImagePaths", u"", {"member":name})
-//                    eimg = e
-//                    dpath = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Face")
-//                    for info in infos:
-//                        if not info.path:
-//                            continue
-//                        fpath = info.path
-//                        fname = os.path.basename(fpath)
-//                        fpath2 = cw.util.join_yadodir(fpath)
-//                        if os.path.isfile(fpath2):
-//                            fpath = cw.util.join_paths(dpath, fname)
-//                            fpath = cw.util.dupcheck_plus(fpath, yado=False)
-//                            if not os.path.isdir(dpath):
-//                                os.makedirs(dpath)
-//                            cw.util.copy_scaledimagepaths(fpath2, fpath, can_loaded_scaledimage)
-//                            e2 = cw.data.make_element("ImagePath", os.path.basename(fpath))
-//                            info.set_attr(e2)
-//                            e.append(e2)
-//
-//                    etree.getroot().append(e)
-//
-//            for info in infos:
-//                if not info.path:
-//                    continue
-//                fpath = cw.util.join_yadodir(info.path)
-//                for fpath, _scale in cw.util.get_scaledimagepaths(fpath, can_loaded_scaledimage):
-//                    cw.cwpy.ydata.deletedpaths.add(fpath, forceyado=True)
-//
-//        if not eimg is None:
-//            # 複数回変更された時は変更後ファイル情報を
-//            # 都度最新に更新しておく
-//            for e in list(eimg):
-//                if e.tag == "NewImagePath":
-//                    eimg.remove(e)
-//
-//        # 新しいファイル群をコピー
-//        newpaths = cw.xmlcreater.write_castimagepath(self.get_name(), paths, True)
-//        prop = self.data.find("Property")
-//        for ename in ("ImagePath", "ImagePaths"):
-//            e = prop.find(ename)
-//            if not e is None:
-//                prop.remove(e)
-//        # コピー後のファイルパスを設定
-//        e = cw.data.make_element("ImagePaths", "")
-//        prop.append(e)
-//        for info in newpaths:
-//            if info.path:
-//                e2 = cw.data.make_element("ImagePath", info.path)
-//                info.set_attr(e2)
-//                e.append(e2)
-//
-//                if not eimg is None:
-//                    # F9時に変更後のイメージを削除するため、記録しておく
-//                    eimg.append(cw.data.make_element("NewImagePath", info.path))
-//
-//        # 外部から設定したイメージは常にスケーリング可能とする
-//        self.data.edit(".", str(True), "scaledimage")
-//
-//        self.data.is_edited = True
-//
-//        if not etree is None:
-//            etree.write()
-//
-//        return newpaths
-//
+    public UNK set_images(UNK paths)
+    {
+        // """このキャラクターのカード画像を
+        // cw.image.ImageInfoのlistで指定した内容に差し替える。
+        // """
+        if (cw.cwpy.ydata)
+        {
+            cw.cwpy.ydata.changed();
+        }
+        etree = null;
+        eimg = null;
+        infos = this.get_imagepaths();
+        can_loaded_scaledimage = this.data.getattr(".", "scaledimage", false);
+        if (infos)
+        {
+            if (cw.cwpy.is_playingscenario())
+            {
+                // メッセージログのイメージが変化しないように
+                // ファイル上書き前に読み込んでおく
+                foreach (var info in infos)
+                {
+                    if (!info.path)
+                    {
+                        continue;
+                    }
+                    fpath = info.path;
+                    fname = os.path.basename(fpath);
+                    fpath2 = cw.util.join_yadodir(fpath);
+                    if (os.path.isfile(fpath2));
+                    {
+                        cw.sprite.message.store_messagelogimage(fpath2, can_loaded_scaledimage);
+                    }
+                }
+                // F9のためにシナリオ突入時の画像の記録を取る
+                name = os.path.splitext(os.path.basename(this.data.fpath))[0];
+                log = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Face/Log.xml");
+                if (os.path.isfile(log));
+                {
+                    etree = cw.data.xml2etree(log);
+                }else{
+                    e = cw.data.make_element("FaceLog", "");
+                    etree = cw.data.xml2etree(element=e);
+                    etree.fpath = log;
+                }
+                foreach (var e in etree.getfind(".", raiseerror=false))
+                {
+                    member = e.getattr(".", "member");
+                    if (member == name)
+                    {
+                        // すでに記録済み
+                        eimg = e;
+                        break;
+                    }
+                }else{ // TODO
+                    e = cw.data.make_element("ImagePaths", u"", {"member":name});
+                    eimg = e;
+                    dpath = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Face");
+                    foreach (var info in infos)
+                    {
+                        if (!info.path)
+                        {
+                            continue;
+                        }
+                        fpath = info.path;
+                        fname = os.path.basename(fpath);
+                        fpath2 = cw.util.join_yadodir(fpath);
+                        if (os.path.isfile(fpath2))
+                        {
+                            fpath = cw.util.join_paths(dpath, fname);
+                            fpath = cw.util.dupcheck_plus(fpath, yado=false);
+                            if (!os.path.isdir(dpath))
+                            {
+                                os.makedirs(dpath);
+                            }
+                            cw.util.copy_scaledimagepaths(fpath2, fpath, can_loaded_scaledimage);
+                            e2 = cw.data.make_element("ImagePath", os.path.basename(fpath));
+                            info.set_attr(e2);
+                            e.append(e2);
+                        }
+                    }
+
+                    etree.getroot().append(e);
+                }
+            }
+
+            foreach (var info in infos)
+            {
+                if (!info.path)
+                {
+                    continue;
+                }
+                fpath = cw.util.join_yadodir(info.path);
+                foreach (var fpath, _scale in cw.util.get_scaledimagepaths(fpath, can_loaded_scaledimage))
+                {
+                    cw.cwpy.ydata.deletedpaths.add(fpath, forceyado=true);
+                }
+            }
+        }
+        if (!eimg == null)
+        {
+            // 複数回変更された時は変更後ファイル情報を
+            // 都度最新に更新しておく
+            foreach (var e in list(eimg))
+            {
+                if (e.tag == "NewImagePath")
+                {
+                    eimg.remove(e);
+                }
+            }
+        }
+
+        // 新しいファイル群をコピー
+        newpaths = cw.xmlcreater.write_castimagepath(this.get_name(), paths, true);
+        prop = this.data.find("Property");
+        foreach (var ename in ("ImagePath", "ImagePaths"))
+        {
+            e = prop.find(ename);
+            if (!e == null)
+            {
+                prop.remove(e);
+            }
+        }
+        // コピー後のファイルパスを設定
+        e = cw.data.make_element("ImagePaths", "");
+        prop.append(e);
+        foreach (var info in newpaths)
+        {
+            if (info.path)
+            {
+                e2 = cw.data.make_element("ImagePath", info.path);
+                info.set_attr(e2);
+                e.append(e2);
+
+                if (!eimg == null)
+                {
+                    // F9時に変更後のイメージを削除するため、記録しておく
+                    eimg.append(cw.data.make_element("NewImagePath", info.path));
+                }
+            }
+        }
+
+        // 外部から設定したイメージは常にスケーリング可能とする
+        this.data.edit(".", (string)(True), "scaledimage"); // TODO
+
+        this.data.is_edited = true;
+
+        if (!etree == null)
+        {
+            etree.write();
+        }
+
+        return newpaths;
+    }
+    
     public string get_name()
     {       
         return this.data.gettext("Property/Name", "");
@@ -1046,141 +1096,178 @@ class Character
             return true;
         }
      }
-//
-//    #---------------------------------------------------------------------------
-//    #　カード操作
-//    #---------------------------------------------------------------------------
-//
-//    def use_card(self, targets, header):
-//        """targetsにカードを使用する。"""
-//        cw.cwpy.advlog.use_card(self, header, targets)
-//
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        if not isinstance(targets, list):
-//            targets = [targets]
-//
-//        data = header.carddata
-//        # 他の使用中カード削除
-//        cw.cwpy.clear_inusecardimg()
-//        # TargetArrow削除
-//        cw.cwpy.clear_targetarrow()
-//        # 効果音ファイルのパスを取得
-//        soundpath = data.gettext("Property/SoundPath", "")
-//        volume = data.getint("Property/SoundPath", "volume", 100)
-//        loopcount = data.getint("Property/SoundPath", "loopcount", 1)
-//        channel = data.getint("Property/SoundPath", "channel", 0)
-//        fade = data.getint("Property/SoundPath", "fadein", 0)
-//
-//        # 使用アニメーション
-//        cw.cwpy.event.in_inusecardevent = True
-//        removeafter = False
-//        battlespeed = cw.cwpy.is_battlestatus()
-//        if header.type == "BeastCard":
-//            cw.cwpy.set_inusecardimg(self, header, "hidden", center=True)
-//            inusecardimg = cw.cwpy.get_inusecardimg()
-//            cw.animation.animate_sprite(inusecardimg, "deal", battlespeed=battlespeed)
-//            # 効果音を鳴らす
-//            cw.cwpy.play_sound_with(soundpath, header, subvolume=volume, loopcount=loopcount, channel=channel, fade=fade)
-//
-//            if cw.cwpy.setting.enlarge_beastcardzoomingratio:
-//                cw.animation.animate_sprite(inusecardimg, "zoomin_slow", battlespeed=battlespeed)
-//            else:
-//                inusecardimg.zoomsize_noscale = (16, 22)
-//                cw.animation.animate_sprite(inusecardimg, "zoomin", battlespeed=battlespeed)
-//
-//            if cw.cwpy.setting.wait_usecard:
-//                waitrate = cw.cwpy.setting.get_dealspeed(cw.cwpy.is_battlestatus())*2+1
-//                cw.cwpy.wait_frame(waitrate, cw.cwpy.setting.can_skipanimation)
-//            else:
-//                waitrate = cw.cwpy.setting.get_dealspeed(cw.cwpy.is_battlestatus())+1
-//                cw.cwpy.wait_frame(waitrate, cw.cwpy.setting.can_skipanimation)
-//
-//            if cw.cwpy.setting.enlarge_beastcardzoomingratio:
-//                cw.animation.animate_sprite(inusecardimg, "zoomout_slow", battlespeed=battlespeed)
-//            else:
-//                cw.animation.animate_sprite(inusecardimg, "zoomout", battlespeed=battlespeed)
-//
-//            cw.animation.animate_sprite(inusecardimg, "hide", battlespeed=battlespeed)
-//        elif isinstance(self, cw.character.Friend):
-//            self.set_pos_noscale(center_noscale=(316, 142))
-//            # NPC表示
-//            cw.cwpy.cardgrp.add(self, layer=self.layer)
-//            cw.animation.animate_sprite(self, "deal", battlespeed=battlespeed)
-//            # 表示中に効果音を鳴らす
-//            cw.cwpy.play_sound_with(soundpath, header, subvolume=volume, loopcount=loopcount, channel=channel, fade=fade)
-//            cw.animation.animate_sprite(self, "zoomin", battlespeed=battlespeed)
-//            # カード表示
-//            inusecardimg = cw.cwpy.set_inusecardimg(self, header, center=True)
-//            cw.cwpy.draw(clip=inusecardimg.rect)
-//            if cw.cwpy.setting.wait_usecard:
-//                waitrate = cw.cwpy.setting.get_dealspeed(cw.cwpy.is_battlestatus())*2+1
-//                cw.cwpy.wait_frame(waitrate, cw.cwpy.setting.can_skipanimation)
-//            else:
-//                waitrate = cw.cwpy.setting.get_dealspeed(cw.cwpy.is_battlestatus())+1
-//                cw.cwpy.wait_frame(waitrate, cw.cwpy.setting.can_skipanimation)
-//            # カード消去
-//            cw.cwpy.clear_inusecardimg(self)
-//            # 自分が対象の時でなければNPC消去
-//            if not self in targets:
-//                cw.animation.animate_sprite(self, "zoomout", battlespeed=battlespeed)
-//                cw.animation.animate_sprite(self, "hide", battlespeed=battlespeed)
-//                cw.cwpy.cardgrp.remove(self)
-//            else:
-//                removeafter = True
-//        else:
-//            cw.cwpy.set_inusecardimg(self, header)
-//            # 効果音を鳴らす
-//            cw.cwpy.play_sound_with(soundpath, header, subvolume=volume, loopcount=loopcount, channel=channel, fade=fade)
-//            cw.animation.animate_sprite(self, "zoomin", battlespeed=battlespeed)
-//            if cw.cwpy.setting.wait_usecard:
-//                waitrate = cw.cwpy.setting.get_dealspeed(cw.cwpy.is_battlestatus())
-//                cw.cwpy.wait_frame(waitrate, cw.cwpy.setting.can_skipanimation)
-//
-//        # 宿へ取り込んだ特殊文字の使用時イベントでの表示に備える
-//        specialchars = cw.cwpy.rsrc.specialchars
-//        specialchars_is_changed = cw.cwpy.rsrc.specialchars_is_changed
-//        e_mates = header.carddata.find("Property/Materials")
-//        can_loaded_scaledimage = header.carddata.getbool(".", "scaledimage", False)
-//        if cw.cwpy.is_playingscenario() and not e_mates is None:
-//            specialchars = specialchars.copy()
-//            dpath = cw.util.join_yadodir(e_mates.text)
-//            if os.path.isdir(dpath):
-//                for fname in os.listdir(dpath):
-//                    cw.cwpy.sdata.eat_spchar(dpath, fname, can_loaded_scaledimage)
-//
-//        try:
-//            # カードイベント開始
-//            e = data.find("Events/Event")
-//            cw.event.CardEvent(e, header, self, targets).start()
-//        finally:
-//            if removeafter:
-//                # NPC消去
-//                battlespeed = cw.cwpy.is_battlestatus()
-//                cw.animation.animate_sprite(self, "hide", battlespeed=battlespeed)
-//                cw.cwpy.cardgrp.remove(self)
-//            # 特殊文字を元に戻す
-//            cw.cwpy.rsrc.specialchars = specialchars
-//            cw.cwpy.rsrc.specialchars_is_changed = specialchars_is_changed
-//
-//    def throwaway_card(self, header, from_event=True, update_image=True):
-//        """
-//        引数のheaderのカードを破棄処理する。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.trade("TRASHBOX", header=header, from_event=from_event, update_image=update_image)
-//        else:
-//            if header.type == "SkillCard":
-//                index = 0
-//            elif header.type == "ItemCard" :
-//                index = 1
-//            elif header.type == "BeastCard":
-//                index = 2
-//            self.cardpocket[index].remove(header)
-//
-//    #---------------------------------------------------------------------------
-//    #　戦闘行動関係
-//    #---------------------------------------------------------------------------
+
+    //---------------------------------------------------------------------------
+    //　カード操作
+    //---------------------------------------------------------------------------
+
+    public UNK use_card(UNK targets, UNK header)
+    {
+        // """targetsにカードを使用する。"""
+        cw.cwpy.advlog.use_card(this, header, targets);
+
+        if (cw.cwpy.ydata)
+        {
+            cw.cwpy.ydata.changed();
+        }
+        if (!isinstance(targets, list))
+        {
+            targets = [targets];
+        }
+
+        data = header.carddata;
+        // 他の使用中カード削除
+        cw.cwpy.clear_inusecardimg();
+        // TargetArrow削除
+        cw.cwpy.clear_targetarrow();
+        // 効果音ファイルのパスを取得
+        soundpath = data.gettext("Property/SoundPath", "");
+        volume = data.getint("Property/SoundPath", "volume", 100);
+        loopcount = data.getint("Property/SoundPath", "loopcount", 1);
+        channel = data.getint("Property/SoundPath", "channel", 0);
+        fade = data.getint("Property/SoundPath", "fadein", 0);
+
+        // 使用アニメーション
+        cw.cwpy.event.in_inusecardevent = true;
+        removeafter = false;
+        battlespeed = cw.cwpy.is_battlestatus();
+        if (header.type == "BeastCard")
+        {
+            cw.cwpy.set_inusecardimg(this, header, "hidden", center=true);
+            inusecardimg = cw.cwpy.get_inusecardimg();
+            cw.animation.animate_sprite(inusecardimg, "deal", battlespeed=battlespeed);
+            // 効果音を鳴らす
+            cw.cwpy.play_sound_with(soundpath, header, subvolume=volume, loopcount=loopcount, channel=channel, fade=fade);
+
+            if (cw.cwpy.setting.enlarge_beastcardzoomingratio)
+            {
+                cw.animation.animate_sprite(inusecardimg, "zoomin_slow", battlespeed=battlespeed);
+            }else{
+                inusecardimg.zoomsize_noscale = (16, 22);
+                cw.animation.animate_sprite(inusecardimg, "zoomin", battlespeed=battlespeed);
+            }
+
+            if (cw.cwpy.setting.wait_usecard)
+            {
+                waitrate = cw.cwpy.setting.get_dealspeed(cw.cwpy.is_battlestatus())*2+1;
+                cw.cwpy.wait_frame(waitrate, cw.cwpy.setting.can_skipanimation);
+            }else{
+                waitrate = cw.cwpy.setting.get_dealspeed(cw.cwpy.is_battlestatus())+1;
+                cw.cwpy.wait_frame(waitrate, cw.cwpy.setting.can_skipanimation);
+            }
+
+            if (cw.cwpy.setting.enlarge_beastcardzoomingratio)
+            {
+                cw.animation.animate_sprite(inusecardimg, "zoomout_slow", battlespeed=battlespeed);
+            }else{
+                cw.animation.animate_sprite(inusecardimg, "zoomout", battlespeed=battlespeed);
+            }
+
+            cw.animation.animate_sprite(inusecardimg, "hide", battlespeed=battlespeed);
+        }else if (isinstance(this, cw.character.Friend)){
+            this.set_pos_noscale(center_noscale=(316, 142));
+            // NPC表示
+            cw.cwpy.cardgrp.add(this, layer=this.layer);
+            cw.animation.animate_sprite(this, "deal", battlespeed=battlespeed);
+            // 表示中に効果音を鳴らす
+            cw.cwpy.play_sound_with(soundpath, header, subvolume=volume, loopcount=loopcount, channel=channel, fade=fade);
+            cw.animation.animate_sprite(this, "zoomin", battlespeed=battlespeed);
+            // カード表示
+            inusecardimg = cw.cwpy.set_inusecardimg(this, header, center=true);
+            cw.cwpy.draw(clip=inusecardimg.rect);
+            if (cw.cwpy.setting.wait_usecard)
+            {
+                waitrate = cw.cwpy.setting.get_dealspeed(cw.cwpy.is_battlestatus())*2+1;
+                cw.cwpy.wait_frame(waitrate, cw.cwpy.setting.can_skipanimation);
+            }else{
+                waitrate = cw.cwpy.setting.get_dealspeed(cw.cwpy.is_battlestatus())+1;
+                cw.cwpy.wait_frame(waitrate, cw.cwpy.setting.can_skipanimation);
+            }
+            // カード消去
+            cw.cwpy.clear_inusecardimg(this);
+            // 自分が対象の時でなければNPC消去
+            if (!this in targets)
+            {
+                cw.animation.animate_sprite(this, "zoomout", battlespeed=battlespeed);
+                cw.animation.animate_sprite(this, "hide", battlespeed=battlespeed);
+                cw.cwpy.cardgrp.remove(this);
+            }else{
+                removeafter = true;
+            }
+        }else{
+            cw.cwpy.set_inusecardimg(this, header);
+            // 効果音を鳴らす
+            cw.cwpy.play_sound_with(soundpath, header, subvolume=volume, loopcount=loopcount, channel=channel, fade=fade);
+            cw.animation.animate_sprite(this, "zoomin", battlespeed=battlespeed);
+            if (cw.cwpy.setting.wait_usecard)
+            {
+                waitrate = cw.cwpy.setting.get_dealspeed(cw.cwpy.is_battlestatus());
+                cw.cwpy.wait_frame(waitrate, cw.cwpy.setting.can_skipanimation);
+            }
+        }
+
+        // 宿へ取り込んだ特殊文字の使用時イベントでの表示に備える
+        specialchars = cw.cwpy.rsrc.specialchars;
+        specialchars_is_changed = cw.cwpy.rsrc.specialchars_is_changed;
+        e_mates = header.carddata.find("Property/Materials");
+        can_loaded_scaledimage = header.carddata.getbool(".", "scaledimage", false);
+        if (cw.cwpy.is_playingscenario() && !e_mates == null)
+        {
+            specialchars = specialchars.copy();
+            dpath = cw.util.join_yadodir(e_mates.text);
+            if (os.path.isdir(dpath))
+            {
+                foreach (var fname in os.listdir(dpath))
+                {
+                    cw.cwpy.sdata.eat_spchar(dpath, fname, can_loaded_scaledimage);
+                }
+            }
+        }
+        try
+        {
+            // カードイベント開始
+            e = data.find("Events/Event");
+            cw.event.CardEvent(e, header, this, targets).start();
+        }
+        finally
+        {
+            if (removeafter)
+            {
+                // NPC消去
+                battlespeed = cw.cwpy.is_battlestatus();
+                cw.animation.animate_sprite(this, "hide", battlespeed=battlespeed);
+                cw.cwpy.cardgrp.remove(this);
+            }
+            // 特殊文字を元に戻す
+            cw.cwpy.rsrc.specialchars = specialchars;
+            cw.cwpy.rsrc.specialchars_is_changed = specialchars_is_changed;
+        }
+    }
+    
+    public UNK throwaway_card(UNK header, bool from_event=true, bool update_image=true)
+    {
+        // """
+        // 引数のheaderのカードを破棄処理する。
+        // """
+        if (cw.cwpy.ydata)
+        {
+            cw.cwpy.trade("TRASHBOX", header=header, from_event=from_event, update_image=update_image);
+        }else{
+            if (header.type == "SkillCard")
+            {
+                index = 0;
+            }else if (header.type == "ItemCard" ){
+                index = 1;
+            }else if (header.type == "BeastCard"){
+                index = 2;
+            this.cardpocket[index].remove(header);
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------
+    //　戦闘行動関係
+    //---------------------------------------------------------------------------
 
     public UNK action()
     {
