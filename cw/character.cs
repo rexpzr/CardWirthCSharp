@@ -300,6 +300,7 @@ class Character
                     etree = cw.data.xml2etree(element=e);
                     etree.fpath = log;
                 }
+                bool _for_else = true;
                 foreach (var e in etree.getfind(".", raiseerror=false))
                 {
                     member = e.getattr(".", "member");
@@ -307,9 +308,11 @@ class Character
                     {
                         // すでに記録済み
                         eimg = e;
+                        _for_else = false;
                         break;
                     }
-                }else{ // TODO
+                }
+                if (_for_else) {
                     e = cw.data.make_element("ImagePaths", u"", {"member":name});
                     eimg = e;
                     dpath = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Face");
@@ -3165,10 +3168,10 @@ class Character
         return len(this.get_pocketcards(idx)) < this.get_cardpocketspace()[idx];
     }
 
-    public UNK decrease_physical(stype, time);
+    public UNK decrease_physical(UNK stype, UNK time);
     {
         // """中毒麻痺の時間経過による軽減。""";
-        for _t in xrange(time)  // TODO
+        for (int _t=0; _t<time; _t++)
         {
             uvalue = cw.util.div_vocation(this.get_vocation_val(("vit", "aggressive"))) + this.level + cw.cwpy.dice.roll(2);
             if (stype == "Poison") {
