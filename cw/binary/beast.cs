@@ -1,21 +1,10 @@
-//!/usr/bin/env python
-// -*- coding: utf-8 -*-
-
-import base;
-import effectmotion;
-import event;
-
-import cw;
-
-
-class BeastCard(base.CWBinaryBase):
-    """召喚獣カードのデータ。;
-    silence: 沈黙時使用不可(真偽値);
-    target_all: 全体攻撃か否か(真偽値);
-    limit: 使用回数;
-    """;
-    public UNK __init__(parent, f, yadodata=false, nameonly=false, materialdir="Material", image_export=true, summoneffect=false) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata, materialdir, image_export);
+class BeastCard : base.CWBinaryBase {
+    // """召喚獣カードのデータ。;
+    // silence: 沈黙時使用不可(真偽値);
+    // target_all: 全体攻撃か否か(真偽値);
+    // limit: 使用回数;
+    // """;
+    public BeastCard(parent, UNK f, bool yadodata=false, bool nameonly=false, string materialdir="Material", bool image_export=true, bool summoneffect=false) : base(parent, f, yadodata, materialdir, image_export) {
         this.summoneffect = summoneffect;
         this.type = f.byte();
         this.image = f.image();
@@ -35,12 +24,15 @@ class BeastCard(base.CWBinaryBase):
         } else {
             dataversion = 5;
             this.id = idl - 50000;
+        }
 
         if (nameonly) {
             return;
+        }
 
         if (5 <= dataversion) {
             this.fname = this.get_fname();
+        }
 
         this.description = f.string(true);
         this.p_ability = f.dword();
@@ -53,14 +45,13 @@ class BeastCard(base.CWBinaryBase):
         this.success_rate = f.dword();
         this.visual_effect = f.byte();
         motions_num = f.dword();
-        this.motions = [effectmotion.EffectMotion(self, f, dataversion=dataversion);
-                                          for _cnt in xrange(motions_num)];
+        this.motions = [effectmotion.EffectMotion(self, f, dataversion=dataversion) for _cnt in xrange(motions_num)]; // TODO
         this.enhance_avoid = f.dword();
         this.enhance_resist = f.dword();
         this.enhance_defense = f.dword();
         this.sound_effect = f.string();
         this.sound_effect2 = f.string();
-        this.keycodes = [f.string() for _cnt in xrange(5)];
+        this.keycodes = [f.string() for _cnt in xrange(5)]; // TODO
         if (2 < dataversion) {
             this.premium = f.byte();
             this.scenario_name = f.string();
@@ -77,10 +68,13 @@ class BeastCard(base.CWBinaryBase):
                 this.premium = f.byte();
             } else {
                 this.premium = 0;
+            }
+        }
 
         // 宿データだとここに不明なデータ(4)が付加されている
         if (5 <= dataversion) {
             f.dword();
+        }
 
         this.limit = f.dword();
 
@@ -97,19 +91,25 @@ class BeastCard(base.CWBinaryBase):
             } else {
                 // カード置場・荷物袋
                 this.attachment = false;
+            }
+        }
 
         this.data = null;
+    }
 
     public UNK get_data() {
         if (this.data == null) {
             if (2 < this.premium) {
                 // シナリオで入手したカード
                 this.set_image_export(false, true);
+            }
             if (!this.imgpath) {
                 if (this.image) {
                     this.imgpath = this.export_image();
                 } else {
                     this.imgpath = "";
+                }
+            }
             this.data = cw.data.make_element("BeastCard");
             prop = cw.data.make_element("Property");
             e = cw.data.make_element("Id", str(this.id));
@@ -156,6 +156,7 @@ class BeastCard(base.CWBinaryBase):
                 e = cw.data.make_element("Premium", this.conv_card_premium(this.premium - 3));
             } else {
                 e = cw.data.make_element("Premium", this.conv_card_premium(this.premium));
+            }
             prop.append(e);
             e = cw.data.make_element("UseLimit", str(this.limit));
             prop.append(e);
@@ -163,19 +164,23 @@ class BeastCard(base.CWBinaryBase):
                 // 付帯召喚はboolの値が逆
                 e = cw.data.make_element("Attachment", str(!this.attachment));
                 prop.append(e);
+            }
             this.data.append(prop);
             e = cw.data.make_element("Motions");
             foreach (var motion in this.motions) {
                 e.append(motion.get_data());
+            }
             this.data.append(e);
             e = cw.data.make_element("Events");
             foreach (var event in this.events) {
                 e.append(event.get_data());
+            }
             this.data.append(e);
+        }
         return this.data;
+    }
 
-    @staticmethod;
-    def unconv(f, data, ownerisadventurer):
+    public static UNK unconv(UNK f, UNK data, UNK ownerisadventurer) {
         restype = 0;
         image = null;
         name = "";
@@ -258,13 +263,19 @@ class BeastCard(base.CWBinaryBase):
                                         break;
                                     } else {
                                         keycodes2.append(keycode);
+                                    }
+                                }
+                            }
                             keycodes = keycodes2;
+                        }
                         if (len(keycodes) < 5) {
-                            keycodes.extend([""] * (5 - len(keycodes)));
+                            keycodes.extend([""] * (5 - len(keycodes))); // TODO
+                        }
                     } else if (prop.tag == "Premium") {
                         premium = base.CWBinaryBase.unconv_card_premium(prop.text);
                         if (ownerisadventurer && scenariocard) {
                             premium += 3;
+                        }
                     } else if (prop.tag == "UseLimit") {
                         limit = int(prop.text);
                     } else if (prop.tag == "Hold") {
@@ -274,10 +285,15 @@ class BeastCard(base.CWBinaryBase):
                     } else if (prop.tag == "LinkId") {
                         if (prop.text && prop.text != "0") {
                             f.check_wsnversion("1");
+                        }
+                    }
+                }
             } else if (e.tag == "Motions") {
                 motions = e;
             } else if (e.tag == "Events") {
                 events = e;
+            }
+        }
 
         f.write_byte(restype);
         f.write_image(image);
@@ -296,6 +312,7 @@ class BeastCard(base.CWBinaryBase):
         f.write_dword(len(motions));
         foreach (var motion in motions) {
             effectmotion.EffectMotion.unconv(f, motion);
+        }
         f.write_dword(enhance_avoid);
         f.write_dword(enhance_resist);
         f.write_dword(enhance_defense);
@@ -303,12 +320,14 @@ class BeastCard(base.CWBinaryBase):
         f.write_string(sound_effect2);
         foreach (var keycode in keycodes) {
             f.write_string(keycode);
+        }
         f.write_byte(premium);
         f.write_string(scenario_name);
         f.write_string(scenario_author);
         f.write_dword(len(events));
         foreach (var evt in events) {
             event.SimpleEvent.unconv(f, evt);
+        }
         f.write_bool(hold);
 
         // 宿データだとここに不明なデータ(4)が付加されている
@@ -317,9 +336,5 @@ class BeastCard(base.CWBinaryBase):
         f.write_dword(limit);
         // 付帯召喚はboolの値が逆
         f.write_bool(!attachment);
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+    }
+}
