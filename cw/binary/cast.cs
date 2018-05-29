@@ -12,10 +12,10 @@ import coupon;
 import cw;
 
 
-class CastCard(base.CWBinaryBase):
-    """キャストデータ(widファイル)。""";
-    public UNK __init__(parent, f, yadodata=false, nameonly=false, materialdir="Material", image_export=true) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata, materialdir, image_export);
+class CastCard : base.CWBinaryBase
+{
+    // """キャストデータ(widファイル)。"""
+    public CastCard(UNK parent, UNK f, bool yadodata=false, bool nameonly=false, string materialdir="Material", bool image_export=true) : base(parent, f, yadodata, materialdir, image_export) {
         this.type = f.byte();
         this.image = f.image();
         this.name = f.string();
@@ -30,9 +30,11 @@ class CastCard(base.CWBinaryBase):
         } else {
             dataversion = 4;
             this.id = idl - 40000;
+        }
 
         if (nameonly) {
             return;
+        }
 
         // mate特有の属性値(真偽値)*10
         this.noeffect_weapon = f.bool();
@@ -109,9 +111,11 @@ class CastCard(base.CWBinaryBase):
             coupons_num = f.dword();
             this.coupons = [coupon.Coupon(self, f) for _cnt in xrange(coupons_num)];
         } else {
-            this.coupons = [];
+            this.coupons = new List<UNK>();
+        }
 
         this.data = null;
+    }
 
     public UNK get_data() {
         if (this.data == null) {
@@ -119,6 +123,7 @@ class CastCard(base.CWBinaryBase):
                 this.imgpath = this.export_image();
             } else {
                 this.imgpath = "";
+            }
 
             this.data = cw.data.make_element("CastCard");
 
@@ -224,6 +229,7 @@ class CastCard(base.CWBinaryBase):
             ce = cw.data.make_element("Coupons");
             foreach (var coupon in this.coupons) {
                 ce.append(coupon.get_data());
+            }
             prop.append(ce);
 
             this.data.append(prop);
@@ -231,22 +237,27 @@ class CastCard(base.CWBinaryBase):
             e = cw.data.make_element("ItemCards");
             foreach (var card in this.items) {
                 e.append(card.get_data());
+            }
             this.data.append(e);
 
             e = cw.data.make_element("SkillCards");
             foreach (var card in this.skills) {
                 e.append(card.get_data());
+            }
             this.data.append(e);
 
             e = cw.data.make_element("BeastCards");
             foreach (var card in this.beasts) {
                 e.append(card.get_data());
+            }
             this.data.append(e);
+        }
 
         return this.data;
+    }
 
-    @staticmethod;
-    def unconv(f, data):
+
+    public static UNK unconv(UNK f, UNK data) {
         restype = 2;
         image = null;
         name = "";
@@ -306,7 +317,7 @@ class CastCard(base.CWBinaryBase):
         enhance_defense = 0;
         duration_enhance_defense = 0;
 
-        items = [];
+        items = new List<UNK>();
         skills = [];
         beasts = [];
 
@@ -347,6 +358,8 @@ class CastCard(base.CWBinaryBase):
                             } else if (fe.tag == "Weakness") {
                                 weakness_fire = cw.util.str2bool(fe.get("weakness_fire"));
                                 weakness_ice = cw.util.str2bool(fe.get("weakness_ice"));
+                            }
+                        }
                     } else if (prop.tag == "Ability") {
                         foreach (var ae in prop) {
                             if (ae.tag == "Physical") {
@@ -366,6 +379,8 @@ class CastCard(base.CWBinaryBase):
                                 avoid = int(ae.get("avoid"));
                                 resist = int(ae.get("resist"));
                                 defense = int(ae.get("defense"));
+                            }
+                        }
                     } else if (prop.tag == "Status") {
                         foreach (var se in prop) {
                             if (se.tag == "Mentality") {
@@ -383,6 +398,8 @@ class CastCard(base.CWBinaryBase):
                                 duration_faceup = int(se.get("duration"));
                             } else if (se.tag == "AntiMagic") {
                                 duration_antimagic = int(se.get("duration"));
+                            }
+                        }
                     } else if (prop.tag == "Enhance") {
                         foreach (var ee in prop) {
                             if (ee.tag == "Action") {
@@ -397,8 +414,12 @@ class CastCard(base.CWBinaryBase):
                             } else if (ee.tag == "Defense") {
                                 enhance_defense = int(ee.text);
                                 duration_enhance_defense = int(ee.get("duration"));
+                            }
+                        }
                     } else if (prop.tag == "Coupons") {
                         coupons = prop;
+                    }
+                }
 
             } else if (e.tag == "ItemCards") {
                 items = e;
@@ -408,6 +429,8 @@ class CastCard(base.CWBinaryBase):
 
             } else if (e.tag == "BeastCards") {
                 beasts = e;
+            }
+        }
 
         f.write_byte(restype);
         f.write_image(image);
@@ -476,19 +499,27 @@ class CastCard(base.CWBinaryBase):
                 pos = f.tell();
                 item.ItemCard.unconv(f, card, false);
                 cardslen += 1;
-            except cw.binary.cwfile.UnsupportedError:
+            }
+            catch (cw.binary.cwfile.UnsupportedError e)
+            {
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = card.gettext("Property/Name", "");
                     s = u"%s の所持する %s は対象エンジンで使用できないため、変換しません。\n" % (name, cardname);
                     f.write_errorlog(s);
-            except Exception:
+                }
+            }
+            catch (Exception e)
+            {
                 cw.util.print_ex(file=sys.stderr);
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = card.gettext("Property/Name", "");
                     s = u"%s の所持する %s は変換できませんでした。\n" % (name, cardname);
                     f.write_errorlog(s);
+                }
+            }
+        }
         tell = f.tell();
         f.seek(lenpos);
         f.write_dword(cardslen);
@@ -502,19 +533,27 @@ class CastCard(base.CWBinaryBase):
                 pos = f.tell();
                 skill.SkillCard.unconv(f, card, false);
                 cardslen += 1;
-            except cw.binary.cwfile.UnsupportedError:
+            }
+            catch (cw.binary.cwfile.UnsupportedError e)
+            {
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = card.gettext("Property/Name", "");
                     s = u"%s の所持する %s は対象エンジンで使用できないため、変換しません。\n" % (name, cardname);
                     f.write_errorlog(s);
-            except Exception:
+                }
+            }
+            catch (Exception e)
+            {
                 cw.util.print_ex(file=sys.stderr);
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = card.gettext("Property/Name", "");
                     s = u"%s の所持する %s は変換できませんでした。\n" % (name, cardname);
                     f.write_errorlog(s);
+                }
+            }
+        }
         tell = f.tell();
         f.seek(lenpos);
         f.write_dword(cardslen);
@@ -528,19 +567,27 @@ class CastCard(base.CWBinaryBase):
                 pos = f.tell();
                 beast.BeastCard.unconv(f, card, false);
                 cardslen += 1;
-            except cw.binary.cwfile.UnsupportedError:
+            }
+            catch (cw.binary.cwfile.UnsupportedError e)
+            {
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = card.gettext("Property/Name", "");
                     s = u"%s の所持する %s は対象エンジンで使用できないため、変換しません。\n" % (name, cardname);
                     f.write_errorlog(s);
-            except Exception:
+                }
+            }
+            catch (Exception e)
+            {
                 cw.util.print_ex(file=sys.stderr);
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = card.gettext("Property/Name", "");
                     s = u"%s の所持する %s は変換できませんでした。\n" % (name, cardname);
                     f.write_errorlog(s);
+                }
+            }
+        }
         tell = f.tell();
         f.seek(lenpos);
         f.write_dword(cardslen);
@@ -549,11 +596,8 @@ class CastCard(base.CWBinaryBase):
         f.write_dword(len(coupons));
         foreach (var cp in coupons) {
             coupon.Coupon.unconv(f, cp);
+        }
 
         f.truncate();
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+    }
+}
