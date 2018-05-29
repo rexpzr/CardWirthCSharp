@@ -1977,1154 +1977,1416 @@ class Character
         return value2;
     }
     
-//    def _get_enhance_impl(self, name, initvalue, enhindex):
-//        """
-//        現在かけられている全ての能力修正値の合計を返す(ただし単純な加算ではない)。
-//        デフォルト修正値 + 状態修正値 + カード所持修正値 + カード使用修正値。
-//        ただしカードの修正値は適性による補正を受ける。
-//        """
-//        val1 = int(self.enhance.get(name))
-//        val1 = cw.util.numwrap(val1, -10, 10)
-//        val2 = int(initvalue)
-//        val2 = cw.util.numwrap(val2, -10, 10)
-//        seq = [val1, val2]
-//        pvals = []
-//        def add_pval(val):
-//            if 0 < val and val < 10:
-//                pvals.append(int(val))
-//
-//        def addval(header, val, using=False):
-//            if name == "defense":
-//                val = int(val)
-//                val2 = val
-//                if header.type == "SkillCard":
-//                    # 特殊技能使用
-//                    assert using
-//                    level = header.get_vocation_level(self, enhance_act=False)
-//                    if 2 <= level:
-//                        val = val * 120 // 100
-//                    add_pval(val)
-//                    val = val2
-//                elif header.type == "ItemCard" and using:
-//                    # アイテム使用
-//                    add_pval(val)
-//                elif header.type == "ItemCard":
-//                    # アイテム所持
-//                    level = header.get_vocation_level(self, enhance_act=False)
-//                    if val < 0:
-//                        if 3 <= level:
-//                            val = val * 80 // 100
-//                        elif level <= 0:
-//                            val = val * 150 // 100
-//                        add_pval(val)
-//                    elif 0 < val:
-//                        if level <= 0:
-//                            val = val * 50 // 100
-//                        elif level <= 1:
-//                            val = val * 80 // 100
-//                        add_pval(val)
-//                elif header.type == "BeastCard":
-//                    # 召喚獣所持
-//                    add_pval(val)
-//                else:
-//                    assert header.type == "ActionCard"
-//                    add_pval(val)
-//            else:
-//                val = self._calc_enhancevalue(header, val)
-//                add_pval(val)
-//            val = int(val)
-//            seq.append(val)
-//
-//        if self.actiondata and self.actiondata[1]:
-//            header = self.actiondata[1]
-//        elif self.deck and self.deck.get_used():
-//            header = self.deck.get_used()
-//        else:
-//            header = None
-//
-//        if header:
-//            val4 = header.get_enhance_val_used()[enhindex]
-//            addval(header, val4, True)
-//
-//        for header in itertools.chain(self.get_pocketcards(cw.POCKET_BEAST),
-//                                      self.get_pocketcards(cw.POCKET_ITEM)):
-//            val3 = header.get_enhance_val()[enhindex]
-//            addval(header, val3)
-//
-//        add_pval(val1)
-//        add_pval(val2)
-//
-//        a = 0
-//        b = 0
-//        ac = 0
-//        bc = 0
-//        max10 = 0
-//        max10counter = 0
-//        maxval = 0
-//        minval = 0
-//        for val in seq:
-//            if val < 0:
-//                if a == 0:
-//                    a = (10 + val)
-//                else:
-//                    a *= (10 + val)
-//                ac += 1
-//                minval = min(minval, val)
-//                max10counter += -val//6 + 1
-//            elif 0 < val:
-//                if b == 0:
-//                    b = (10 - val)
-//                else:
-//                    b *= (10 - val)
-//                bc += 1
-//                max10 += val // 10
-//                maxval = max(maxval, val)
-//        if ac:
-//            a /= math.pow(10, ac-1)
-//            a = 10 - a
-//            a = max(-minval, a)
-//        if bc:
-//            b /= math.pow(10, bc-1)
-//            b = 10 - b
-//            b = max(maxval, b)
-//
-//        pvalr = 100
-//        for pval in reversed(pvals):
-//            pvalr *= 10
-//            pvalr *= 10-pval
-//            pvalr //= 100
-//
-//        if pvalr < 1:
-//            # 防御修正でn[1],n[2],n[3],...,n[N]の値がある時、
-//            # (1-n[N]/10)*(1-n[N-1]/10)*...,(1-n[1]/10)の結果が
-//            # 0.01未満になれば+10効果を得られる(計算途中の誤差は切り捨て)。
-//            # ただし適性による変動がある
-//            max10 += 1
-//
-//        if max10 < 3:
-//            # 防御修正で+10があると完全にダメージが無くなるが、
-//            # -1～5で1回、-6以上で2回分、+10効果を打ち消すことができる
-//            # ただし+30以上は無効化不可
-//            max10 -= max10counter
-//
-//        value = int(b) - int(a)
-//        if name == "defense":
-//            if 0 < max10:
-//                value = 10
-//            else:
-//                # 防御ボーナスは単体の+10がない限り最大で+9になる
-//                value = cw.util.numwrap(value, -10, 9)
-//        else:
-//            value = cw.util.numwrap(value, -10, 10)
-//
-//        return value
-//
-//    #---------------------------------------------------------------------------
-//    #　クーポン関連
-//    #---------------------------------------------------------------------------
-//
-//    @synclock(_couponlock)
-//    def get_coupons(self):
-//        """
-//        所有クーポンをセット型で返す。
-//        """
-//        return self._get_coupons()
-//    def _get_coupons(self):
-//        return set(self.coupons.iterkeys())
-//
-//    @synclock(_couponlock)
-//    def get_couponvalue(self, name, raiseerror=True):
-//        """
-//        クーポンの値を返す。
-//        """
-//        return self._get_couponvalue(name, raiseerror)
-//
-//    def _get_couponvalue(self, name, raiseerror=True):
-//        if raiseerror:
-//            return self.coupons[name][0]
-//        else:
-//            data = self.coupons.get(name, None)
-//            if data:
-//                return data[0]
-//            else:
-//                return None
-//
-//    @synclock(_couponlock)
-//    def has_coupon(self, coupon):
-//        """
-//        引数のクーポンを所持しているかbool値で返す。
-//        """
-//        return self._has_coupon(coupon)
-//
-//    def _has_coupon(self, coupon):
-//        return coupon in self.coupons
-//
-//    @synclock(_couponlock)
-//    def get_couponsvalue(self):
-//        return self._get_couponsvalue()
-//
-//    def _get_couponsvalue(self):
-//        """
-//        全ての所持クーポンの点数を合計した値を返す。
-//        """
-//        cnt = 0
-//
-//        for coupon, data in self.coupons.iteritems():
-//            if coupon and not coupon[0] in (u"＠", u"：", u"；"):
-//                value = data[0]
-//                cnt += value
-//
-//        return cnt
-//
-//    @synclock(_couponlock)
-//    def get_specialcoupons(self):
-//        """
-//        "＠"で始まる特殊クーポンの
-//        辞書(key=クーポン名, value=クーポン得点)を返す。
-//        """
-//        return self._get_specialcoupons()
-//
-//    def _get_specialcoupons(self):
-//        d = {}
-//
-//        for coupon, data in self.coupons.iteritems():
-//            if coupon and coupon.startswith(u"＠"):
-//                value = data[0]
-//                d[coupon] = value
-//
-//        return d
-//
-//    @synclock(_couponlock)
-//    def replace_allcoupons(self, seq, syscoupons={}.copy()):
-//        """システムクーポン以外の全てのクーポンを
-//        listの内容に入れ替える。
-//        所持クーポンが変化したらTrueを返す。
-//        seq: クーポン情報のタプル(name, value)のリスト。
-//        syscoupons: このコレクション内にあるクーポンは
-//                    システムクーポンとして処理対象外にする
-//        """
-//        old_coupons = {}
-//        for name, (value, e) in self.coupons.iteritems():
-//            old_coupons[name] = value
-//        revcoupon_old = False
-//        revcoupon_new = False
-//        # システムクーポン以外を一旦除去
-//        for name in self._get_coupons():
-//            if syscoupons is None or not (name.startswith(u"＠") or name in syscoupons):
-//                self._remove_coupon(name, False)
-//            revcoupon_old |= (name == u"：Ｒ")
-//
-//        sexcoupons = set(cw.cwpy.setting.sexcoupons)
-//        periodcoupons = set(cw.cwpy.setting.periodcoupons)
-//        naturecoupons = set(cw.cwpy.setting.naturecoupons)
-//
-//        # クーポン追加
-//        for coupon in seq:
-//            name = coupon[0]
-//            if name in sexcoupons:
-//                old = self._get_sex()
-//                if old:
-//                    self._remove_coupon(old)
-//            if name in periodcoupons:
-//                old = self._get_age()
-//                if old:
-//                    self._remove_coupon(old)
-//            if name in naturecoupons:
-//                old = self._get_talent()
-//                if old:
-//                    self._remove_coupon(old)
-//
-//            self._set_coupon(name, coupon[1], False)
-//            revcoupon_new |= (name == u"：Ｒ")
-//
-//        # 隠蔽クーポン
-//        if revcoupon_old <> revcoupon_new:
-//            self.reversed = revcoupon_old
-//            if self.status == "hidden":
-//                self.reverse()
-//            else:
-//                cw.animation.animate_sprite(self, "reverse")
-//
-//        new_coupons = {}
-//        for name, (value, e) in self.coupons.iteritems():
-//            new_coupons[name] = value
-//        return new_coupons <> old_coupons
-//
-//    @synclock(_couponlock)
-//    def get_sex(self):
-//        return self._get_sex()
-//
-//    def _get_sex(self):
-//        for coupon in cw.cwpy.setting.sexcoupons:
-//            if coupon in self.coupons:
-//                return coupon
-//
-//        return cw.cwpy.setting.sexcoupons[0]
-//
-//    @synclock(_couponlock)
-//    def set_sex(self, sex):
-//        self._set_sex(sex)
-//
-//    def _set_sex(self, sex):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        old = self._get_sex()
-//        if old:
-//            self._remove_coupon(old)
-//        self._set_coupon(sex, 0)
-//
-//    @synclock(_couponlock)
-//    def has_sex(self):
-//        return self._has_sex()
-//
-//    def _has_sex(self):
-//        for coupon in cw.cwpy.setting.sexcoupons:
-//            if coupon in self.coupons:
-//                return True
-//
-//        return False
-//
-//    @synclock(_couponlock)
-//    def get_age(self):
-//        return self._get_age()
-//
-//    def _get_age(self):
-//        for coupon in cw.cwpy.setting.periodcoupons:
-//            if coupon in self.coupons:
-//                return coupon
-//
-//        return cw.cwpy.setting.periodcoupons[0]
-//
-//    @synclock(_couponlock)
-//    def set_age(self, age):
-//        self._set_age(age)
-//
-//    def _set_age(self, age):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        old = self._get_age()
-//        if old:
-//            self._remove_coupon(old)
-//        self._set_coupon(age, 0)
-//
-//    @synclock(_couponlock)
-//    def has_age(self):
-//        return self._has_age()
-//
-//    def _has_age(self):
-//        for coupon in cw.cwpy.setting.periodcoupons:
-//            if coupon in self.coupons:
-//                return True
-//
-//        return False
-//
-//    @synclock(_couponlock)
-//    def get_talent(self):
-//        return self._get_talent()
-//
-//    def _get_talent(self):
-//        for coupon in cw.cwpy.setting.naturecoupons:
-//            if coupon in self.coupons:
-//                return coupon
-//
-//        return cw.cwpy.setting.naturecoupons[0]
-//
-//    @synclock(_couponlock)
-//    def set_talent(self, talent):
-//        self._set_talent(talent)
-//
-//    def _set_talent(self, talent):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        old = self._get_talent()
-//        if old:
-//            self._remove_coupon(old)
-//        self._set_coupon(talent, 0)
-//
-//    @synclock(_couponlock)
-//    def has_talent(self):
-//        return self._has_talent()
-//
-//    def _has_talent(self):
-//        for coupon in cw.cwpy.setting.naturecoupons:
-//            if coupon in self.coupons:
-//                return True
-//
-//        return False
-//
-//    @synclock(_couponlock)
-//    def get_makings(self):
-//        return self._get_makings()
-//
-//    def _get_makings(self):
-//        """
-//        所持する特徴クーポンをセット型で返す。
-//        """
-//        makings = set()
-//        for making in cw.cwpy.setting.makingcoupons:
-//            if making in self.coupons:
-//                makings.add(making)
-//        return makings
-//
-//    @synclock(_couponlock)
-//    def set_makings(self, makings):
-//        return self._set_makings(makings)
-//
-//    def _set_makings(self, makings):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        for coupon in cw.cwpy.setting.makingcoupons:
-//            if coupon in self.coupons:
-//                self._remove_coupon(coupon)
-//        for coupon in makings:
-//            self._set_coupon(coupon, 0)
-//
-//    @synclock(_couponlock)
-//    def set_race(self, race):
-//        self._set_race(race)
-//    def _set_race(self, race):
-//        old = self._get_race()
-//        if race == old:
-//            return
-//        if not isinstance(old, cw.header.UnknownRaceHeader):
-//            self._remove_coupon(u"＠Ｒ" + old.name)
-//        if not isinstance(race, cw.header.UnknownRaceHeader):
-//            self._set_coupon(u"＠Ｒ" + race.name, 0)
-//
-//    @synclock(_couponlock)
-//    def get_race(self):
-//        return self._get_race()
-//
-//    def _get_race(self):
-//        for race in cw.cwpy.setting.races:
-//            if self._has_coupon(u"＠Ｒ" + race.name):
-//                return race
-//        return cw.cwpy.setting.unknown_race
-//
-//    @synclock(_couponlock)
-//    def count_timedcoupon(self, value=-1):
-//        """
-//        時限クーポンの点数を減らす。
-//        value: 減らす数。
-//        """
-//        if self.timedcoupons:
-//            if cw.cwpy.ydata:
-//                cw.cwpy.ydata.changed()
-//            self.data.is_edited = True
-//
-//            for coupon in list(self.timedcoupons):
-//                oldvalue, e = self.coupons[coupon]
-//                if oldvalue == 0:
-//                    continue
-//
-//                n = oldvalue + value
-//                n = cw.util.numwrap(n, 0, 999)
-//
-//                if n > 0:
-//                    e.set("value", str(n))
-//                    self.coupons[coupon] = n, e
-//                else:
-//                    self._remove_coupon(coupon)
-//
-//    @synclock(_couponlock)
-//    def set_coupon(self, name, value):
-//        """
-//        クーポンを付与する。同名のクーポンがあったら上書き。
-//        時限クーポン("："or"；"で始まるクーポン)はtimedcouponsに登録する。
-//        name: クーポン名。
-//        value: クーポン点数。
-//        """
-//        self._set_coupon(name, value, True)
-//
-//    def _set_coupon(self, name, value, update=True):
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        value = int(value)
-//        value = cw.util.numwrap(value, -999, 999)
-//        removed = self._remove_coupon(name, False)
-//        e = self.data.make_element("Coupon", name, {"value" : str(value)})
-//        self.data.append("Property/Coupons", e)
-//        self.coupons[name] = value, e
-//
-//        # 時限クーポン
-//        if name.startswith(u"：") or name.startswith(u"；"):
-//            self.timedcoupons.add(name)
-//
-//        # 隠蔽クーポン
-//        if name == u"：Ｒ" and not self.is_reversed():
-//            if update and not removed:
-//                if self.status == "hidden":
-//                    self.reverse()
-//                else:
-//                    cw.animation.animate_sprite(self, "reverse")
-//            self.reversed = True
-//
-//        if not removed:
-//            # 効果対象の変更(Wsn.2)
-//            effectevent = cw.cwpy.event.get_effectevent()
-//            if effectevent and name == u"＠効果対象":
-//                effectevent.add_target(self)
-//
-//        # 隠蔽クーポンがあるため
-//        self.adjust_action()
-//
-//    @synclock(_couponlock)
-//    def get_timedcoupons(self):
-//        """
-//        時限クーポンのデータをまとめたsetを返す。
-//        """
-//        s = set()
-//
-//        for coupon in self.coupons.iterkeys():
-//            if coupon.startswith(u"：") or coupon.startswith(u"；"):
-//                s.add(coupon)
-//
-//        return s
-//
-//    @synclock(_couponlock)
-//    def remove_coupon(self, name):
-//        """
-//        同じ名前のクーポンを全て剥奪する。
-//        name: クーポン名。
-//        """
-//        return self._remove_coupon(name, True)
-//
-//    def _remove_coupon(self, name, update=True):
-//        if not name in self.coupons:
-//            return False
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//
-//        _value, e = self.coupons[name]
-//        self.data.remove("Property/Coupons", e)
-//        del self.coupons[name]
-//
-//        # 時限クーポン
-//        if name in self.timedcoupons:
-//            self.timedcoupons.remove(name)
-//
-//        # 隠蔽クーポン
-//        if name == u"：Ｒ" and self.is_reversed():
-//            if update:
-//                if self.status == "hidden":
-//                    self.reverse()
-//                else:
-//                    cw.animation.animate_sprite(self, "reverse")
-//            self.reversed = False
-//
-//        # 効果対象の変更(Wsn.2)
-//        effectevent = cw.cwpy.event.get_effectevent()
-//        if effectevent and name == u"＠効果対象":
-//            effectevent.remove_target(self)
-//
-//        return True
-//
-//    @synclock(_couponlock)
-//    def remove_timedcoupons(self, battleonly=False):
-//        """
-//        時限クーポンを削除する。イメージは更新しない。
-//        battleonly: Trueの場合は"；"の時限クーポンのみ削除。
-//        """
-//        for name in set(self.timedcoupons):
-//            if not battleonly or name.startswith(u"；"):
-//                self._remove_coupon(name, False)
-//
-//    @synclock(_couponlock)
-//    def remove_numbercoupon(self):
-//        """
-//        "＿１"等の番号クーポンを削除。
-//        """
-//        # u"＠ＭＰ３"はCardWirth 1.29以降で配布されるクーポン
-//        names = [cw.cwpy.msgs["number_1_coupon"], u"＿１", u"＿２", u"＿３", u"＿４", u"＿５", u"＿６", u"＠ＭＰ３"]
-//
-//        for name in names:
-//            self._remove_coupon(name)
-//
-//    #---------------------------------------------------------------------------
-//    #　レベル変更用
-//    #---------------------------------------------------------------------------
-//
-//    @synclock(_couponlock)
-//    def get_limitlevel(self):
-//        """レベルの調節範囲の最大値を返す。"""
-//        return self._get_limitlevel()
-//
-//    def _get_limitlevel(self):
-//        l = self._get_couponvalue(u"＠レベル原点", raiseerror=False)
-//        if not l is None:
-//            return max(self.level, l)
-//        else:
-//            return self.level
-//
-//    @synclock(_couponlock)
-//    def check_level(self):
-//        coupons = self._get_specialcoupons()
-//        level = coupons[u"＠レベル原点"]
-//
-//        limit = self._get_levelmax(coupons)
-//        if not u"＠レベル上限" in coupons:
-//            self._set_coupon(u"＠レベル上限", limit)
-//
-//        # 解の公式で現在の経験点で到達できるレベルを算出
-//        cnt = max(1, self._get_couponsvalue())
-//        olevel = int((-1 + math.sqrt(1 + 4 * cnt)) / 2.0) + 1
-//        olevel = min(limit, olevel)
-//
-//        return olevel - level
-//
-//    @synclock(_couponlock)
-//    def get_levelmax(self):
-//        coupons = self._get_specialcoupons()
-//        return self._get_levelmax(coupons)
-//
-//    def _get_levelmax(self, coupons):
-//        if u"＠レベル上限" in coupons:
-//            limit = coupons[u"＠レベル上限"]
-//        elif u"＠本来の上限" in coupons:
-//            limit = coupons[u"＠本来の上限"]
-//            self._set_coupon(u"＠レベル上限", limit)
-//        else:
-//            limit = 10
-//        return limit
-//
-//    @synclock(_couponlock)
-//    def set_level(self, value, regulate=False, debugedit=False, backpack_party=None, revert_cardpocket=True):
-//        """レベルを設定する。
-//        regulate: レベルを調節する場合はTrue。
-//        backpack_party: レベルが下がって手札を持ちきれなくなった際、
-//                        このパーティの荷物袋へ入れる。
-//                        Noneの場合はアクティブなパーティの荷物袋か
-//                        カード置場へ入る。
-//        """
-//        # 調節前のレベル
-//        limit = self._get_limitlevel()
-//        if regulate:
-//            value = min(value, limit)
-//
-//        # レベル
-//        uplevel = value - self.level
-//        if uplevel == 0:
-//            return
-//
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//
-//        vit = max(1, int(self.physical.get("vit")))
-//        minval = max(1, int(self.physical.get("min")))
-//
-//        coeff = self.data.getfloat("Property/Life", "coefficient", 0.0)
-//        if coeff <= 0.0:
-//            maxlife = calc_maxlife(vit, minval, self.level)
-//            if int(maxlife) == self.maxlife:
-//                coeff = 1
-//            else:
-//                # 最大HP10でレベル10のキャラクタのレベルを9に下げたら
-//                # 最大HPが90に増えてしまった、というような問題を
-//                # 避けるため、計算上の体力と実際の最大体力が食い違う
-//                # 場合は計算用係数を付与する
-//                coeff = float(self.maxlife) / int(maxlife)
-//                self.data.edit("Property/Life", str(coeff), "coefficient")
-//
-//        self.level = value
-//        self.data.edit("Property/Level", str(self.level))
-//        # 最大HPとHP
-//        maxlife = calc_maxlife(vit, minval, self.level)
-//        if coeff <> 1:
-//            maxlife = round(maxlife * coeff)
-//        maxlife = int(max(1, maxlife))
-//        self.maxlife += maxlife - self.maxlife
-//        self.data.edit("Property/Life", str(self.maxlife), "max")
-//        self.set_life(self.maxlife)
-//        # 技能の使用回数
-//        for header in self.cardpocket[cw.POCKET_SKILL]:
-//            header.get_uselimit(reset=True)
-//
-//        if not regulate:
-//            # レベル原点・EPクーポン操作
-//            for e in self.data.find("Property/Coupons"):
-//                if not e.text:
-//                    continue
-//
-//                if e.text == u"＠レベル原点":
-//                    e.attrib["value"] = str(self.level)
-//                    self.coupons[e.text] = self.level, e
-//                elif e.text == u"＠ＥＰ":
-//                    value = e.getint(".", "value", 0) + (value - limit) * 10
-//                    e.attrib["value"] = str(value)
-//                    self.coupons[e.text] = value, e
-//
-//        if uplevel < 0:
-//            # 所持可能上限を越えたカードを、荷物袋ないしカード置き場へ移動
-//            if backpack_party or isinstance(self, cw.sprite.card.PlayerCard):
-//                targettype = "BACKPACK"
-//            else:
-//                targettype = "STOREHOUSE"
-//            targettype_original = targettype
-//            for index in range(3):
-//                n = len(self.cardpocket[index])
-//                maxn = self.get_cardpocketspace()[index]
-//                while n > maxn:
-//                    header = self.cardpocket[index][-1]
-//                    if index == cw.POCKET_BEAST and not header.attachment:
-//                        targettype = "TRASHBOX"
-//                    else:
-//                        targettype = targettype_original
-//                    if regulate and targettype <> "TRASHBOX":
-//                        self.add_cardpocketmemory(header)
-//                    cw.cwpy.trade(targettype=targettype, header=header, from_event=True, party=backpack_party, sort=False)
-//                    n -= 1
-//            if targettype_original == "BACKPACK":
-//                cw.cwpy.ydata.party.sort_backpack()
-//            elif targettype_original == "STOREHOUSE":
-//                cw.cwpy.ydata.sort_storehouse()
-//            for header in self.cardpocket[cw.POCKET_SKILL]:
-//                header.get_uselimit(reset=True)
-//        elif 0 < uplevel and revert_cardpocket:
-//            # レベル調節で手放したカードを戻す
-//            self.revert_cardpocket(backpack_party)
-//
-//    def add_cardpocketmemory(self, header):
-//        """レベル調節前に所持していたカードを記憶する。"""
-//        memories = self.data.find("./CardMemories")
-//        if memories is None:
-//            memories = cw.data.make_element("CardMemories")
-//            self.data.append(".", memories)
-//        e = cw.data.make_element("CardMemory")
-//        e.append(cw.data.make_element("Type", header.type))
-//        e.append(cw.data.make_element("Name", header.name))
-//        e.append(cw.data.make_element("Description", header.desc))
-//        e.append(cw.data.make_element("Scenario", header.scenario))
-//        e.append(cw.data.make_element("Author", header.author))
-//        if type <> "BeastCard":
-//            e.append(cw.data.make_element("Hold", str(header.hold)))
-//        if header.type <> "SkillCard":
-//            e.append(cw.data.make_element("UseLimit", str(header.uselimit)))
-//        memories.append(e)
-//
-//    def revert_cardpocket(self, backpack_party=None):
-//        """記憶していたカードを検索し、
-//        見つかったら再び所持する。"""
-//        if not cw.cwpy.setting.revert_cardpocket:
-//            return
-//
-//        if not backpack_party:
-//            backpack_party = cw.cwpy.ydata.party
-//
-//        seq = []
-//        if backpack_party:
-//            seq.extend(backpack_party.backpack)
-//            if not backpack_party.is_adventuring():
-//                seq.extend(cw.cwpy.ydata.storehouse)
-//        else:
-//            seq.extend(cw.cwpy.ydata.storehouse)
-//
-//        maxn = self.get_cardpocketspace()
-//        n = [
-//             len(self.get_pocketcards(cw.POCKET_SKILL)),
-//             len(self.get_pocketcards(cw.POCKET_ITEM)),
-//             len(self.get_pocketcards(cw.POCKET_BEAST)),
-//        ]
-//        for e in reversed(self.data.getfind("./CardMemories", False)[:]):
-//            cardtype = e.gettext("./Type")
-//            name = e.gettext("./Name", "")
-//            desc = e.gettext("./Description", "")
-//            scenario = e.gettext("./Scenario", "")
-//            author = e.gettext("./Author", "")
-//            if cardtype == "SkillCard":
-//                index = cw.POCKET_SKILL
-//                uselimit = -1
-//            elif cardtype == "ItemCard":
-//                index = cw.POCKET_ITEM
-//                uselimit = e.getint("./UseLimit", -1)
-//            elif cardtype == "BeastCard":
-//                index = cw.POCKET_BEAST
-//                uselimit = e.getint("./UseLimit", -1)
-//
-//            if n[index] < maxn[index]:
-//                for header in seq:
-//                    if header.type == cardtype and\
-//                            header.name == name and\
-//                            header.desc == desc and\
-//                            header.scenario == scenario and\
-//                            header.author == author and\
-//                            (uselimit == -1 or uselimit == header.uselimit):
-//                        n[index] += 1
-//                        cw.cwpy.trade("PLAYERCARD", target=self, header=header, from_event=True, party=backpack_party)
-//                        seq.remove(header)
-//                        if cardtype <> "BeastCard":
-//                            hold = e.getbool("./Hold", False)
-//                            header.set_hold(hold)
-//                        break
-//                # 記憶に残すのは持ちきれなかった場合のみ
-//                # 持ちきれる場合はカードが見つからなくても
-//                # 記憶から除去する
-//                self.data.remove("./CardMemories", e)
-//
-//    #---------------------------------------------------------------------------
-//    #　状態変更用
-//    #---------------------------------------------------------------------------
-//
-//    def set_unconsciousstatus(self, clearbeast=True):
-//        """
-//        意識不明に伴う状態回復。
-//        強化値もすべて0、付帯召喚以外の召喚獣カードも消去。
-//        毒と麻痺は残る。
-//        """
-//        self.set_mentality("Normal", 0)
-//        self.set_bind(0)
-//        self.set_silence(0)
-//        self.set_faceup(0)
-//        self.set_antimagic(0)
-//        self.set_enhance_act(0, 0)
-//        self.set_enhance_avo(0, 0)
-//        self.set_enhance_res(0, 0)
-//        self.set_enhance_def(0, 0)
-//        if clearbeast:
-//            self.set_beast(vanish=True)
-//
-//    def set_fullrecovery(self, decideaction=False):
-//        """
-//        完全回復処理。HP＆精神力＆状態異常回復。
-//        強化値もすべて0、付帯召喚以外の召喚獣カードも消去。
-//        """
-//        self.set_life(self.maxlife)
-//        self.set_paralyze(-40)
-//        self.set_poison(-40)
-//        self.set_mentality("Normal", 0)
-//        self.set_bind(0)
-//        self.set_silence(0)
-//        self.set_faceup(0)
-//        self.set_antimagic(0)
-//        self.set_enhance_act(0, 0)
-//        self.set_enhance_avo(0, 0)
-//        self.set_enhance_res(0, 0)
-//        self.set_enhance_def(0, 0)
-//        self.set_skillpower()
-//        self.set_beast(vanish=True)
-//
-//        # 行動を再選択する
-//        if decideaction and cw.cwpy.is_battlestatus() and cw.cwpy.battle.is_ready() and self.is_active():
-//            self.deck.set(self)
-//            self.decide_action()
-//
-//    def set_life(self, value):
-//        """
-//        現在ライフに引数nの値を足す(nが負だと引き算でダメージ)。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        oldlife = self.life
-//        self.life += value
-//        self.life = cw.util.numwrap(self.life, 0, self.maxlife)
-//        self.data.edit("Property/Life", str(int(self.life)))
-//        self.adjust_action()
-//        if self.is_unconscious():
-//            self.set_unconsciousstatus()
-//        return self.life - oldlife
-//
-//    def set_paralyze(self, value):
-//        """
-//        麻痺値を操作する。
-//        麻痺値は0～40の範囲を越えない。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        old = self.paralyze
-//        self.paralyze += value
-//        self.paralyze = cw.util.numwrap(self.paralyze, 0, 40)
-//        if 0 < self.paralyze:
-//            self.set_mentality("Normal", 0)
-//        self.data.edit("Property/Status/Paralyze", str(self.paralyze))
-//        self.adjust_action()
-//        return self.paralyze - old
-//
-//    def set_poison(self, value):
-//        """
-//        中毒値を操作する。
-//        中毒値は0～40の範囲を越えない。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        old = self.poison
-//        self.poison += value
-//        self.poison = cw.util.numwrap(self.poison, 0, 40)
-//        self.data.edit("Property/Status/Poison", str(self.poison))
-//        return self.poison - old
-//
-//    def set_mentality(self, name, value, overwrite=True):
-//        """
-//        精神状態とその継続ラウンド数を操作する。
-//        継続ラウンド数の範囲は0～999を越えない。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        if self.is_unconscious() or self.is_paralyze():
-//            name = "Normal"
-//            value = 0
-//        value = cw.util.numwrap(value, 0, 999)
-//        if name == "Normal":
-//            value = 0
-//        elif value == 0:
-//            name = "Normal"
-//
-//        if not overwrite and name == self.mentality and name <> "Normal":
-//            # 長い方の効果時間を優先
-//            self.mentality_dur = max(self.mentality_dur, value)
-//        else:
-//            self.mentality = name
-//            self.mentality_dur = value
-//
-//        path = "Property/Status/Mentality"
-//        self.data.edit(path, self.mentality)
-//        self.data.edit(path, str(self.mentality_dur), "duration")
-//        self.adjust_action()
-//
-//    def set_bind(self, value, overwrite=True):
-//        """
-//        束縛状態の継続ラウンド数を操作する。
-//        継続ラウンド数の範囲は0～999を越えない。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        if self.is_unconscious():
-//            value = 0
-//        if overwrite:
-//            self.bind = value
-//        else:
-//            self.bind = max(self.bind, value)
-//        self.bind = cw.util.numwrap(self.bind, 0, 999)
-//        self.data.edit("Property/Status/Bind", str(self.bind), "duration")
-//        self.adjust_action()
-//
-//    def set_silence(self, value, overwrite=True):
-//        """
-//        沈黙状態の継続ラウンド数を操作する。
-//        継続ラウンド数の範囲は0～999を越えない。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        if self.is_unconscious():
-//            value = 0
-//        if overwrite:
-//            self.silence = value
-//        else:
-//            self.silence = max(self.silence, value)
-//        self.silence = cw.util.numwrap(self.silence, 0, 999)
-//        self.data.edit("Property/Status/Silence", str(self.silence), "duration")
-//
-//    def set_faceup(self, value, overwrite=True):
-//        """
-//        暴露状態の継続ラウンド数を操作する。
-//        継続ラウンド数の範囲は0～999を越えない。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        if self.is_unconscious():
-//            value = 0
-//        if overwrite:
-//            self.faceup = value
-//        else:
-//            self.faceup = max(self.faceup, value)
-//        self.faceup = cw.util.numwrap(self.faceup, 0, 999)
-//        self.data.edit("Property/Status/FaceUp", str(self.faceup), "duration")
-//
-//    def set_antimagic(self, value, overwrite=True):
-//        """
-//        魔法無効状態の継続ラウンド数を操作する。
-//        継続ラウンド数の範囲は0～999を越えない。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        if self.is_unconscious():
-//            value = 0
-//        if overwrite:
-//            self.antimagic = value
-//        else:
-//            self.antimagic = max(self.antimagic, value)
-//        self.antimagic = cw.util.numwrap(self.antimagic, 0, 999)
-//        self.data.edit("Property/Status/AntiMagic", str(self.antimagic), "duration")
-//
-//    def set_vanish(self, battlespeed=False):
-//        """
-//        対象消去を行う。
-//        """
-//        if isinstance(self, cw.character.Friend):
-//            # 1.50までは同行NPCに対象消去は効かない
-//            return
-//        if not self.is_vanished():
-//            if cw.cwpy.ydata:
-//                cw.cwpy.ydata.changed()
-//            self._vanished = True
-//            if isinstance(self, cw.character.Player):
-//                cw.animation.animate_sprite(self, "vanish", battlespeed=battlespeed)
-//                if cw.cwpy.sct.enable_vanishmembercancellation(cw.cwpy.sdata.get_versionhint(frompos=cw.HINT_SCENARIO)) or\
-//                   cw.cwpy.sct.enable_vanishmembercancellation(cw.cwpy.sdata.get_versionhint(frompos=cw.HINT_AREA)):
-//                    cw.cwpy.ydata.party.vanished_pcards.append(self)
-//                else:
-//                    self.commit_vanish()
-//            else:
-//                cw.animation.animate_sprite(self, "delete", battlespeed=battlespeed)
-//                self.commit_vanish()
-//            cw.cwpy.vanished_card(self)
-//
-//    def cancel_vanish(self):
-//        """対象消去をキャンセルする。
-//        表示処理は行わないため、呼び出し後に行う必要がある。
-//        """
-//        if not self.is_vanished():
-//            return
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//
-//        assert not cw.cwpy.cardgrp.has(self)
-//        assert self.data in cw.cwpy.ydata.party.members
-//
-//        self._vanished = False
-//        cw.cwpy.cardgrp.add(self, layer=self.layer)
-//        cw.cwpy.pcards.insert(cw.cwpy.ydata.party.members.index(self.data), self)
-//
-//    def commit_vanish(self):
-//        if not self.is_vanished():
-//            return
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//
-//        if isinstance(self, cw.character.Player):
-//            # PCの場合、プレミアカードを荷物袋へ移動する
-//            for pocket in self.cardpocket:
-//                for card in pocket[:]:
-//                    if card.premium == "Premium":
-//                        cw.cwpy.trade("BACKPACK", header=card, from_event=True, sort=False)
-//
-//            index = cw.cwpy.ydata.party.members.index(self.data)
-//            for i in xrange(index, len(cw.cwpy.ydata.party.members)):
-//                pi = i + 1
-//                cw.cwpy.file_updates.update(cw.cwpy.update_pcimage(pi, deal=False))
-//
-//            for bgtype, d in cw.cwpy.background.bgs:
-//                if bgtype == cw.sprite.background.BG_PC:
-//                    pcnumber = d[0]
-//                    if index + 1 <= pcnumber:
-//                        cw.cwpy.file_updates_bg = True
-//                        break
-//                elif bgtype == cw.sprite.background.BG_TEXT:
-//                    namelist = d[1]
-//                    for item in namelist:
-//                        if item.data is self:
-//                            # テキストセルに表示中の名前
-//                            # 対象消去された場合は最後に表示された文字列に固定する
-//                            item.data = None
-//
-//            cw.cwpy.ydata.party.remove(self)
-//
-//        self.lost()
-//
-//    def set_enhance_act(self, value, duration):
-//        """
-//        行動力強化値とその継続ラウンド数を操作する。
-//        強化値の範囲は-10～10、継続ラウンド数の範囲は0～999を越えない。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        if self.is_unconscious():
-//            value = 0
-//            duration = 0
-//        if value == 0:
-//            duration = 0
-//        if duration <= 0:
-//            value = 0
-//        self.enhance_act = value
-//        self.enhance_act = cw.util.numwrap(self.enhance_act, -10, 10)
-//        self.enhance_act_dur = duration
-//        self.enhance_act_dur = cw.util.numwrap(self.enhance_act_dur, 0, 999)
-//        path = "Property/Enhance/Action"
-//        self.data.edit(path, str(self.enhance_act))
-//        self.data.edit(path, str(self.enhance_act_dur), "duration")
-//
-//    def set_enhance_avo(self, value, duration):
-//        """
-//        回避力強化値とその継続ラウンド数を操作する。
-//        強化値の範囲は-10～10、継続ラウンド数の範囲は0～999を越えない。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        if self.is_unconscious():
-//            value = 0
-//            duration = 0
-//        if value == 0:
-//            duration = 0
-//        if duration <= 0:
-//            value = 0
-//        self.enhance_avo = value
-//        self.enhance_avo = cw.util.numwrap(self.enhance_avo, -10, 10)
-//        self.enhance_avo_dur = duration
-//        self.enhance_avo_dur = cw.util.numwrap(self.enhance_avo_dur, 0, 999)
-//        path = "Property/Enhance/Avoid"
-//        self.data.edit(path, str(self.enhance_avo))
-//        self.data.edit(path, str(self.enhance_avo_dur), "duration")
-//
-//    def set_enhance_res(self, value, duration):
-//        """
-//        抵抗力強化値とその継続ラウンド数を操作する。
-//        強化値の範囲は-10～10、継続ラウンド数の範囲は0～999を越えない。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        if self.is_unconscious():
-//            value = 0
-//            duration = 0
-//        if value == 0:
-//            duration = 0
-//        if duration <= 0:
-//            value = 0
-//        self.enhance_res = value
-//        self.enhance_res = cw.util.numwrap(self.enhance_res, -10, 10)
-//        self.enhance_res_dur = duration
-//        self.enhance_res_dur = cw.util.numwrap(self.enhance_res_dur, 0, 999)
-//        path = "Property/Enhance/Resist"
-//        self.data.edit(path, str(self.enhance_res))
-//        self.data.edit(path, str(self.enhance_res_dur), "duration")
-//
-//    def set_enhance_def(self, value, duration):
-//        """
-//        抵抗力強化値とその継続ラウンド数を操作する。
-//        強化値の範囲は-10～10、継続ラウンド数の範囲は0～999を越えない。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        if self.is_unconscious():
-//            value = 0
-//            duration = 0
-//        if value == 0:
-//            duration = 0
-//        if duration <= 0:
-//            value = 0
-//        self.enhance_def = value
-//        self.enhance_def = cw.util.numwrap(self.enhance_def, -10, 10)
-//        self.enhance_def_dur = duration
-//        self.enhance_def_dur = cw.util.numwrap(self.enhance_def_dur, 0, 999)
-//        path = "Property/Enhance/Defense"
-//        self.data.edit(path, str(self.enhance_def))
-//        self.data.edit(path, str(self.enhance_def_dur), "duration")
-//
-//    def set_skillpower(self, value=999):
-//        """
-//        精神力(スキルの使用回数)を操作する。
-//        recoveryがTrueだったら、最大値まで回復。
-//        Falseだったら、0にする。
-//        """
-//        if cw.cwpy.ydata:
-//            cw.cwpy.ydata.changed()
-//        for header in self.get_pocketcards(cw.POCKET_SKILL):
-//            header.set_uselimit(value)
-//
-//        if 0 < value:
-//            if cw.cwpy.is_battlestatus():
-//                self.deck.get_skillpower(self)
-//        elif value < 0:
-//            if cw.cwpy.is_battlestatus():
-//                self.deck.lose_skillpower(self, -value)
-//
+    public UNK _get_enhance_impl(string name, UNK initvalue, int enhindex)
+    {
+        // """
+        // 現在かけられている全ての能力修正値の合計を返す(ただし単純な加算ではない)。
+        // デフォルト修正値 + 状態修正値 + カード所持修正値 + カード使用修正値。
+        // ただしカードの修正値は適性による補正を受ける。
+        // """
+        val1 = (int)(this.enhance.get(name));
+        val1 = cw.util.numwrap(val1, -10, 10);
+        val2 = (int)(initvalue);
+        val2 = cw.util.numwrap(val2, -10, 10);
+        seq = [val1, val2];
+        pvals = [];
+        public UNK add_pval(UNK val) // TODO
+        {
+            if (0 < val && val < 10) {
+                pvals.append((int)(val));
+            }
+        }
+
+        public UNK addval(UNK header, UNK val, bool using=false) // TODO
+        {
+            if (name == "defense") {
+                val = (int)(val);
+                val2 = val;
+                if (header.type == "SkillCard") {
+                    // 特殊技能使用
+                    assert using;
+                    level = header.get_vocation_level(self, enhance_act=false);
+                    if (2 <= level) {
+                        val = val * 120; // 100
+                    }
+                    add_pval(val);
+                    val = val2;
+                } else if (header.type == "ItemCard" && using) {
+                    // アイテム使用
+                    add_pval(val);
+                } else if (header.type == "ItemCard") {
+                    // アイテム所持
+                    level = header.get_vocation_level(self, enhance_act=false);
+                    if (val < 0) {
+                        if (3 <= level) {
+                            val = val * 80 // 100;
+                        } else if (level <= 0) {
+                            val = val * 150 // 100;
+                        }
+                        add_pval(val);
+                    } else if (0 < val) {
+                        if (level <= 0) {
+                            val = val * 50; // 100
+                        } else if (level <= 1) {
+                            val = val * 80; // 100
+                        }
+                        add_pval(val);
+                    }
+                } else if (header.type == "BeastCard") {
+                    // 召喚獣所持
+                    add_pval(val);
+                } else {
+                    assert header.type == "ActionCard";
+                    add_pval(val);
+                }
+            } else {
+                val = this._calc_enhancevalue(header, val);
+                add_pval(val);
+            }
+            val = (int)(val);
+            seq.append(val);
+        }
+
+        if (this.actiondata && this.actiondata[1]) {
+            header = this.actiondata[1];
+        } else if (this.deck && this.deck.get_used()) {
+            header = this.deck.get_used();
+        } else {
+            header = null;
+        }
+
+        if (header) {
+            val4 = header.get_enhance_val_used()[enhindex];
+            addval(header, val4, true);
+        }
+
+        foreach (var header in itertools.chain(this.get_pocketcards(cw.POCKET_BEAST), this.get_pocketcards(cw.POCKET_ITEM)))
+        {
+            val3 = header.get_enhance_val()[enhindex];
+            addval(header, val3);
+        }
+
+        add_pval(val1);
+        add_pval(val2);
+
+        a = 0;
+        b = 0;
+        ac = 0;
+        bc = 0;
+        max10 = 0;
+        max10counter = 0;
+        maxval = 0;
+        minval = 0;
+        foreach (var val in seq) {
+            if (val < 0) {
+                if (a == 0) {
+                    a = (10 + val);
+                } else {
+                    a *= (10 + val);
+                }
+                ac += 1;
+                minval = min(minval, val);
+                max10counter += -val; //6 + 1
+            } else if (0 < val) {
+                if (b == 0) {
+                    b = (10 - val);
+                } else {
+                    b *= (10 - val);
+                }
+                bc += 1;
+                max10 += val;  // 10
+                maxval = max(maxval, val);
+            }
+        }
+        if (ac) {
+            a /= math.pow(10, ac-1);
+            a = 10 - a;
+            a = max(-minval, a);
+        }
+        if (bc) {
+            b /= math.pow(10, bc-1);
+            b = 10 - b;
+            b = max(maxval, b);
+        }
+
+        pvalr = 100;
+        foreach (var pval in reversed(pvals)) {
+            pvalr *= 10;
+            pvalr *= 10-pval;
+            pvalr /= 100; // pvalr //= 100
+        }
+
+        if (pvalr < 1) {
+            // 防御修正でn[1],n[2],n[3],...,n[N]の値がある時、
+            // (1-n[N]/10)*(1-n[N-1]/10)*...,(1-n[1]/10)の結果が
+            // 0.01未満になれば+10効果を得られる(計算途中の誤差は切り捨て)。
+            // ただし適性による変動がある
+            max10 += 1;
+        }
+
+        if (max10 < 3) {
+            // 防御修正で+10があると完全にダメージが無くなるが、
+            // -1～5で1回、-6以上で2回分、+10効果を打ち消すことができる
+            // ただし+30以上は無効化不可
+            max10 -= max10counter;
+        }
+
+        value = (int)(b) - (int)(a);
+        if (name == "defense") {
+            if (0 < max10) {
+                value = 10;
+            } else {
+                // 防御ボーナスは単体の+10がない限り最大で+9になる
+                value = cw.util.numwrap(value, -10, 9);
+            }
+        } else {
+            value = cw.util.numwrap(value, -10, 10);
+        }
+
+        return value;
+    }
+
+    //---------------------------------------------------------------------------
+    //　クーポン関連
+    //---------------------------------------------------------------------------
+
+    @synclock(_couponlock);
+    public UNK get_coupons() {
+        // """
+        // 所有クーポンをセット型で返す。
+        // """
+        return this._get_coupons();
+    }
+    public UNK _get_coupons() {
+        return set(this.coupons.iterkeys());
+    }
+
+    @synclock(_couponlock);
+    public UNK get_couponvalue(name, raiseerror=true) {
+        // """
+        // クーポンの値を返す。
+        // """
+        return this._get_couponvalue(name, raiseerror);
+    }
+
+    public UNK _get_couponvalue(name, raiseerror=true) {
+        if (raiseerror) {
+            return this.coupons[name][0];
+        } else {
+            data = this.coupons.get(name, null);
+            if (data) {
+                return data[0];
+            } else {
+                return null;
+            }
+        }
+    }
+
+    @synclock(_couponlock);
+    public UNK has_coupon(coupon) {
+        // """
+        // 引数のクーポンを所持しているかbool値で返す。
+        // """
+        return this._has_coupon(coupon);
+    }
+
+    public UNK _has_coupon(coupon) {
+        return coupon in this.coupons;
+    }
+
+    @synclock(_couponlock);
+    public UNK get_couponsvalue() {
+        return this._get_couponsvalue();
+    }
+
+    public UNK _get_couponsvalue() {
+        // """
+        // 全ての所持クーポンの点数を合計した値を返す。
+        // """
+        cnt = 0;
+
+        foreach (var coupon, data in this.coupons.iteritems()) {
+            if (coupon && !coupon[0] in (u"＠", u"：", u"；")) {
+                value = data[0];
+                cnt += value;
+            }
+        }
+
+        return cnt;
+    }
+
+    @synclock(_couponlock);
+    public UNK get_specialcoupons() {
+        // """;
+        // "＠"で始まる特殊クーポンの;
+        // 辞書(key=クーポン名, value=クーポン得点)を返す。;
+        // """;
+        return this._get_specialcoupons();
+    }
+
+    public UNK _get_specialcoupons() {
+        d = {};
+
+        foreach (var coupon, data in this.coupons.iteritems()) {
+            if (coupon && coupon.startswith(u"＠")) {
+                value = data[0];
+                d[coupon] = value;
+            }
+        }
+
+        return d;
+    }
+
+    @synclock(_couponlock);
+    public UNK replace_allcoupons(UNK seq, UNK syscoupons={}.copy()) {
+        // """システムクーポン以外の全てのクーポンを;
+        // listの内容に入れ替える。;
+        // 所持クーポンが変化したらtrueを返す。;
+        // seq: クーポン情報のタプル(name, value)のリスト。;
+        // syscoupons: このコレクション内にあるクーポンは;
+        //             システムクーポンとして処理対象外にする;
+        // """;
+        old_coupons = {};
+        foreach (var name, (value, e) in this.coupons.iteritems()) {
+            old_coupons[name] = value;
+        }
+        revcoupon_old = false;
+        revcoupon_new = false;
+        // システムクーポン以外を一旦除去
+        foreach (var name in this._get_coupons()) {
+            if (syscoupons == null || !(name.startswith(u"＠") || name in syscoupons)) {
+                this._remove_coupon(name, false);
+            }
+            revcoupon_old |= (name == u"：Ｒ");
+        }
+
+        sexcoupons = set(cw.cwpy.setting.sexcoupons);
+        periodcoupons = set(cw.cwpy.setting.periodcoupons);
+        naturecoupons = set(cw.cwpy.setting.naturecoupons);
+
+        // クーポン追加
+        foreach (var coupon in seq) {
+            name = coupon[0];
+            if (name in sexcoupons) {
+                old = this._get_sex();
+                if (old) {
+                    this._remove_coupon(old);
+                }
+            }
+            if (name in periodcoupons) {
+                old = this._get_age();
+                if (old) {
+                    this._remove_coupon(old);
+                }
+            }
+            if (name in naturecoupons) {
+                old = this._get_talent();
+                if (old) {
+                    this._remove_coupon(old);
+                }
+            }
+
+            this._set_coupon(name, coupon[1], false);
+            revcoupon_new |= (name == u"：Ｒ");
+        }
+
+        // 隠蔽クーポン
+        if (revcoupon_old != revcoupon_new) {
+            this.reversed = revcoupon_old;
+            if (this.status == "hidden") {
+                this.reverse();
+            } else {
+                cw.animation.animate_sprite(self, "reverse");
+            }
+        }
+
+        new_coupons = {};
+        foreach (var name, (value, e) in this.coupons.iteritems()) {
+            new_coupons[name] = value;
+        }
+        return new_coupons != old_coupons;
+    }
+
+    @synclock(_couponlock);
+    public UNK get_sex() {
+        return this._get_sex();
+    }
+
+    public UNK _get_sex() {
+        foreach (var coupon in cw.cwpy.setting.sexcoupons) {
+            if (coupon in this.coupons) {
+                return coupon;
+            }
+        }
+
+        return cw.cwpy.setting.sexcoupons[0];
+    }
+
+    @synclock(_couponlock);
+    public UNK set_sex(UNK sex) {
+        this._set_sex(sex);
+    }
+
+    public UNK _set_sex(sex) {
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        old = this._get_sex();
+        if (old) {
+            this._remove_coupon(old);
+        }
+        this._set_coupon(sex, 0);
+    }
+
+    @synclock(_couponlock);
+    public UNK has_sex() {
+        return this._has_sex();
+    }
+
+    public bool _has_sex() {
+        foreach (var coupon in cw.cwpy.setting.sexcoupons) {
+            if (coupon in this.coupons) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @synclock(_couponlock);
+    public UNK get_age() {
+        return this._get_age();
+    }
+
+    public UNK _get_age() {
+        foreach (var coupon in cw.cwpy.setting.periodcoupons) {
+            if (coupon in this.coupons) {
+                return coupon;
+            }
+        }
+
+        return cw.cwpy.setting.periodcoupons[0];
+    }
+
+    @synclock(_couponlock);
+    public UNK set_age(age) {
+        this._set_age(age);
+    }
+
+    public UNK _set_age(age) {
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        old = this._get_age();
+        if (old) {
+            this._remove_coupon(old);
+        }
+        this._set_coupon(age, 0);
+    }
+
+    @synclock(_couponlock);
+    public UNK has_age() {
+        return this._has_age();
+    }
+
+    public bool _has_age() {
+        foreach (var coupon in cw.cwpy.setting.periodcoupons) {
+            if (coupon in this.coupons) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @synclock(_couponlock);
+    public UNK get_talent() {
+        return this._get_talent();
+    }
+
+    public UNK _get_talent() {
+        foreach (var coupon in cw.cwpy.setting.naturecoupons) {
+            if (coupon in this.coupons) {
+                return coupon;
+            }
+        }
+
+        return cw.cwpy.setting.naturecoupons[0];
+    }
+
+    @synclock(_couponlock);
+    public UNK set_talent(talent) {
+        this._set_talent(talent);
+    }
+
+    public UNK _set_talent(talent) {
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        old = this._get_talent();
+        if (old) {
+            this._remove_coupon(old);
+        }
+        this._set_coupon(talent, 0);
+    }
+
+    @synclock(_couponlock);
+    public bool has_talent() {
+        return this._has_talent();
+    }
+
+    public bool _has_talent() {
+        foreach (var coupon in cw.cwpy.setting.naturecoupons) {
+            if (coupon in this.coupons) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @synclock(_couponlock);
+    public UNK get_makings() {
+        return this._get_makings();
+    }
+
+    public UNK _get_makings() {
+        // """;
+        // 所持する特徴クーポンをセット型で返す。;
+        // """;
+        makings = set();
+        foreach (var making in cw.cwpy.setting.makingcoupons) {
+            if (making in this.coupons) {
+                makings.add(making);
+            }
+        }
+        return makings;
+    }
+
+    @synclock(_couponlock);
+    public UNK set_makings(makings) {
+        return this._set_makings(makings);
+    }
+
+    public UNK _set_makings(makings) {
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        foreach (var coupon in cw.cwpy.setting.makingcoupons) {
+            if (coupon in this.coupons) {
+                this._remove_coupon(coupon);
+            }
+        }
+        foreach (var coupon in makings) {
+            this._set_coupon(coupon, 0);
+        }
+    }
+
+    @synclock(_couponlock);
+    public UNK set_race(race) {
+        this._set_race(race);
+    }
+
+    public UNK _set_race(race) {
+        old = this._get_race();
+        if (race == old) {
+            return;
+        }
+        if (!isinstance(old, cw.header.UnknownRaceHeader)) {
+            this._remove_coupon(u"＠Ｒ" + old.name);
+        }
+        if (!isinstance(race, cw.header.UnknownRaceHeader)) {
+            this._set_coupon(u"＠Ｒ" + race.name, 0);
+        }
+    }
+
+    @synclock(_couponlock);
+    public UNK get_race() {
+        return this._get_race();
+    }
+
+    public UNK _get_race() {
+        foreach (var race in cw.cwpy.setting.races) {
+            if (this._has_coupon(u"＠Ｒ" + race.name)) {
+                return race;
+            }
+        }
+        return cw.cwpy.setting.unknown_race;
+    }
+
+    @synclock(_couponlock);
+    public UNK count_timedcoupon(value=-1) {
+        // """
+        // 時限クーポンの点数を減らす。
+        // value: 減らす数。
+        // """
+        if (this.timedcoupons) {
+            if (cw.cwpy.ydata) {
+                cw.cwpy.ydata.changed();
+            }
+            this.data.is_edited = true;
+
+            foreach (var coupon in list(this.timedcoupons)) {
+                oldvalue, e = this.coupons[coupon];
+                if (oldvalue == 0) {
+                    continue;
+                }
+
+                n = oldvalue + value;
+                n = cw.util.numwrap(n, 0, 999);
+
+                if (n > 0) {
+                    e.set("value", (string)(n));
+                    this.coupons[coupon] = n, e;
+                } else {
+                    this._remove_coupon(coupon);
+                }
+            }
+        }
+    }
+
+    @synclock(_couponlock);
+    public UNK set_coupon(name, value) {
+        // """
+        // クーポンを付与する。同名のクーポンがあったら上書き。
+        // 時限クーポン("："or"；"で始まるクーポン)はtimedcouponsに登録する。
+        // name: クーポン名。
+        // value: クーポン点数。
+        // """
+        this._set_coupon(name, value, true);
+    }
+
+    public UNK _set_coupon(name, value, update=true) {
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        value = (int)(value);
+        value = cw.util.numwrap(value, -999, 999);
+        removed = this._remove_coupon(name, false);
+        e = this.data.make_element("Coupon", name, {"value" : (string)(value)});
+        this.data.append("Property/Coupons", e);
+        this.coupons[name] = value, e;
+
+        // 時限クーポン
+        if (name.startswith(u"：") || name.startswith(u"；")) {
+            this.timedcoupons.add(name);
+        }
+
+        // 隠蔽クーポン
+        if (name == u"：Ｒ" && !this.is_reversed()) {
+            if (update && !removed) {
+                if (this.status == "hidden") {
+                    this.reverse();
+                } else {
+                    cw.animation.animate_sprite(self, "reverse");
+                }
+            }
+            this.reversed = true;
+        }
+
+        if (!removed) {
+            // 効果対象の変更(Wsn.2)
+            effectevent = cw.cwpy.event.get_effectevent();
+            if (effectevent && name == u"＠効果対象") {
+                effectevent.add_target(this);
+            }
+        }
+
+        // 隠蔽クーポンがあるため
+        this.adjust_action();
+    }
+
+    @synclock(_couponlock);
+    public UNK get_timedcoupons() {
+        // """
+        // 時限クーポンのデータをまとめたsetを返す。
+        // """
+        s = set();
+
+        foreach (var coupon in this.coupons.iterkeys()) {
+            if (coupon.startswith(u"：") || coupon.startswith(u"；")) {
+                s.add(coupon);
+            }
+        }
+
+        return s;
+    }
+
+    @synclock(_couponlock);
+    public UNK remove_coupon(UNK name) {
+        // """
+        // 同じ名前のクーポンを全て剥奪する。
+        // name: クーポン名。
+        // """
+        return this._remove_coupon(name, true);
+    }
+
+    public bool _remove_coupon(UNK name, bool update=true) {
+        if (!name in this.coupons) {
+            return false;
+        }
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+
+        _value, e = this.coupons[name];
+        this.data.remove("Property/Coupons", e);
+        del this.coupons[name];
+
+        // 時限クーポン
+        if (name in this.timedcoupons) {
+            this.timedcoupons.remove(name);
+        }
+
+        // 隠蔽クーポン
+        if (name == u"：Ｒ" && this.is_reversed()) {
+            if (update) {
+                if (this.status == "hidden") {
+                    this.reverse();
+                } else {
+                    cw.animation.animate_sprite(self, "reverse");
+                }
+            }
+            this.reversed = false;
+        }
+
+        // 効果対象の変更(Wsn.2)
+        effectevent = cw.cwpy.event.get_effectevent();
+        if (effectevent && name == u"＠効果対象") {
+            effectevent.remove_target(this);
+        }
+
+        return true;
+    }
+
+    @synclock(_couponlock);
+    public void remove_timedcoupons(bool battleonly=false) {
+        // """
+        // 時限クーポンを削除する。イメージは更新しない。
+        // battleonly: trueの場合は"；"の時限クーポンのみ削除。
+        // """
+        foreach (var name in set(this.timedcoupons)) {
+            if (!battleonly || name.startswith(u"；")) {
+                this._remove_coupon(name, false);
+            }
+        }
+    }
+
+    @synclock(_couponlock);
+    public void remove_numbercoupon() {
+        // """
+        // "＿１"等の番号クーポンを削除。
+        // """
+        // u"＠ＭＰ３"はCardWirth 1.29以降で配布されるクーポン
+        names = [cw.cwpy.msgs["number_1_coupon"], u"＿１", u"＿２", u"＿３", u"＿４", u"＿５", u"＿６", u"＠ＭＰ３"];
+
+        foreach (var name in names) {
+            this._remove_coupon(name);
+        }
+    }
+
+    //---------------------------------------------------------------------------
+    //　レベル変更用
+    //---------------------------------------------------------------------------
+
+    @synclock(_couponlock);
+    public UNK get_limitlevel() {
+        // """レベルの調節範囲の最大値を返す。"""
+        return this._get_limitlevel();
+
+    public UNK _get_limitlevel() {
+        l = this._get_couponvalue(u"＠レベル原点", raiseerror=false);
+        if (!l == null) {
+            return max(this.level, l);
+        } else {
+            return this.level;
+        }
+    }
+
+    @synclock(_couponlock);
+    public int check_level() {
+        coupons = this._get_specialcoupons();
+        level = coupons[u"＠レベル原点"];
+
+        limit = this._get_levelmax(coupons);
+        if (!u"＠レベル上限" in coupons) {
+            this._set_coupon(u"＠レベル上限", limit);
+        }
+
+        // 解の公式で現在の経験点で到達できるレベルを算出
+        cnt = max(1, this._get_couponsvalue());
+        olevel = (int)((-1 + math.sqrt(1 + 4 * cnt)) / 2.0) + 1;
+        olevel = min(limit, olevel);
+
+        return olevel - level;
+    }
+
+    @synclock(_couponlock);
+    public UNK get_levelmax() {
+        coupons = this._get_specialcoupons();
+        return this._get_levelmax(coupons);
+    }
+
+    public UNK _get_levelmax(coupons) {
+        if (u"＠レベル上限" in coupons) {
+            limit = coupons[u"＠レベル上限"];
+        } else if (u"＠本来の上限" in coupons) {
+            limit = coupons[u"＠本来の上限"];
+            this._set_coupon(u"＠レベル上限", limit);
+        } else {
+            limit = 10;
+        }
+        return limit;
+    }
+
+    @synclock(_couponlock);
+    public UNK set_level(UNK value, bool regulate=false, bool debugedit=false, UNK backpack_party=null, bool revert_cardpocket=true) {
+        // """レベルを設定する。;
+        // regulate: レベルを調節する場合はtrue。;
+        // backpack_party: レベルが下がって手札を持ちきれなくなった際、;
+        //                 このパーティの荷物袋へ入れる。;
+        //                 nullの場合はアクティブなパーティの荷物袋か;
+        //                 カード置場へ入る。;
+        // """;
+        // 調節前のレベル
+        limit = this._get_limitlevel();
+        if (regulate) {
+            value = min(value, limit);
+        }
+
+        // レベル
+        uplevel = value - this.level;
+        if (uplevel == 0) {
+            return;
+        }
+
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+
+        vit = max(1, (int)(this.physical.get("vit")));
+        minval = max(1, (int)(this.physical.get("min")));
+
+        coeff = this.data.getfloat("Property/Life", "coefficient", 0.0);
+        if (coeff <= 0.0) {
+            maxlife = calc_maxlife(vit, minval, this.level);
+            if ((int)(maxlife) == this.maxlife) {
+                coeff = 1;
+            } else {
+                // 最大HP10でレベル10のキャラクタのレベルを9に下げたら
+                // 最大HPが90に増えてしまった、というような問題を
+                // 避けるため、計算上の体力と実際の最大体力が食い違う
+                // 場合は計算用係数を付与する
+                coeff = float(this.maxlife) / (int)(maxlife);
+                this.data.edit("Property/Life", (string)(coeff), "coefficient");
+            }
+        }
+
+        this.level = value;
+        this.data.edit("Property/Level", (string)(this.level));
+        // 最大HPとHP
+        maxlife = calc_maxlife(vit, minval, this.level);
+        if (coeff != 1) {
+            maxlife = round(maxlife * coeff);
+        }
+        maxlife = (int)(max(1, maxlife));
+        this.maxlife += maxlife - this.maxlife;
+        this.data.edit("Property/Life", (string)(this.maxlife), "max");
+        this.set_life(this.maxlife);
+        // 技能の使用回数
+        foreach (var header in this.cardpocket[cw.POCKET_SKILL]) {
+            header.get_uselimit(reset=true);
+        }
+
+        if (!regulate) {
+            // レベル原点・EPクーポン操作
+            foreach (var e in this.data.find("Property/Coupons")) {
+                if (!e.text) {
+                    continue;
+                }
+
+                if (e.text == u"＠レベル原点") {
+                    e.attrib["value"] = (string)(this.level);
+                    this.coupons[e.text] = this.level, e;
+                } else if (e.text == u"＠ＥＰ") {
+                    value = e.getint(".", "value", 0) + (value - limit) * 10;
+                    e.attrib["value"] = (string)(value);
+                    this.coupons[e.text] = value, e;
+                }
+            }
+        }
+
+        if (uplevel < 0) {
+            // 所持可能上限を越えたカードを、荷物袋ないしカード置き場へ移動
+            if (backpack_party || isinstance(self, cw.sprite.card.PlayerCard)) {
+                targettype = "BACKPACK";
+            } else {
+                targettype = "STOREHOUSE";
+            }
+            targettype_original = targettype;
+            foreach (var index in range(3)) {
+                n = this.cardpocket[index].Count;
+                maxn = this.get_cardpocketspace()[index];
+                while (n > maxn) {
+                    header = this.cardpocket[index][-1];
+                    if (index == cw.POCKET_BEAST && !header.attachment) {
+                        targettype = "TRASHBOX";
+                    } else {
+                        targettype = targettype_original;
+                    }
+                    if (regulate && targettype != "TRASHBOX") {
+                        this.add_cardpocketmemory(header);
+                    }
+                    cw.cwpy.trade(targettype=targettype, header=header, from_event=true, party=backpack_party, sort=false);
+                    n -= 1;
+                }
+            }
+            if (targettype_original == "BACKPACK") {
+                cw.cwpy.ydata.party.sort_backpack();
+            } else if (targettype_original == "STOREHOUSE") {
+                cw.cwpy.ydata.sort_storehouse();
+            }
+            foreach (var header in this.cardpocket[cw.POCKET_SKILL]) {
+                header.get_uselimit(reset=true);
+            }
+        } else if (0 < uplevel && revert_cardpocket) {
+            // レベル調節で手放したカードを戻す
+            this.revert_cardpocket(backpack_party);
+        }
+    }
+
+    public UNK add_cardpocketmemory(UNK header) {
+        // """レベル調節前に所持していたカードを記憶する。"""
+        memories = this.data.find("./CardMemories");
+        if (memories == null) {
+            memories = cw.data.make_element("CardMemories");
+            this.data.append(".", memories);
+        }
+        e = cw.data.make_element("CardMemory");
+        e.append(cw.data.make_element("Type", header.type));
+        e.append(cw.data.make_element("Name", header.name));
+        e.append(cw.data.make_element("Description", header.desc));
+        e.append(cw.data.make_element("Scenario", header.scenario));
+        e.append(cw.data.make_element("Author", header.author));
+        if (type != "BeastCard") {
+            e.append(cw.data.make_element("Hold", (string)(header.hold)));
+        }
+        if (header.type != "SkillCard") {
+            e.append(cw.data.make_element("UseLimit", (string)(header.uselimit)));
+        }
+        memories.append(e);
+    }
+
+    public UNK revert_cardpocket(backpack_party=null) {
+        // """記憶していたカードを検索し、
+        // 見つかったら再び所持する。"""
+        if (!cw.cwpy.setting.revert_cardpocket) {
+            return;
+        }
+
+        if (!backpack_party) {
+            backpack_party = cw.cwpy.ydata.party;
+        }
+
+        seq = [];
+        if (backpack_party) {
+            seq.extend(backpack_party.backpack);
+            if (!backpack_party.is_adventuring()) {
+                seq.extend(cw.cwpy.ydata.storehouse);
+            }
+        } else {
+            seq.extend(cw.cwpy.ydata.storehouse);
+        }
+
+        maxn = this.get_cardpocketspace();
+        n = [
+             this.get_pocketcards(cw.POCKET_SKILL).Count,
+             this.get_pocketcards(cw.POCKET_ITEM).Count,
+             this.get_pocketcards(cw.POCKET_BEAST).Count
+            ];
+        foreach (var e in reversed(this.data.getfind("./CardMemories", false)[:])) {
+            cardtype = e.gettext("./Type");
+            name = e.gettext("./Name", "");
+            desc = e.gettext("./Description", "");
+            scenario = e.gettext("./Scenario", "");
+            author = e.gettext("./Author", "");
+            if (cardtype == "SkillCard") {
+                index = cw.POCKET_SKILL;
+                uselimit = -1;
+            } else if (cardtype == "ItemCard") {
+                index = cw.POCKET_ITEM;
+                uselimit = e.getint("./UseLimit", -1);
+            } else if (cardtype == "BeastCard") {
+                index = cw.POCKET_BEAST;
+                uselimit = e.getint("./UseLimit", -1);
+            }
+
+            if (n[index] < maxn[index]) {
+                foreach (var header in seq) {
+                    if (header.type == cardtype && header.name == name && header.desc == desc && header.scenario == scenario && header.author == author && (uselimit == -1 || uselimit == header.uselimit)) {
+                        n[index] += 1;
+                        cw.cwpy.trade("PLAYERCARD", target=self, header=header, from_event=true, party=backpack_party);
+                        seq.remove(header);
+                        if (cardtype != "BeastCard") {
+                            hold = e.getbool("./Hold", false);
+                            header.set_hold(hold);
+                        }
+                        break;
+                    }
+                }
+                // 記憶に残すのは持ちきれなかった場合のみ
+                // 持ちきれる場合はカードが見つからなくても
+                // 記憶から除去する
+                this.data.remove("./CardMemories", e);
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------
+    //　状態変更用
+    //---------------------------------------------------------------------------
+
+    public void set_unconsciousstatus(bool clearbeast=true) {
+        // """
+        // 意識不明に伴う状態回復。
+        // 強化値もすべて0、付帯召喚以外の召喚獣カードも消去。
+        // 毒と麻痺は残る。
+        // """
+        this.set_mentality("Normal", 0);
+        this.set_bind(0);
+        this.set_silence(0);
+        this.set_faceup(0);
+        this.set_antimagic(0);
+        this.set_enhance_act(0, 0);
+        this.set_enhance_avo(0, 0);
+        this.set_enhance_res(0, 0);
+        this.set_enhance_def(0, 0);
+        if (clearbeast) {
+            this.set_beast(vanish=true);
+        }
+    }
+
+    public UNK set_fullrecovery(bool decideaction=false) {
+        // """
+        // 完全回復処理。HP＆精神力＆状態異常回復。
+        // 強化値もすべて0、付帯召喚以外の召喚獣カードも消去。
+        // """
+        this.set_life(this.maxlife);
+        this.set_paralyze(-40);
+        this.set_poison(-40);
+        this.set_mentality("Normal", 0);
+        this.set_bind(0);
+        this.set_silence(0);
+        this.set_faceup(0);
+        this.set_antimagic(0);
+        this.set_enhance_act(0, 0);
+        this.set_enhance_avo(0, 0);
+        this.set_enhance_res(0, 0);
+        this.set_enhance_def(0, 0);
+        this.set_skillpower();
+        this.set_beast(vanish=true);
+
+        // 行動を再選択する
+        if (decideaction && cw.cwpy.is_battlestatus() && cw.cwpy.battle.is_ready() && this.is_active()) {
+            this.deck.set(this);
+            this.decide_action();
+        }
+    }
+
+    public UNK set_life(UNK value) {
+        // """
+        // 現在ライフに引数nの値を足す(nが負だと引き算でダメージ)。
+        // """
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        oldlife = this.life;
+        this.life += value;
+        this.life = cw.util.numwrap(this.life, 0, this.maxlife);
+        this.data.edit("Property/Life", (string)((int)(this.life)));
+        this.adjust_action();
+        if (this.is_unconscious()) {
+            this.set_unconsciousstatus();
+        }
+        return this.life - oldlife;
+    }
+
+    public UNK set_paralyze(value) {
+        // """
+        // 麻痺値を操作する。
+        // 麻痺値は0～40の範囲を越えない。
+        // """
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        old = this.paralyze;
+        this.paralyze += value;
+        this.paralyze = cw.util.numwrap(this.paralyze, 0, 40);
+        if (0 < this.paralyze) {
+            this.set_mentality("Normal", 0);
+        }
+        this.data.edit("Property/Status/Paralyze", (string)(this.paralyze));
+        this.adjust_action();
+        return this.paralyze - old;
+    }
+
+    public UNK set_poison(UNK value) {
+        // """
+        // 中毒値を操作する。
+        // 中毒値は0～40の範囲を越えない。
+        // """
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        old = this.poison;
+        this.poison += value;
+        this.poison = cw.util.numwrap(this.poison, 0, 40);
+        this.data.edit("Property/Status/Poison", (string)(this.poison));
+        return this.poison - old;
+    }
+
+    public UNK set_mentality(string name, UNK value, bool overwrite=true) {
+        // """
+        // 精神状態とその継続ラウンド数を操作する。
+        // 継続ラウンド数の範囲は0～999を越えない。
+        // """
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        if (this.is_unconscious() || this.is_paralyze()) {
+            name = "Normal";
+            value = 0;
+        }
+        value = cw.util.numwrap(value, 0, 999);
+        if (name == "Normal") {
+            value = 0;
+        } else if (value == 0) {
+            name = "Normal";
+        }
+
+        if (!overwrite && name == this.mentality && name != "Normal") {
+            // 長い方の効果時間を優先
+            this.mentality_dur = max(this.mentality_dur, value);
+        } else {
+            this.mentality = name;
+            this.mentality_dur = value;
+        }
+
+        path = "Property/Status/Mentality";
+        this.data.edit(path, this.mentality);
+        this.data.edit(path, (string)(this.mentality_dur), "duration");
+        this.adjust_action();
+    }
+
+    public UNK set_bind(UNK value, bool overwrite=true) {
+        // """
+        // 束縛状態の継続ラウンド数を操作する。
+        // 継続ラウンド数の範囲は0～999を越えない。
+        // """
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        if (this.is_unconscious()) {
+            value = 0;
+        }
+        if (overwrite) {
+            this.bind = value;
+        } else {
+            this.bind = max(this.bind, value);
+        }
+        this.bind = cw.util.numwrap(this.bind, 0, 999);
+        this.data.edit("Property/Status/Bind", (string)(this.bind), "duration");
+        this.adjust_action();
+    }
+
+    public UNK set_silence(UNK value, bool overwrite=true) {
+        // """
+        // 沈黙状態の継続ラウンド数を操作する。
+        // 継続ラウンド数の範囲は0～999を越えない。
+        // """
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        if (this.is_unconscious()) {
+            value = 0;
+        }
+        if (overwrite) {
+            this.silence = value;
+        } else {
+            this.silence = max(this.silence, value);
+        }
+        this.silence = cw.util.numwrap(this.silence, 0, 999);
+        this.data.edit("Property/Status/Silence", (string)(this.silence), "duration");
+    }
+
+    public UNK set_faceup(UNK value, bool overwrite=true) {
+        // """
+        // 暴露状態の継続ラウンド数を操作する。
+        // 継続ラウンド数の範囲は0～999を越えない。
+        // """
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        if (this.is_unconscious()) {
+            value = 0;
+        }
+        if (overwrite) {
+            this.faceup = value;
+        } else {
+            this.faceup = max(this.faceup, value);
+        }
+        this.faceup = cw.util.numwrap(this.faceup, 0, 999);
+        this.data.edit("Property/Status/FaceUp", (string)(this.faceup), "duration");
+    }
+
+    public UNK set_antimagic(UNK value, bool overwrite=true) {
+        // """
+        // 魔法無効状態の継続ラウンド数を操作する。
+        // 継続ラウンド数の範囲は0～999を越えない。
+        // """
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        if (this.is_unconscious()) {
+            value = 0;
+        }
+        if (overwrite) {
+            this.antimagic = value;
+        } else {
+            this.antimagic = max(this.antimagic, value);
+        }
+        this.antimagic = cw.util.numwrap(this.antimagic, 0, 999);
+        this.data.edit("Property/Status/AntiMagic", (string)(this.antimagic), "duration");
+    }
+
+    public UNK set_vanish(bool battlespeed=false) {
+        // """
+        // 対象消去を行う。
+        // """
+        if (isinstance(self, cw.character.Friend)) {
+            // 1.50までは同行NPCに対象消去は効かない
+            return;
+        }
+        if (!this.is_vanished()) {
+            if (cw.cwpy.ydata) {
+                cw.cwpy.ydata.changed();
+            }
+            this._vanished = true;
+            if (isinstance(self, cw.character.Player)) {
+                cw.animation.animate_sprite(self, "vanish", battlespeed=battlespeed);
+                if (cw.cwpy.sct.enable_vanishmembercancellation(cw.cwpy.sdata.get_versionhint(frompos=cw.HINT_SCENARIO)) || cw.cwpy.sct.enable_vanishmembercancellation(cw.cwpy.sdata.get_versionhint(frompos=cw.HINT_AREA))) {
+                    cw.cwpy.ydata.party.vanished_pcards.append(this);
+                } else {
+                    this.commit_vanish();
+                }
+            } else {
+                cw.animation.animate_sprite(self, "delete", battlespeed=battlespeed);
+                this.commit_vanish();
+            }
+            cw.cwpy.vanished_card(this);
+        }
+    }
+
+    public UNK cancel_vanish() {
+        // """対象消去をキャンセルする。
+        // 表示処理は行わないため、呼び出し後に行う必要がある。
+        // """
+        if (!this.is_vanished()) {
+            return;
+        }
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+
+        assert !cw.cwpy.cardgrp.has(this);
+        assert this.data in cw.cwpy.ydata.party.members;
+
+        this._vanished = false;
+        cw.cwpy.cardgrp.add(self, layer=this.layer);
+        cw.cwpy.pcards.insert(cw.cwpy.ydata.party.members.index(this.data), self);
+    }
+
+    public UNK commit_vanish() {
+        if (!this.is_vanished()) {
+            return;
+        }
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+
+        if (isinstance(self, cw.character.Player)) {
+            // PCの場合、プレミアカードを荷物袋へ移動する
+            foreach (var pocket in this.cardpocket) {
+                foreach (var card in pocket[:]) {
+                    if (card.premium == "Premium") {
+                        cw.cwpy.trade("BACKPACK", header=card, from_event=true, sort=false);
+                    }
+                }
+            }
+
+            index = cw.cwpy.ydata.party.members.index(this.data);
+            foreach (var i in xrange(index, cw.cwpy.ydata.party.members)).Count {
+                pi = i + 1;
+                cw.cwpy.file_updates.update(cw.cwpy.update_pcimage(pi, deal=false));
+            }
+
+            foreach (var bgtype, d in cw.cwpy.background.bgs) {
+                if (bgtype == cw.sprite.background.BG_PC) {
+                    pcnumber = d[0];
+                    if (index + 1 <= pcnumber) {
+                        cw.cwpy.file_updates_bg = true;
+                        break;
+                    }
+                } else if (bgtype == cw.sprite.background.BG_TEXT) {
+                    namelist = d[1];
+                    foreach (var item in namelist) {
+                        if (item.data is self) {
+                            // テキストセルに表示中の名前
+                            // 対象消去された場合は最後に表示された文字列に固定する
+                            item.data = null;
+                        }
+                    }
+                }
+            }
+
+            cw.cwpy.ydata.party.remove(this);
+        }
+
+        this.lost();
+    }
+
+    public void set_enhance_act(int value, UNK duration) {
+        // """
+        // 行動力強化値とその継続ラウンド数を操作する。
+        // 強化値の範囲は-10～10、継続ラウンド数の範囲は0～999を越えない。
+        // """
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        if (this.is_unconscious()) {
+            value = 0;
+            duration = 0;
+        }
+        if (value == 0) {
+            duration = 0;
+        }
+        if (duration <= 0) {
+            value = 0;
+        }
+        this.enhance_act = value;
+        this.enhance_act = cw.util.numwrap(this.enhance_act, -10, 10);
+        this.enhance_act_dur = duration;
+        this.enhance_act_dur = cw.util.numwrap(this.enhance_act_dur, 0, 999);
+        path = "Property/Enhance/Action";
+        this.data.edit(path, (string)(this.enhance_act));
+        this.data.edit(path, (string)(this.enhance_act_dur), "duration");
+    }
+
+    public void set_enhance_avo(int value, UNK duration) {
+        // """
+        // 回避力強化値とその継続ラウンド数を操作する。
+        // 強化値の範囲は-10～10、継続ラウンド数の範囲は0～999を越えない。
+        // """
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        if (this.is_unconscious()) {
+            value = 0;
+            duration = 0;
+        }
+        if (value == 0) {
+            duration = 0;
+        }
+        if (duration <= 0) {
+            value = 0;
+        }
+        this.enhance_avo = value;
+        this.enhance_avo = cw.util.numwrap(this.enhance_avo, -10, 10);
+        this.enhance_avo_dur = duration;
+        this.enhance_avo_dur = cw.util.numwrap(this.enhance_avo_dur, 0, 999);
+        path = "Property/Enhance/Avoid";
+        this.data.edit(path, (string)(this.enhance_avo));
+        this.data.edit(path, (string)(this.enhance_avo_dur), "duration");
+    }
+
+    public void set_enhance_res(int value, UNK duration) {
+        // """
+        // 抵抗力強化値とその継続ラウンド数を操作する。
+        // 強化値の範囲は-10～10、継続ラウンド数の範囲は0～999を越えない。
+        // """
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        if (this.is_unconscious()) {
+            value = 0;
+            duration = 0;
+        }
+        if (value == 0) {
+            duration = 0;
+        }
+        if (duration <= 0) {
+            value = 0;
+        }
+        this.enhance_res = value;
+        this.enhance_res = cw.util.numwrap(this.enhance_res, -10, 10);
+        this.enhance_res_dur = duration;
+        this.enhance_res_dur = cw.util.numwrap(this.enhance_res_dur, 0, 999);
+        path = "Property/Enhance/Resist";
+        this.data.edit(path, (string)(this.enhance_res));
+        this.data.edit(path, (string)(this.enhance_res_dur), "duration");
+    }
+
+    public void set_enhance_def(int value, UNK duration) {
+        // """
+        // 抵抗力強化値とその継続ラウンド数を操作する。
+        // 強化値の範囲は-10～10、継続ラウンド数の範囲は0～999を越えない。
+        // """
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        if (this.is_unconscious()) {
+            value = 0;
+            duration = 0;
+        }
+        if (value == 0) {
+            duration = 0;
+        }
+        if (duration <= 0) {
+            value = 0;
+        }
+        this.enhance_def = value;
+        this.enhance_def = cw.util.numwrap(this.enhance_def, -10, 10);
+        this.enhance_def_dur = duration;
+        this.enhance_def_dur = cw.util.numwrap(this.enhance_def_dur, 0, 999);
+        path = "Property/Enhance/Defense";
+        this.data.edit(path, (string)(this.enhance_def));
+        this.data.edit(path, (string)(this.enhance_def_dur), "duration");
+    }
+
+    public void set_skillpower(int value=999) {
+        // """;
+        // 精神力(スキルの使用回数)を操作する。;
+        // recoveryがtrueだったら、最大値まで回復。;
+        // falseだったら、0にする。;
+        // """;
+        if (cw.cwpy.ydata) {
+            cw.cwpy.ydata.changed();
+        }
+        foreach (var header in this.get_pocketcards(cw.POCKET_SKILL)) {
+            header.set_uselimit(value);
+        }
+
+        if (0 < value) {
+            if (cw.cwpy.is_battlestatus()) {
+                this.deck.get_skillpower(this);
+            }
+        } else if (value < 0) {
+            if (cw.cwpy.is_battlestatus()) {
+                this.deck.lose_skillpower(self, -value);
+            }
+        }
+    }
+    
     public void set_beast(UNK element=None, bool vanish=false, bool is_scenariocard=false)
     {
         // """召喚獣を召喚する。付帯召喚設定は強制的にクリアされる。
