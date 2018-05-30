@@ -12,13 +12,14 @@ import cw;
 
 
 class CWBinaryBase(object):
-    public UNK __init__(parent, f, yadodata=false, materialdir="Material", image_export=true) {
-        this.set_root(parent);
-        this.xmltype = this.__class__.__name__;
+    public CWBinaryBase(UNK parent, UNK f, bool yadodata=false, UNK materialdir="Material", bool image_export=true) {
+        this.set_root(parent); // TODO
+        this.xmltype = this.__class__.__name__; // TODO
         if (hasattr(f, "name")) {
             this.fpath = f.name;
         } else {
             this.fpath = "";
+        }
         this.materialbasedir = "";
         this.set_materialdir(materialdir);
         this.set_image_export(image_export, false);
@@ -29,84 +30,105 @@ class CWBinaryBase(object):
             this.yadodata = parent.yadodata;
         } else {
             this.yadodata = yadodata;
+        }
+    }
 
     public UNK set_root(parent) {
         if (parent) {
             this.root = parent.root;
         } else {
             this.root = weakref.ref(this);
+        }
+    }
 
     public UNK get_root() {
         return this.root();
+    }
 
-    public UNK set_dir(path) {
+    public UNK set_dir(UNK path) {
         this.get_root().dir = path;
+    }
 
     public UNK get_dir() {
         try {
             return this.get_root().dir;
         } catch (Exception e) {
             return "";
+        }
+    }
 
-    public UNK set_imgdir(path) {
+    public UNK set_imgdir(UNK path) {
         this.get_root().imgdir = path;
+    }
 
     public UNK get_imgdir() {
         try {
             return this.get_root().imgdir;
         } catch (Exception e) {
             return "";
+        }
+    }
 
     public UNK get_fname() {
         fname = os.path.basename(this.fpath);
         return cw.util.splitext(fname)[0];
+    }
 
-    public UNK is_root() {
+    public bool is_root() {
         return bool(self == this.get_root());
+    }
 
     public UNK is_yadodata() {
         return this.yadodata;
+    }
 
-    public UNK set_materialdir(materialdir) {
-        """materialdirを素材ディレクトリとして登録する。;
-        デフォルト値は"Material"。""";
+    public UNK set_materialdir(UNK materialdir) {
+        // """materialdirを素材ディレクトリとして登録する。;
+        // デフォルト値は"Material"。""";
         this._materialdir = materialdir;
+    }
 
     public UNK get_materialdir() {
-        """素材ディレクトリ名を返す。;
-        親要素がある場合、親の設定が優先される。""";
+        // """素材ディレクトリ名を返す。;
+        // 親要素がある場合、親の設定が優先される。""";
         root = this.get_root();
         if (root is self) {
             return this._materialdir;
         } else {
             return root.get_materialdir();
+        }
+    }
 
-    public UNK set_image_export(image_export, force=false) {
-        """XML変換時に格納イメージをエクスポートするか設定する。""";
+    public UNK set_image_export(UNK image_export, bool force=false) {
+        // """XML変換時に格納イメージをエクスポートするか設定する。""";
         this._image_export = image_export;
         this._force_exportsetting = force;
+    }
 
     public UNK get_image_export() {
-        """XML変換時に格納イメージをエクスポートする場合はtrue。;
-        親要素がある場合、親の設定が優先される。""";
+        // """XML変換時に格納イメージをエクスポートする場合はtrue。;
+        // 親要素がある場合、親の設定が優先される。""";
         if (this._force_exportsetting) {
             return this._image_export;
+        }
 
         root = this.get_root();
         if (root is self) {
             return this._image_export;
         } else {
             return root.get_image_export();
+        }
+    }
 
 
 //-------------------------------------------------------------------------------
 // XML作成用
 //-------------------------------------------------------------------------------
 
-    public UNK create_xml(dpath) {
-        """XMLファイルを作成する。;
-        dpath: XMLを作成するディレクトリ;
-        """;
+    public UNK create_xml(UNK dpath) {
+        // """XMLファイルを作成する。;
+        // dpath: XMLを作成するディレクトリ;
+        // """;
         // 保存ディレクトリ設定
         this.set_dir(dpath);
 
@@ -125,35 +147,43 @@ class CWBinaryBase(object):
             // シナリオデータは先頭にidを付与
             if (!this.is_yadodata()) {
                 name = str(this.id).zfill(2) + "_" + name;
+            }
 
             path = util.join_paths(this.get_dir(), this.xmltype, name);
             path = util.check_duplicate(path);
+        }
 
         // xml出力
 
         if (!os.path.isdir(os.path.dirname(path))) {
             os.makedirs(os.path.dirname(path));
+        }
 
         data = this.get_data();
         cw.data.CWPyElementTree(element=data).write(path);
         this.xmlpath = path;
         return path;
+    }
 
-    public UNK export_image() {
-        """内部画像を出力する""";
+    public string export_image() {
+        // """内部画像を出力する""";
         if (!hasattr(self, "image")) {
             return "";
+        }
 
         if (!this.image) {
             return "";
+        }
 
         if (!this.get_image_export()) {
             // パスの代わりにバイナリイメージを使用する
             return cw.binary.image.data_to_code(this.image);
+        }
 
         basedir = this.materialbasedir;
         if (!basedir) {
             basedir = this.get_dir();
+        }
 
         // 画像保存ディレクトリ
         if (this.xmltype == "Summary") {
@@ -162,6 +192,7 @@ class CWBinaryBase(object):
             imgdir = this.get_imgdir();
             if (!basedir) {
                 basedir = this.get_root().materialbasedir;
+            }
 
             if (!imgdir) {
                 root = this.get_root();
@@ -171,17 +202,19 @@ class CWBinaryBase(object):
                     imgdir = util.join_paths(basedir, root.xmltype, name);
                 } else {
                     imgdir = util.join_paths(basedir, mdir, root.xmltype, name);
+                }
                 imgdir = util.check_duplicate(imgdir);
                 this.set_imgdir(imgdir);
+            }
 
-        elif this.xmltype in ("Adventurer", "SkillCard", "ItemCard",;
-                                                    "BeastCard", "CastCard"):
+        } else if (this.xmltype in ("Adventurer", "SkillCard", "ItemCard", "BeastCard", "CastCard") {
             name = util.check_filename(this.name);
             mdir = this.get_materialdir();
             if (mdir == "") {
                 imgdir = util.join_paths(basedir, this.xmltype, name);
             } else {
                 imgdir = util.join_paths(basedir, mdir, this.xmltype, name);
+            }
             imgdir = util.check_duplicate(imgdir);
             this.set_imgdir(imgdir);
         } else {
@@ -190,6 +223,8 @@ class CWBinaryBase(object):
                 imgdir = util.join_paths(basedir, this.xmltype);
             } else {
                 imgdir = util.join_paths(basedir, mdir, this.xmltype);
+            }
+        }
 
         // 画像保存
         // 画像パス
@@ -198,14 +233,16 @@ class CWBinaryBase(object):
         } else {
             name = util.check_filename(this.name) + ".bmp";
             path = util.join_paths(imgdir, name);
+        }
 
         // 画像出力
         path = util.check_duplicate(path);
 
         if (!os.path.isdir(imgdir)) {
             os.makedirs(imgdir);
+        }
 
-        with open(path, "wb") as f:
+        with open(path, "wb") as f: // TODO
             f.write(this.image);
             f.flush();
             f.close();
@@ -213,30 +250,33 @@ class CWBinaryBase(object):
         // 最後に参照パスを返す
         path = path.replace(basedir + "/", "", 1);
         return util.repl_escapechar(path);
+    }
 
-    @staticmethod;
-    def check_imgpath(f, e_imgpath, defpostype):
-        """ImagePath要素のWSNバージョンをチェックする。""";
+    public static void check_imgpath(UNK f, UNK e_imgpath, UNK defpostype) {
+        // """ImagePath要素のWSNバージョンをチェックする。""";
         if (e_imgpath == null) {
             return;
+        }
         assert e_imgpath.tag in ("ImagePath", "Talk"), e_imgpath.tag;
         postype = e_imgpath.getattr(".", "positiontype", "Default");
         if (postype in (defpostype, "Default")) {
             return;
+        }
         f.check_wsnversion("2");
+    }
 
-    @staticmethod;
-    def check_coupon(f, coupon):
-        """称号名couponがシステムクーポンであればWSNバージョンをチェックする。;
-        """;
+    public static void check_coupon(UNK f, UNK coupon) {
+        // """称号名couponがシステムクーポンであればWSNバージョンをチェックする。;
+        // """;
         if (coupon in (u"＠効果対象", u"＠効果対象外", u"＠イベント対象", u"＠使用者")) {
             f.check_wsnversion("2");
+        }
+    }
 
-    @staticmethod;
-    def import_image(f, imagepath, convertbitmap=true, fullpath=false, defpostype="TopLeft"):
-        """imagepathの画像を読み込み、バイナリデータとして返す。;
-        ビットマップ以外であればビットマップに変換する。;
-        """;
+    public static UNK import_image(UNK f, UNK imagepath, bool convertbitmap=true, bool fullpath=false, string defpostype="TopLeft") {
+        // """imagepathの画像を読み込み、バイナリデータとして返す。;
+        // ビットマップ以外であればビットマップに変換する。;
+        // """;
         if (isinstance(imagepath, cw.data.CWPyElement)) {
             e = imagepath;
             if (e.tag == "ImagePath") {
@@ -245,13 +285,17 @@ class CWBinaryBase(object):
             } else if (e.tag == "ImagePaths") {
                 if (1 < len(e)) {
                     f.check_wsnversion("1");
+                }
                 CWBinaryBase.check_imgpath(f, e.find("ImagePath"), defpostype);
                 imagepath = e.gettext("ImagePath", "");
             } else {
                 imagepath = "";
+            }
+        }
 
         if (!imagepath) {
             return null;
+        }
 
         if (cw.binary.image.path_is_code(imagepath)) {
             image = cw.binary.image.code_to_data(imagepath);
@@ -266,32 +310,41 @@ class CWBinaryBase(object):
                         fpath = cw.util.join_paths(cw.cwpy.yadodir, imagepath);
                         if (!os.path.isfile(fpath)) {
                             return null;
+                        }
+                    }
+                }
+            }
 
-            with open(fpath, "rb") as f:
+            with open(fpath, "rb") as f: // TODO
                 image = f.read();
                 f.close();
+        }
 
         if (convertbitmap && cw.util.get_imageext(image) != ".bmp") {
-            with io.BytesIO(image) as f:
+            with io.BytesIO(image) as f: // TODO
                 data = wx.ImageFromStream(f);
                 f.close();
-            with io.BytesIO() as f:
+            with io.BytesIO() as f: // TODO
                 data.SaveStream(f, wx.BITMAP_TYPE_BMP);
                 image = f.getvalue();
                 f.close();
+        }
 
         return image;
+    }
 
     public UNK get_data() {
-        """CWPyElementのインスタンスを返す。""";
+        // """CWPyElementのインスタンスを返す。""";
         return null;
+    }
 
-    public UNK get_materialpath(path) {
-        """引数のパスを素材ディレクトリに関連づける。;
-        dpath: 素材ファイルのパス。;
-        """;
+    public string get_materialpath(UNK path) {
+        // """引数のパスを素材ディレクトリに関連づける。;
+        // dpath: 素材ファイルのパス。;
+        // """;
         if (path == u"（なし）") {
             return "";
+        }
         mdir = this.get_materialdir();
         if (mdir == "") {
             return path;
@@ -299,190 +352,197 @@ class CWBinaryBase(object):
             return util.join_paths(mdir, path);
         } else {
             return "";
+        }
+    }
 
-    @staticmethod;
-    def materialpath(path):
-        """素材パスを逆変換する。""";
+    public static string materialpath(string path) {
+        // """素材パスを逆変換する。""";
         if (!path) {
             return "";
+        }
 
         if (path.startswith("Material/")) {
             return path[9:];
         } else {
             return path;
+        }
+    }
 
-    public UNK get_indent(indent) {
-        """インデントの文字列を返す。スペース一個分。""";
+    public string get_indent(int indent) {
+        // """インデントの文字列を返す。スペース一個分。""";
         return " " * indent;
+    }
 
-    public UNK get_propertiestext(d) {
-        """XMLエレメントのプロパティ文字列を返す。""";
+    public string get_propertiestext(UNK d) {
+        // """XMLエレメントのプロパティ文字列を返す。""";
         s = "";
 
         foreach (var key, value in d.iteritems()) {
             s += ' %s="%s"' % (key, value);
 
         return s;
+    }
 
 //-------------------------------------------------------------------------------
 // コンテント
 //-------------------------------------------------------------------------------
 
-    public UNK conv_contenttype(n) {
-        """引数の値から、コンテントの種類を返す。""";
+    public UNK conv_contenttype(int n) {
+        // """引数の値から、コンテントの種類を返す。""";
         if (n == 0) {
-            return "Start", ""                // スタート
+            return "Start", "";                // スタート
         } else if (n == 1) {
-            return "Link", "Start"            // スタートへのリンク
+            return "Link", "Start";            // スタートへのリンク
         } else if (n == 2) {
-            return "Start", "Battle"          // バトル開始
+            return "Start", "Battle";          // バトル開始
         } else if (n == 3) {
             return "End", ""                  // シナリオクリア
         } else if (n == 4) {
-            return "End", "BadEnd"            // ゲームオーバー
+            return "End", "BadEnd";            // ゲームオーバー
         } else if (n == 5) {
-            return "Change", "Area"           // エリア移動
+            return "Change", "Area";           // エリア移動
         } else if (n == 6) {
-            return "Talk", "Message"          // メッセージ
+            return "Talk", "Message";          // メッセージ
         } else if (n == 7) {
-            return "Play", "Bgm"              // BGM変更
+            return "Play", "Bgm";              // BGM変更
         } else if (n == 8) {
-            return "Change", "BgImage"        // 背景変更
+            return "Change", "BgImage";        // 背景変更
         } else if (n == 9) {
-            return "Play", "Sound"            // 効果音
+            return "Play", "Sound";            // 効果音
         } else if (n == 10) {
-            return "Wait", ""                 // 空白時間
+            return "Wait", "";                 // 空白時間
         } else if (n == 11) {
-            return "Effect", ""               // 効果
+            return "Effect", "";               // 効果
         } else if (n == 12) {
-            return "Branch", "Select"         // メンバ選択分岐
+            return "Branch", "Select";         // メンバ選択分岐
         } else if (n == 13) {
-            return "Branch", "Ability"        // 能力判定分岐
+            return "Branch", "Ability";        // 能力判定分岐
         } else if (n == 14) {
-            return "Branch", "Random"         // ランダム分岐
+            return "Branch", "Random";         // ランダム分岐
         } else if (n == 15) {
-            return "Branch", "Flag"           // フラグ分岐
+            return "Branch", "Flag";           // フラグ分岐
         } else if (n == 16) {
-            return "Set", "Flag"              // フラグ変更
+            return "Set", "Flag";              // フラグ変更
         } else if (n == 17) {
-            return "Branch", "MultiStep"      // ステップ多岐分岐
+            return "Branch", "MultiStep";      // ステップ多岐分岐
         } else if (n == 18) {
-            return "Set", "Step"              // ステップ変更
+            return "Set", "Step";              // ステップ変更
         } else if (n == 19) {
-            return "Branch", "Cast"           // キャスト存在分岐
+            return "Branch", "Cast";           // キャスト存在分岐
         } else if (n == 20) {
-            return "Branch", "Item"           // アイテム所持分岐
+            return "Branch", "Item";           // アイテム所持分岐
         } else if (n == 21) {
-            return "Branch", "Skill"          // スキル所持分岐
+            return "Branch", "Skill";          // スキル所持分岐
         } else if (n == 22) {
-            return "Branch", "Info"           // 情報所持分岐
+            return "Branch", "Info";           // 情報所持分岐
         } else if (n == 23) {
-            return "Branch", "Beast"          // 召喚獣存在分岐
+            return "Branch", "Beast";          // 召喚獣存在分岐
         } else if (n == 24) {
-            return "Branch", "Money"          // 所持金分岐
+            return "Branch", "Money";          // 所持金分岐
         } else if (n == 25) {
-            return "Branch", "Coupon"         // 称号分岐
+            return "Branch", "Coupon";         // 称号分岐
         } else if (n == 26) {
-            return "Get", "Cast"              // キャスト加入
+            return "Get", "Cast";              // キャスト加入
         } else if (n == 27) {
-            return "Get", "Item"              // アイテム入手
+            return "Get", "Item";              // アイテム入手
         } else if (n == 28) {
-            return "Get", "Skill"             // スキル入手
+            return "Get", "Skill";             // スキル入手
         } else if (n == 29) {
-            return "Get", "Info"              // 情報入手
+            return "Get", "Info";              // 情報入手
         } else if (n == 30) {
-            return "Get", "Beast"             // 召喚獣獲得
+            return "Get", "Beast";             // 召喚獣獲得
         } else if (n == 31) {
-            return "Get", "Money"             // 所持金増加
+            return "Get", "Money";             // 所持金増加
         } else if (n == 32) {
-            return "Get", "Coupon"            // 称号付与
+            return "Get", "Coupon";            // 称号付与
         } else if (n == 33) {
-            return "Lose", "Cast"             // キャスト離脱
+            return "Lose", "Cast";             // キャスト離脱
         } else if (n == 34) {
-            return "Lose", "Item"             // アイテム喪失
+            return "Lose", "Item";             // アイテム喪失
         } else if (n == 35) {
-            return "Lose", "Skill"            // スキル喪失
+            return "Lose", "Skill";            // スキル喪失
         } else if (n == 36) {
-            return "Lose", "Info"             // 情報喪失
+            return "Lose", "Info";             // 情報喪失
         } else if (n == 37) {
-            return "Lose", "Beast"            // 召喚獣喪失
+            return "Lose", "Beast";            // 召喚獣喪失
         } else if (n == 38) {
-            return "Lose", "Money"            // 所持金減少
+            return "Lose", "Money";            // 所持金減少
         } else if (n == 39) {
-            return "Lose", "Coupon"           // 称号剥奪
+            return "Lose", "Coupon";           // 称号剥奪
         } else if (n == 40) {
-            return "Talk", "Dialog"           // セリフ
+            return "Talk", "Dialog";           // セリフ
         } else if (n == 41) {
-            return "Set", "StepUp"            // ステップ増加
+            return "Set", "StepUp";            // ステップ増加
         } else if (n == 42) {
-            return "Set", "StepDown"          // ステップ減少
+            return "Set", "StepDown";          // ステップ減少
         } else if (n == 43) {
-            return "Reverse", "Flag"          // フラグ反転
+            return "Reverse", "Flag";          // フラグ反転
         } else if (n == 44) {
-            return "Branch", "Step"           // ステップ上下分岐
+            return "Branch", "Step";           // ステップ上下分岐
         } else if (n == 45) {
-            return "Elapse", "Time"           // 時間経過
+            return "Elapse", "Time";           // 時間経過
         } else if (n == 46) {
-            return "Branch", "Level"          // レベル分岐
+            return "Branch", "Level";          // レベル分岐
         } else if (n == 47) {
-            return "Branch", "Status"         // 状態分岐
+            return "Branch", "Status";         // 状態分岐
         } else if (n == 48) {
-            return "Branch", "PartyNumber"    // 人数判定分岐
+            return "Branch", "PartyNumber";    // 人数判定分岐
         } else if (n == 49) {
-            return "Show", "Party"            // パーティ表示
+            return "Show", "Party";            // パーティ表示
         } else if (n == 50) {
-            return "Hide", "Party"            // パーティ隠蔽
+            return "Hide", "Party";            // パーティ隠蔽
         } else if (n == 51) {
-            return "Effect", "Break"          // 効果中断
+            return "Effect", "Break";          // 効果中断
         } else if (n == 52) {
-            return "Call", "Start"            // スタートのコール
+            return "Call", "Start";            // スタートのコール
         } else if (n == 53) {
-            return "Link", "Package"          // パッケージへのリンク
+            return "Link", "Package";          // パッケージへのリンク
         } else if (n == 54) {
-            return "Call", "Package"          // パッケージのコール
+            return "Call", "Package";          // パッケージのコール
         } else if (n == 55) {
-            return "Branch", "Area"           // エリア分岐
+            return "Branch", "Area";           // エリア分岐
         } else if (n == 56) {
-            return "Branch", "Battle"         // バトル分岐
+            return "Branch", "Battle";         // バトル分岐
         } else if (n == 57) {
-            return "Branch", "CompleteStamp"  // 終了シナリオ分岐
+            return "Branch", "CompleteStamp";  // 終了シナリオ分岐
         } else if (n == 58) {
-            return "Get", "CompleteStamp"     // 終了シナリオ設定
+            return "Get", "CompleteStamp";     // 終了シナリオ設定
         } else if (n == 59) {
-            return "Lose", "CompleteStamp"    // 終了シナリオ削除
+            return "Lose", "CompleteStamp";    // 終了シナリオ削除
         } else if (n == 60) {
-            return "Branch", "Gossip"         // ゴシップ分岐
+            return "Branch", "Gossip";         // ゴシップ分岐
         } else if (n == 61) {
-            return "Get", "Gossip"            // ゴシップ追加
+            return "Get", "Gossip";            // ゴシップ追加
         } else if (n == 62) {
-            return "Lose", "Gossip"           // ゴシップ削除
+            return "Lose", "Gossip";           // ゴシップ削除
         } else if (n == 63) {
-            return "Branch", "IsBattle"       // バトル判定分岐
+            return "Branch", "IsBattle";       // バトル判定分岐
         } else if (n == 64) {
-            return "Redisplay", ""            // 画面の再構築
+            return "Redisplay", "";            // 画面の再構築
         } else if (n == 65) {
-            return "Check", "Flag"            // フラグ判定
+            return "Check", "Flag";            // フラグ判定
         } else if (n == 66) {
-            return "Substitute", "Step"       // ステップ代入(1.30)
+            return "Substitute", "Step";       // ステップ代入(1.30)
         } else if (n == 67) {
-            return "Substitute", "Flag"       // フラグ代入(1.30)
+            return "Substitute", "Flag";       // フラグ代入(1.30)
         } else if (n == 68) {
-            return "Branch", "StepValue"      // ステップ比較(1.30)
+            return "Branch", "StepValue";      // ステップ比較(1.30)
         } else if (n == 69) {
-            return "Branch", "FlagValue"      // フラグ比較(1.30)
+            return "Branch", "FlagValue";      // フラグ比較(1.30)
         } else if (n == 70) {
-            return "Branch", "RandomSelect"   // ランダム選択(1.30)
+            return "Branch", "RandomSelect";   // ランダム選択(1.30)
         } else if (n == 71) {
-            return "Branch", "KeyCode"        // キーコード所持分岐(1.50)
+            return "Branch", "KeyCode";        // キーコード所持分岐(1.50)
         } else if (n == 72) {
-            return "Check", "Step"            // ステップ判定(1.50)
+            return "Check", "Step";            // ステップ判定(1.50)
         } else if (n == 73) {
-            return "Branch", "Round"          // ラウンド分岐(1.50)
+            return "Branch", "Round";          // ラウンド分岐(1.50)
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_contenttype(ctype, n):
+    public static int unconv_contenttype(string ctype, string n) {
         if (ctype == "Start" && n == "") {
             return 0;
         } else if (ctype == "Link" && n == "Start") {
@@ -615,36 +675,38 @@ class CWBinaryBase(object):
             return 64;
         } else if (ctype == "Check" && n == "Flag") {
             return 65;
-        elif ctype == "Substitute" && n == "Step": // 1.30
+        } else if (ctype == "Substitute" && n == "Step") { // 1.30
             return 66;
-        elif ctype == "Substitute" && n == "Flag": // 1.30
+        } else if (ctype == "Substitute" && n == "Flag") { // 1.30
             return 67;
-        elif ctype == "Branch" && n == "StepValue": // 1.30
+        } else if (ctype == "Branch" && n == "StepValue") { // 1.30
             return 68;
-        elif ctype == "Branch" && n == "FlagValue": // 1.30
+        } else if (ctype == "Branch" && n == "FlagValue") { // 1.30
             return 69;
-        elif ctype == "Branch" && n == "RandomSelect": // 1.30
+        } else if (ctype == "Branch" && n == "RandomSelect") { // 1.30
             return 70;
-        elif ctype == "Branch" && n == "KeyCode": // 1.50
+        } else if (ctype == "Branch" && n == "KeyCode") { // 1.50
             return 71;
-        elif ctype == "Check" && n == "Step": // 1.50
+        } else if (ctype == "Check" && n == "Step") { // 1.50
             return 72;
-        elif ctype == "Branch" && n == "Round": // 1.50
+        } else if (ctype == "Branch" && n == "Round") { // 1.50
             return 73;
         } else {
             throw new ValueError(ctype + ", " + n);
+        }
+    }
 
 //-------------------------------------------------------------------------------
 // 適用メンバ・適用範囲
 //-------------------------------------------------------------------------------
 
-    public UNK conv_target_member(n) {
-        """引数の値から、「適用メンバ」の種類を返す。;
-        0:Selected(現在選択中のメンバ), 1:Random(ランダムメンバ),;
-        2:Party(現在選択中以外のメンバ);
-        睡眠者有効ならば＋3で、返り値の文字列の後ろに"Sleep"を付ける。;
-        さらに6:Party(パーティの全員。効果コンテントの時に使う);
-        """;
+    public string conv_target_member(n) {
+        // """引数の値から、「適用メンバ」の種類を返す。;
+        // 0:Selected(現在選択中のメンバ), 1:Random(ランダムメンバ),;
+        // 2:Party(現在選択中以外のメンバ);
+        // 睡眠者有効ならば＋3で、返り値の文字列の後ろに"Sleep"を付ける。;
+        // さらに6:Party(パーティの全員。効果コンテントの時に使う);
+        // """;
         if (n == 0) {
             return "Selected";
         } else if (n == 1) {
@@ -657,18 +719,19 @@ class CWBinaryBase(object):
             return "RandomSleep";
         } else if (n == 5) {
             return "PartySleep";
-        elif n == 6: // 存在するか不明だが残しておく
+        } else if (n == 6) { // 存在するか不明だが残しておく
             return "Party";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_target_member(n):
+    public static int unconv_target_member(string n) {
         if (n == "Selected") {
             return 0;
         } else if (n == "Random") {
             return 1;
-        elif n == "Unselected": // 存在するか不明だが残しておく
+        } else if (n == "Unselected") { // 存在するか不明だが残しておく
             return 2;
         } else if (n == "SelectedSleep") {
             return 3;
@@ -680,14 +743,16 @@ class CWBinaryBase(object):
             return 2;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
     public UNK conv_target_member_dialog(n) {
-        """引数の値から、台詞コンテントの話者を返す。;
-        0:Selected(現在選択中のメンバ), 1:Random(ランダムメンバ),;
-        2:Unselected(現在選択中以外のメンバ);
-        以降は1.50～;
-        3:Valued(評価メンバ);
-        """;
+        // """引数の値から、台詞コンテントの話者を返す。;
+        // 0:Selected(現在選択中のメンバ), 1:Random(ランダムメンバ),;
+        // 2:Unselected(現在選択中以外のメンバ);
+        // 以降は1.50～;
+        // 3:Valued(評価メンバ);
+        // """;
         if n in (-1, 0): // 稀に-1になっている事がある
             return "Selected";
         } else if (n == 1) {
