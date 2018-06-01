@@ -11,7 +11,7 @@ import wx;
 import cw;
 
 
-class CWBinaryBase(object):
+class CWBinaryBase {
     public CWBinaryBase(UNK parent, UNK f, bool yadodata=false, UNK materialdir="Material", bool image_export=true) {
         this.set_root(parent); // TODO
         this.xmltype = this.__class__.__name__; // TODO
@@ -242,10 +242,7 @@ class CWBinaryBase(object):
             os.makedirs(imgdir);
         }
 
-        with open(path, "wb") as f: // TODO
-            f.write(this.image);
-            f.flush();
-            f.close();
+        File.WriteAllBytes(path, this.image);
 
         // 最後に参照パスを返す
         path = path.replace(basedir + "/", "", 1);
@@ -257,7 +254,7 @@ class CWBinaryBase(object):
         if (e_imgpath == null) {
             return;
         }
-        assert e_imgpath.tag in ("ImagePath", "Talk"), e_imgpath.tag;
+        Debug.assert(e_imgpath.tag in ("ImagePath", "Talk"), e_imgpath.tag);
         postype = e_imgpath.getattr(".", "positiontype", "Default");
         if (postype in (defpostype, "Default")) {
             return;
@@ -315,9 +312,7 @@ class CWBinaryBase(object):
                 }
             }
 
-            with open(fpath, "rb") as f: // TODO
-                image = f.read();
-                f.close();
+            File.ReadAllBytes(fpath, image);
         }
 
         if (convertbitmap && cw.util.get_imageext(image) != ".bmp") {
@@ -378,7 +373,8 @@ class CWBinaryBase(object):
         s = "";
 
         foreach (var key, value in d.iteritems()) {
-            s += ' %s="%s"' % (key, value); // TODO
+            s += String.Format(" {0}=\"{1}\"", key, value);
+        }
 
         return s;
     }
@@ -700,7 +696,7 @@ class CWBinaryBase(object):
 // 適用メンバ・適用範囲
 //-------------------------------------------------------------------------------
 
-    public string conv_target_member(n) {
+    public string conv_target_member(int n) {
         // """引数の値から、「適用メンバ」の種類を返す。;
         // 0:Selected(現在選択中のメンバ), 1:Random(ランダムメンバ),;
         // 2:Party(現在選択中以外のメンバ);
@@ -889,6 +885,7 @@ class CWBinaryBase(object):
             } else {
                 throw new cw.binary.cwfile.UnsupportedError();
             }
+        }
         return value;
     }
 
@@ -1150,7 +1147,7 @@ class CWBinaryBase(object):
         }
     }
 
-    public static int unconv_comparison4(string n):
+    public static int unconv_comparison4(string n){
         if (n == "=") {
             return 0;
         } else if (n == "<>") {
@@ -1486,6 +1483,8 @@ class CWBinaryBase(object):
             return "Max";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
     public static int unconv_effectmotion_damagetype(string n) {
         if (n == "LevelRatio") {
@@ -1847,7 +1846,7 @@ class CWBinaryBase(object):
         }
     }
 
-    public static int unconv_yado_summaryview(string n):
+    public static int unconv_yado_summaryview(string n) {
         if (n == "HideHiddenAndCompleteScenario") {
             return 0;
         } else if (n == "HideHiddenScenario") {
@@ -1897,7 +1896,7 @@ class CWBinaryBase(object):
 //　特殊セル関連(1.50～)
 //-------------------------------------------------------------------------------
 
-    public UNK conv_borderingtype(n) {
+    public string conv_borderingtype(int n) {
         // """引数の値から、テキストセルの縁取り方式を返す。;
         // 0:縁取り形式1, 1:縁取り形式2;
         // """;
@@ -1935,6 +1934,7 @@ class CWBinaryBase(object):
         } else {
             throw new ValueError(this.fpath);
         }
+    }
 
     public static int unconv_blendmode(string n) {
         if (n == "Normal") {
@@ -1976,3 +1976,4 @@ class CWBinaryBase(object):
             throw new cw.binary.cwfile.UnsupportedError();
         }
     }
+}
