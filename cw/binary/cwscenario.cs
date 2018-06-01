@@ -19,13 +19,13 @@ import skill;
 import beast;
 
 
-class CWScenario(object):
-    public UNK __init__(path, dstdir, skintype, materialdir="Material", image_export=true) {
-        """カードワースのシナリオを読み込み、XMLファイルに変換するクラス。;
-        path: カードワースシナリオフォルダのパス。;
-        dstdir: 変換先ディレクトリ。;
-        skintype: スキンタイプ。;
-        """;
+class CWScenario{
+    public CWScenario(UNK path, UNK dstdir, UNK skintype, string materialdir="Material", bool image_export=true) {
+        // """カードワースのシナリオを読み込み、XMLファイルに変換するクラス。;
+        // path: カードワースシナリオフォルダのパス。;
+        // dstdir: 変換先ディレクトリ。;
+        // skintype: スキンタイプ。;
+        // """;
         this.name = os.path.basename(path);
         this.path = path;
         this.dir = util.join_paths(dstdir, os.path.basename(this.path));
@@ -43,8 +43,7 @@ class CWScenario(object):
         this.errorlog = "";
         // pathにあるファイル・ディレクトリを
         // (シナリオファイル,素材ファイル,その他ファイル, ディレクトリ)に分ける。
-        exts_mat = set(["bmp", "jpg", "jpeg", "wav", "wave", "mid", "midi",;
-                                                    "jpdc", "jpy1", "jptx"]);
+        exts_mat = set(["bmp", "jpg", "jpeg", "wav", "wave", "mid", "midi", "jpdc", "jpy1", "jptx"]);
         this.cwfiles = [];
         this.materials = [];
         this.otherfiles = [];
@@ -57,6 +56,7 @@ class CWScenario(object):
 
         if (this.path == "") {
             return;
+        }
         foreach (var name in os.listdir(this.path)) {
             path = util.join_paths(this.path, name);
 
@@ -74,40 +74,53 @@ class CWScenario(object):
                     this.read_modeini(path);
                 } else {
                     this.otherfiles.append(path);
+                }
 
             } else {
                 this.otherdirs.append(path);
+            }
+        }
 
         if (this.summarypath) {
             this.versionhint = cw.cwpy.sct.merge_versionhints(this.versionhint, cw.cwpy.sct.get_versionhint(fpath=this.summarypath));
+        }
+    }
 
-    public UNK read_modeini(fpath) {
+    public void read_modeini(UNK fpath) {
         if (cw.cwpy && cw.cwpy.sct) {
             versionhint = cw.cwpy.sct.read_modeini(fpath);
             if (versionhint) {
                 this.versionhint = versionhint;
                 this.hasmodeini = true;
+            }
+        }
+    }
 
-    public UNK is_convertible() {
+    public bool is_convertible() {
         if (!this.summarypath) {
             return false;
+        }
 
         try {
             data, _filedata = this.load_file(this.summarypath);
             if (data == null || 4 < data.version) {
                 return false;
+            }
         } catch (Exception e) {
             return false;
+        }
 
         return true;
+    }
 
-    public UNK write_errorlog(s) {
+    public void write_errorlog(string s) {
         this.errorlog += s + "\n";
+    }
 
-    public UNK load() {
-        """シナリオファイルのリストを読み込む。;
-        種類はtypeで判別できる(見出しは"-1"、パッケージは"7"となっている)。;
-        """;
+    public void load() {
+        // """シナリオファイルのリストを読み込む。;
+        // 種類はtypeで判別できる(見出しは"-1"、パッケージは"7"となっている)。;
+        // """;
         this.datalist = [];
 
         foreach (var path in this.cwfiles) {
@@ -119,18 +132,22 @@ class CWScenario(object):
                     this.write_errorlog(s);
                 } else {
                     this.datalist.append(data);
+                }
             } catch (Exception e) {
                 s = os.path.basename(path);
                 s = u"%s は読込できませんでした。\n" % (s);
                 this.write_errorlog(s);
+            }
+        }
 
         this.maxnum = len(this.datalist);
         this.maxnum += len(this.materials);
         this.maxnum += len(this.otherfiles);
         this.maxnum += len(this.otherdirs);
+    }
 
-    public UNK load_file(path, nameonly=false, decodewrap=false) {
-        """引数のファイル(wid, wsmファイル)を読み込む。""";
+    public UNK load_file(UNK path, bool nameonly=false, bool decodewrap=false) {
+        // """引数のファイル(wid, wsmファイル)を読み込む。""";
         try {
             f = cwfile.CWFile(path, "rb", decodewrap=decodewrap);
 
@@ -155,6 +172,7 @@ class CWScenario(object):
                         data = battle.Battle(null, f, nameonly=no, materialdir=md, image_export=ie);
                     } else {
                         data = cast.CastCard(null, f, nameonly=no, materialdir=md, image_export=ie);
+                    }
                 } else if (filetype == 3) {
                     data = item.ItemCard(null, f, nameonly=no, materialdir=md, image_export=ie);
                 } else if (filetype == 4) {
@@ -165,17 +183,20 @@ class CWScenario(object):
                         data = cast.CastCard(null, f, nameonly=no, materialdir=md, image_export=ie);
                     } else {
                         data = info.InfoCard(null, f, nameonly=no, materialdir=md, image_export=ie);
+                    }
 
                 } else if (filetype == 5) {
                     if (os.path.basename(path).lower().startswith("item")) {
                         data = item.ItemCard(null, f, nameonly=no, materialdir=md, image_export=ie);
                     } else {
                         data = skill.SkillCard(null, f, nameonly=no, materialdir=md, image_export=ie);
+                    }
                 } else if (filetype == 6) {
                     if (os.path.basename(path).lower().startswith("info")) {
                         data = info.InfoCard(null, f, nameonly=no, materialdir=md, image_export=ie);
                     } else {
                         data = beast.BeastCard(null, f, nameonly=no, materialdir=md, image_export=ie);
+                    }
                 } else if (filetype == 7) {
                     data = skill.SkillCard(null, f, nameonly=no, materialdir=md, image_export=ie);
                 } else if (filetype == 8) {
@@ -183,20 +204,26 @@ class CWScenario(object):
                 } else {
                     f.close();
                     throw new ValueError(path);
+                }
+            }
 
             if (!nameonly) {
                 // 読み残し分を全て読み込む
                 f.read();
+            }
 
             f.close();
             return data, "".join(f.filedata);
         } catch (Exception e) {
             cw.util.print_ex();
             return null, null;
+        }
+    }
 
     public UNK convert() {
         if (!this.datalist) {
             this.load();
+        }
 
         this.curnum = 0;
 
@@ -207,17 +234,20 @@ class CWScenario(object):
 
             try {
                 data.create_xml(this.dir);
-            except Exception:
+            } catch (Exception e) {
                 cw.util.print_ex();
                 s = os.path.basename(data.fpath);
                 s = u"%s は変換できませんでした。\n" % (s);
                 this.write_errorlog(s);
+            }
+        }
 
         // 素材ファイルをMaterialディレクトリにコピー
         materialdir = util.join_paths(this.dir, "Material");
 
         if (!os.path.isdir(materialdir)) {
             os.makedirs(materialdir);
+        }
 
         foreach (var path in this.materials) {
             this.message = u"%s をコピー中..." % (os.path.basename(path));
@@ -225,6 +255,7 @@ class CWScenario(object):
             dst = util.join_paths(materialdir, os.path.basename(path));
             dst = util.check_duplicate(dst);
             shutil.copy2(path, dst);
+        }
 
         // その他のファイルをシナリオディレクトリにコピー
         foreach (var path in this.otherfiles) {
@@ -233,6 +264,7 @@ class CWScenario(object):
             dst = util.join_paths(this.dir, os.path.basename(path));
             dst = util.check_duplicate(dst);
             shutil.copy2(path, dst);
+        }
 
         // ディレクトリをシナリオディレクトリにコピー
         foreach (var path in this.otherdirs) {
@@ -241,12 +273,9 @@ class CWScenario(object):
             dst = util.join_paths(this.dir, os.path.basename(path));
             dst = util.check_duplicate(dst);
             shutil.copytree(path, dst);
+        }
 
         this.curnum = this.maxnum;
         return this.dir;
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+    }
+}
