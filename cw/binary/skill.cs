@@ -8,12 +8,11 @@ import event;
 import cw;
 
 
-class SkillCard(base.CWBinaryBase):
-    """widファイルのスキルカードのデータ。;
-    hold(真偽値):true?だと自動選択されない。;
-    """;
-    public UNK __init__(parent, f, yadodata=false, nameonly=false, materialdir="Material", image_export=true) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata, materialdir, image_export);
+class SkillCard : base.CWBinaryBase {
+    // """widファイルのスキルカードのデータ。;
+    // hold(真偽値):true?だと自動選択されない。;
+    // """;
+    public SkillCard(UNK parent, UNK f, bool yadodata=false, bool nameonly=false, string materialdir="Material", bool image_export=true) : base(parent, f, yadodata, materialdir, image_export) {
         this.type = f.byte();
         this.image = f.image();
         this.imgpath = "";
@@ -32,12 +31,15 @@ class SkillCard(base.CWBinaryBase):
         } else {
             dataversion = 5;
             this.id = idl - 50000;
+        }
 
         if (nameonly) {
             return;
+        }
 
         if (5 <= dataversion) {
             this.fname = this.get_fname();
+        }
 
         this.description = f.string(true);
         this.p_ability = f.dword();
@@ -50,8 +52,7 @@ class SkillCard(base.CWBinaryBase):
         this.success_rate = f.dword();
         this.visual_effect = f.byte();
         motions_num = f.dword();
-        this.motions = [effectmotion.EffectMotion(self, f, dataversion=dataversion);
-                                          for _cnt in xrange(motions_num)];
+        this.motions = [effectmotion.EffectMotion(self, f, dataversion=dataversion) for _cnt in xrange(motions_num)]; // TODO
         this.enhance_avoid = f.dword();
         this.enhance_resist = f.dword();
         this.enhance_defense = f.dword();
@@ -74,10 +75,13 @@ class SkillCard(base.CWBinaryBase):
                 this.premium = f.byte();
             } else {
                 this.premium = 0;
+            }
+        }
 
         // 宿データだとここに不明なデータ(4)が付加されている
         if (5 <= dataversion) {
             _dw = f.dword();
+        }
 
         this.level = f.dword();
         this.limit = f.dword();
@@ -94,6 +98,8 @@ class SkillCard(base.CWBinaryBase):
                     this.imgpath = this.export_image();
                 } else {
                     this.imgpath = "";
+                }
+            }
             this.data = cw.data.make_element("SkillCard");
             prop = cw.data.make_element("Property");
             e = cw.data.make_element("Id", str(this.id));
@@ -142,6 +148,7 @@ class SkillCard(base.CWBinaryBase):
                 e = cw.data.make_element("Premium", this.conv_card_premium(this.premium - 3));
             } else {
                 e = cw.data.make_element("Premium", this.conv_card_premium(this.premium));
+            }
             prop.append(e);
             e = cw.data.make_element("UseLimit", str(this.limit));
             prop.append(e);
@@ -151,15 +158,17 @@ class SkillCard(base.CWBinaryBase):
             e = cw.data.make_element("Motions");
             foreach (var motion in this.motions) {
                 e.append(motion.get_data());
+            }
             this.data.append(e);
             e = cw.data.make_element("Events");
             foreach (var event in this.events) {
                 e.append(event.get_data());
+            }
             this.data.append(e);
         return this.data;
+    }
 
-    @staticmethod;
-    def unconv(f, data, ownerisadventurer):
+    public static void unconv(UNK f, UNK data, UNK ownerisadventurer) {
         restype = 0;
         image = null;
         name = "";
@@ -244,13 +253,19 @@ class SkillCard(base.CWBinaryBase):
                                         break;
                                     } else {
                                         keycodes2.append(keycode);
+                                    }
+                                }
+                            }
                             keycodes = keycodes2;
+                        }
                         if (len(keycodes) < 5) {
                             keycodes.extend([""] * (5 - len(keycodes)));
+                        }
                     } else if (prop.tag == "Premium") {
                         premium = base.CWBinaryBase.unconv_card_premium(prop.text);
                         if (ownerisadventurer && scenariocard) {
                             premium += 3;
+                        }
                     } else if (prop.tag == "UseLimit") {
                         limit = int(prop.text);
                     } else if (prop.tag == "Hold") {
@@ -258,10 +273,14 @@ class SkillCard(base.CWBinaryBase):
                     } else if (prop.tag == "LinkId") {
                         if (prop.text && prop.text != "0") {
                             f.check_wsnversion("1");
+                        }
+                    }
+                }
             } else if (e.tag == "Motions") {
                 motions = e;
             } else if (e.tag == "Events") {
                 events = e;
+            }
 
         f.write_byte(restype);
         f.write_image(image);
@@ -280,6 +299,7 @@ class SkillCard(base.CWBinaryBase):
         f.write_dword(len(motions));
         foreach (var motion in motions) {
             effectmotion.EffectMotion.unconv(f, motion);
+        }
         f.write_dword(enhance_avoid);
         f.write_dword(enhance_resist);
         f.write_dword(enhance_defense);
@@ -287,12 +307,14 @@ class SkillCard(base.CWBinaryBase):
         f.write_string(sound_effect2);
         foreach (var keycode in keycodes) {
             f.write_string(keycode);
+        }
         f.write_byte(premium);
         f.write_string(scenario_name);
         f.write_string(scenario_author);
         f.write_dword(len(events));
         foreach (var evt in events) {
             event.SimpleEvent.unconv(f, evt);
+        }
         f.write_bool(hold);
 
         // 宿データだとここに不明なデータ(4)が付加されている
@@ -300,9 +322,5 @@ class SkillCard(base.CWBinaryBase):
 
         f.write_dword(level);
         f.write_dword(limit);
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+    }
+}
