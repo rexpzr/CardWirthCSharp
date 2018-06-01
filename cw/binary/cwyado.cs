@@ -20,11 +20,11 @@ import item;
 import beast;
 
 
-class CWYado(object):
-    """pathの宿データをxmlに変換、yadoディレクトリに保存する。;
-    その他ファイルもコピー。;
-    """;
-    public UNK __init__(path, dstpath, skintype="") {
+class CWYado {
+    // """pathの宿データをxmlに変換、yadoディレクトリに保存する。;
+    // その他ファイルもコピー。;
+    // """;
+    public CWYado (UNK path, UNK dstpath, string skintype="") {
         this.name = os.path.basename(path);
         this.path = path;
         this.dir = util.join_paths(dstpath, os.path.basename(path));
@@ -71,22 +71,29 @@ class CWYado(object):
                     this.cardfiles.append(path);
                 } else if (!ext in exts_ignore) {
                     this.otherfiles.append(path);
+                }
 
             } else {
                 this.otherdirs.append(path);
+            }
+        }
+    }
 
-    public UNK write_errorlog(s) {
+    public void write_errorlog(string s) {
         this.errorlog += s + "\n";
+    }
 
-    public UNK is_convertible() {
+    public bool is_convertible() {
         if (!this.environmentpath) {
             return false;
+        }
 
         try {
             data = this.load_yadofile(this.environmentpath);
         } catch (Exception e) {
             cw.util.print_ex();
             return false;
+        }
 
         this.wyd = null;
 
@@ -95,11 +102,14 @@ class CWYado(object):
             return true;
         } else {
             return false;
+        }
+    }
 
     public UNK convert() {
 
         if (!this.datalist) {
             this.load();
+        }
 
         this.curnum_n = 0;
         this.curnum = 50;
@@ -107,6 +117,7 @@ class CWYado(object):
         // 宿データをxmlに変換
         if (!os.path.isdir(this.dir)) {
             os.makedirs(this.dir);
+        }
         yadodb = cw.yadodb.YadoDB(this.dir);
         foreach (var data in this.datalist) {
             data.yadodb = yadodb;
@@ -117,22 +128,26 @@ class CWYado(object):
             try {
                 fpath = data.create_xml(this.dir);
 
-                if isinstance(data, party.Party) and\;
-                        this.wyd.partyname == cw.util.splitext(os.path.basename(data.fpath))[0]:
+                if (isinstance(data, party.Party) && this.wyd.partyname == cw.util.splitext(os.path.basename(data.fpath))[0]) {
                     fpath = cw.util.relpath(fpath, this.dir);
                     fpath = cw.util.join_paths(fpath);
                     this.wyd.cwpypartyname = fpath;
+                }
 
                 if (hasattr(data, "errorcards")) {
                     foreach (var errcard in data.errorcards) {
                         s = errcard.fname;
                         s = u"%s は読込できませんでした。\n" % (s);
                         this.write_errorlog(s);
-            except Exception:
+                    }
+                }
+            } catch (Exception e) {
                 cw.util.print_ex();
                 s = os.path.basename(data.fpath);
                 s = u"%s は変換できませんでした。\n" % (s);
                 this.write_errorlog(s);
+            }
+        }
 
         // 冒険中情報を変換
         foreach (var partyinfo, partymembers in this.nowadventuringparties) {
@@ -143,11 +158,12 @@ class CWYado(object):
             try {
                 this.create_log(partyinfo, partymembers);
 
-            except Exception:
+            } catch (Exception e) {
                 cw.util.print_ex();
                 s = partyinfo.name;
                 s = u"%s の冒険中情報は変換できませんでした。\n" % (s);
                 this.write_errorlog(s);
+            }
 
         yadodb.commit();
         yadodb.close();
@@ -163,6 +179,7 @@ class CWYado(object):
 
             if (!os.access(dst, os.R_OK|os.W_OK|os.X_OK)) {
                 os.chmod(dst, stat.S_IWRITE|stat.S_IREAD);
+            }
 
         // ディレクトリを宿ディレクトリにコピー
         foreach (var path in this.otherdirs) {
@@ -175,6 +192,8 @@ class CWYado(object):
 
             if (!os.access(dst, os.R_OK|os.W_OK|os.X_OK)) {
                 os.chmod(dst, stat.S_IWRITE|stat.S_IREAD);
+            }
+        }
 
         // 存在しないディレクトリを作成
         dnames = ("Adventurer", "Album", "BeastCard", "ItemCard", "SkillCard",;
@@ -185,14 +204,17 @@ class CWYado(object):
 
             if (!os.path.isdir(path)) {
                 os.makedirs(path);
+            }
+        }
 
         this.curnum = 100;
         return this.dir;
+    }
 
     public UNK load() {
-        """宿ファイルを読み込む。;
-        種類はtypeで判別できる(wydは"-1"、wptは"4"となっている)。;
-        """;
+        // """宿ファイルを読み込む。;
+        // 種類はtypeで判別できる(wydは"-1"、wptは"4"となっている)。;
+        // """;
         // 各種データ初期化
         this.datalist = [];
         this.wyd = null;
@@ -214,7 +236,7 @@ class CWYado(object):
             this.curnum = this.curnum_n * 50 / this.maxnum;
             try {
                 data = this.load_yadofile(path);
-            except Exception:
+            } catch (Exception e) {
                 cw.util.print_ex();
                 s = os.path.basename(path);
                 s = u"%s は読込できませんでした。\n" % (s);
@@ -225,7 +247,10 @@ class CWYado(object):
                 } else if (path.lower().endswith(".wpt") && !wptwarn) {
                     s += s2 % (u"パーティメンバ");
                     wptwarn = true;
+                }
                 this.write_errorlog(s);
+            }
+        }
 
         // ファイルネームからカードの種類を判別する辞書を作成し、
         // カードデータを読み込む
@@ -239,11 +264,13 @@ class CWYado(object):
             try {
                 data = this.load_cardfile(path, cardtypes);
                 carddatadict[data.fname] = data;
-            except Exception:
+            } catch (Exception e) {
                 cw.util.print_ex();
                 s = os.path.basename(path);
                 s = u"%s は読込できませんでした。\n" % (s);
                 this.write_errorlog(s);
+            }
+        }
 
     //---------------------------------------------------------------------------
     // ここからxml変換するためのもろもろのデータ加工
@@ -259,11 +286,15 @@ class CWYado(object):
                 if (wch.fname == wcp.fname) {
                     wcp.set_image(wch.image);
                     break;
+                }
+            }
 
             // 1.20以前は個人ごとに所持金があるので、宿の金庫に集める
             if (this.dataversion_int <= 8) {
                 this.wyd.money += wcp.adventurer.money;
                 wcp.adventurer.money = 0;
+            }
+        }
 
         // wptの荷物袋のカードリストをwplに格納する
         foreach (var wpt in this.wpts) {
@@ -273,12 +304,17 @@ class CWYado(object):
                     wpt.wpl = wpl;
                     if (wpt.nowadventuring) {
                         this.nowadventuringparties.append((wpl, wpt));
+                    }
                     if (this.dataversion_int <= 8) {
                         // wptのパーティ名をwplに格納する
                         wpl.name = wpt.name;
                         // wptの所持金データをwplに格納する
                         wpl.money = wpt.money;
+                    }
                     break;
+                }
+            }
+        }
 
         // 荷物袋・カード置場に同一カードが複数存在する場合
         // ２枚目以降にはコピーしたデータを渡す。
@@ -563,8 +599,9 @@ class CWYado(object):
         path = cw.util.splitext(party.xmlpath)[0] + ".wsl";
         cw.util.compress_zip(cw.util.join_paths(cw.tempdir, u"ScenarioLog"), path, unicodefilename=true);
         cw.util.remove(cw.util.join_paths(cw.tempdir, u"ScenarioLog"));
+}
 
-class UnconvCWYado(object):
+class UnconvCWYado {
     """宿データを逆変換してdstpathへ保存する。;
     """;
     public UNK __init__(ydata, dstpath, targetengine) {
@@ -831,8 +868,4 @@ class UnconvCWYado(object):
             s = u"宿情報は変換できませんでした。\n";
             this.write_errorlog(s);
 
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+}
