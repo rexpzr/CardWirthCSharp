@@ -6,14 +6,14 @@ import base;
 import cw;
 
 
-class Dialog(base.CWBinaryBase):
-    """台詞データ""";
-    public UNK __init__(parent, f, yadodata=false) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
+class Dialog : base.CWBinaryBase {
+    // """台詞データ""";
+    public Dialog(UNK parent, UNK f, bool yadodata=false) : base(parent, f, yadodata) {
         this.coupons = f.string(true);
         this.text = f.string(true);
 
         this.data = null;
+    }
 
     public UNK get_data() {
         if (this.data == null) {
@@ -22,10 +22,11 @@ class Dialog(base.CWBinaryBase):
             this.data.append(e);
             e = cw.data.make_element("Text", this.text);
             this.data.append(e);
+        }
         return this.data;
+    }
 
-    @staticmethod;
-    def unconv(f, data):
+    public static void unconv(UNK f, UNK data) {
         coupons = "";
         text = "";
 
@@ -34,12 +35,10 @@ class Dialog(base.CWBinaryBase):
                 coupons = e.text;
             } else if (e.tag == "Text") {
                 text = e.text;
+            }
+        }
 
         f.write_string(coupons, true);
         f.write_string(text, true);
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+    }
+}
