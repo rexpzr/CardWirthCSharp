@@ -378,7 +378,7 @@ class CWBinaryBase(object):
         s = "";
 
         foreach (var key, value in d.iteritems()) {
-            s += ' %s="%s"' % (key, value);
+            s += ' %s="%s"' % (key, value); // TODO
 
         return s;
     }
@@ -746,14 +746,14 @@ class CWBinaryBase(object):
         }
     }
 
-    public UNK conv_target_member_dialog(n) {
+    public string conv_target_member_dialog(int n) {
         // """引数の値から、台詞コンテントの話者を返す。;
         // 0:Selected(現在選択中のメンバ), 1:Random(ランダムメンバ),;
         // 2:Unselected(現在選択中以外のメンバ);
         // 以降は1.50～;
         // 3:Valued(評価メンバ);
         // """;
-        if n in (-1, 0): // 稀に-1になっている事がある
+        if (n in (-1, 0)) { // 稀に-1になっている事がある
             return "Selected";
         } else if (n == 1) {
             return "Random";
@@ -763,9 +763,10 @@ class CWBinaryBase(object):
             return "Valued";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_target_member_dialog(n, f):
+    public static int unconv_target_member_dialog(string n, UNK f) {
         if (n == "Selected") {
             return 0;
         } else if (n == "Random") {
@@ -777,13 +778,15 @@ class CWBinaryBase(object):
             return 3;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_target_scope(n) {
-        """引数の値から、「適用範囲」の種類を返す。;
-        0:Selected(現在選択中のメンバ), 1:Random(パーティの誰か一人),;
-        2:Party(パーティの全員), 3:Backpack(荷物袋),;
-        4:PartyAndBackpack(全体(荷物袋含む)) 5:Field(フィールド全体);
-        """;
+    public string conv_target_scope(int n) {
+        // """引数の値から、「適用範囲」の種類を返す。;
+        // 0:Selected(現在選択中のメンバ), 1:Random(パーティの誰か一人),;
+        // 2:Party(パーティの全員), 3:Backpack(荷物袋),;
+        // 4:PartyAndBackpack(全体(荷物袋含む)) 5:Field(フィールド全体);
+        // """;
         if (n == 0) {
             return "Selected";
         } else if (n == 1) {
@@ -798,9 +801,10 @@ class CWBinaryBase(object):
             return "Field";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_target_scope(n):
+    public static int unconv_target_scope(string n) {
         if (n == "Selected") {
             return 0;
         } else if (n == "Random") {
@@ -818,12 +822,14 @@ class CWBinaryBase(object):
             return 0;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_target_scope_coupon(n) {
-        """引数の値から、「適用範囲」の種類を返す(1.30～のクーポン分岐)。;
-        0:Selected(現在選択中のメンバ), 1:Random(パーティの誰か一人),;
-        2:Party(パーティの全員), 3:Field(フィールド全体);
-        """;
+    public string conv_target_scope_coupon(int n) {
+        // """引数の値から、「適用範囲」の種類を返す(1.30～のクーポン分岐)。;
+        // 0:Selected(現在選択中のメンバ), 1:Random(パーティの誰か一人),;
+        // 2:Party(パーティの全員), 3:Field(フィールド全体);
+        // """;
         if (n == 0) {
             return "Selected";
         } else if (n == 1) {
@@ -834,9 +840,10 @@ class CWBinaryBase(object):
             return "Field";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_target_scope_coupon(n, f):
+    public static int unconv_target_scope_coupon(string n, UNK f) {
         if (n == "Selected") {
             return 0;
         } else if (n == "Random") {
@@ -848,24 +855,29 @@ class CWBinaryBase(object):
             return 3;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_castranges(n) {
-        """引数の値から、「適用メンバ」の種類をsetで返す(1.30)。;
-        0b0001:パーティ;
-        0b0010:エネミー;
-        0b0100:同行NPC;
-        """;
+    public UNK conv_castranges(UNK n) {
+        // """引数の値から、「適用メンバ」の種類をsetで返す(1.30)。;
+        // 0b0001:パーティ;
+        // 0b0010:エネミー;
+        // 0b0100:同行NPC;
+        // """;
         s = set();
         if ((n & 0b0001) != 0) {
             s.add("Party");
+        }
         if ((n & 0b0010) != 0) {
             s.add("Enemy");
+        }
         if ((n & 0b0100) != 0) {
             s.add("Npc");
+        }
         return s;
+    }
 
-    @staticmethod;
-    def unconv_castranges(data):
+    public static UNK unconv_castranges(UNK data) {
         value = 0;
         foreach (var n in data) {
             if (n.text == "Party") {
@@ -876,13 +888,15 @@ class CWBinaryBase(object):
                 value |= 0b0100;
             } else {
                 throw new cw.binary.cwfile.UnsupportedError();
+            }
         return value;
+    }
 
-    public UNK conv_keycoderange(n) {
-        """引数の値から、「キーコード取得範囲」の種類を返す(1.50～のキーコード所持分岐)。;
-        0:Selected(現在選択中のメンバ), 1:Random(パーティの誰か一人),;
-        2:Backpack(荷物袋), 3:PartyAndBackpack(全体(荷物袋含む));
-        """;
+    public string conv_keycoderange(int n) {
+        // """引数の値から、「キーコード取得範囲」の種類を返す(1.50～のキーコード所持分岐)。;
+        // 0:Selected(現在選択中のメンバ), 1:Random(パーティの誰か一人),;
+        // 2:Backpack(荷物袋), 3:PartyAndBackpack(全体(荷物袋含む));
+        // """;
         if (n == 0) {
             return "Selected";
         } else if (n == 1) {
@@ -893,9 +907,10 @@ class CWBinaryBase(object):
             return "PartyAndBackpack";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_keycoderange(n):
+    public static int unconv_keycoderange(string n) {
         if (n == "Selected") {
             return 0;
         } else if (n == "Random") {
@@ -909,44 +924,49 @@ class CWBinaryBase(object):
             return 0;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
 //-------------------------------------------------------------------------------
 // コンテント系
 //-------------------------------------------------------------------------------
 
-    public UNK conv_spreadtype(n) {
-        """引数の値から、カードの並べ方を返す。""";
+    public string conv_spreadtype(int n) {
+        // """引数の値から、カードの並べ方を返す。""";
         if (n == 0) {
             return "Auto";
         } else if (n == 1) {
             return "Custom";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_spreadtype(n):
+    public static int unconv_spreadtype(string n) {
         if (n == "Auto") {
             return 0;
         } else if (n == "Custom") {
             return 1;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_statustype(n) {
-        """引数の値から、状態を返す。;
-        0:Active(行動可能), 1:Inactive(行動不可), 2:Alive(生存), 3:Dead(非生存),;
-        4:Fine(健康), 5:Injured(負傷), 6:Heavy-Injured(重傷),;
-        7:Unconscious(意識不明), 8:Poison(中毒), 9:Sleep(眠り),;
-        10:Bind(呪縛), 11:Paralyze(麻痺・石化);
-        以降は1.30～;
-        12:Confuse(混乱), 13:Overheat(激昂), 14:Brave(勇敢), 15:Panic(恐慌);
-        以降は1.50～;
-        16:Silence(沈黙), 17:FaceUp(暴露), 18:AntiMagic(魔法無効化),;
-        19:UpAction(行動力上昇), 20:UpAvoid(回避力上昇),;
-        21:UpResist(抵抗力上昇), 22:UpDefense(防御力上昇),;
-        23:DownAction(行動力低下), 24:DownAvoid(回避力低下),;
-        25:DownResist(抵抗力低下), 26:DownDefense(防御力低下);
-        """;
+    public string conv_statustype(int n) {
+        // """引数の値から、状態を返す。;
+        // 0:Active(行動可能), 1:Inactive(行動不可), 2:Alive(生存), 3:Dead(非生存),;
+        // 4:Fine(健康), 5:Injured(負傷), 6:Heavy-Injured(重傷),;
+        // 7:Unconscious(意識不明), 8:Poison(中毒), 9:Sleep(眠り),;
+        // 10:Bind(呪縛), 11:Paralyze(麻痺・石化);
+        // 以降は1.30～;
+        // 12:Confuse(混乱), 13:Overheat(激昂), 14:Brave(勇敢), 15:Panic(恐慌);
+        // 以降は1.50～;
+        // 16:Silence(沈黙), 17:FaceUp(暴露), 18:AntiMagic(魔法無効化),;
+        // 19:UpAction(行動力上昇), 20:UpAvoid(回避力上昇),;
+        // 21:UpResist(抵抗力上昇), 22:UpDefense(防御力上昇),;
+        // 23:DownAction(行動力低下), 24:DownAvoid(回避力低下),;
+        // 25:DownResist(抵抗力低下), 26:DownDefense(防御力低下);
+        // """;
         if (n == 0) {
             return "Active";
         } else if (n == 1) {
@@ -1003,9 +1023,10 @@ class CWBinaryBase(object):
             return "DownDefense";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_statustype(n, f):
+    public static int unconv_statustype(string n, UNK f) {
         if (n == "Active") {
             return 0;
         } else if (n == "Inactive") {
@@ -1077,11 +1098,13 @@ class CWBinaryBase(object):
             return 26;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_effectcardtype(n) {
-        """引数の値から、「カード種別」を返す(1.50～のキーコード所持分岐)。;
-        0:All(全種類), 1:Skill(特殊技能), 2:Item(アイテム), 3:Beast(召喚獣);
-        """;
+    public string conv_effectcardtype(int n) {
+        // """引数の値から、「カード種別」を返す(1.50～のキーコード所持分岐)。;
+        // 0:All(全種類), 1:Skill(特殊技能), 2:Item(アイテム), 3:Beast(召喚獣);
+        // """;
         if (n == 0) {
             return "All";
         } else if (n == 1) {
@@ -1092,9 +1115,10 @@ class CWBinaryBase(object):
             return "Beast";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_effectcardtype(n):
+    public static int unconv_effectcardtype(string n) {
         if (n == "All") {
             return 0;
         } else if (n == "Skill") {
@@ -1105,12 +1129,14 @@ class CWBinaryBase(object):
             return 3;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_comparison4(n) {
-        """引数の値から、「4路選択条件」を返す(1.50～のステップ判定)。;
-        0:=(条件値と一致), 1:<>(条件値と不一致),;
-        2:<(条件値より大きい), 3:>(条件値より小さい);
-        """;
+    public string conv_comparison4(int n) {
+        // """引数の値から、「4路選択条件」を返す(1.50～のステップ判定)。;
+        // 0:=(条件値と一致), 1:<>(条件値と不一致),;
+        // 2:<(条件値より大きい), 3:>(条件値より小さい);
+        // """;
         if (n == 0) {
             return "=";
         } else if (n == 1) {
@@ -1121,9 +1147,10 @@ class CWBinaryBase(object):
             return ">";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_comparison4(n):
+    public static int unconv_comparison4(string n):
         if (n == "=") {
             return 0;
         } else if (n == "<>") {
@@ -1134,11 +1161,13 @@ class CWBinaryBase(object):
             return 3;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_comparison3(n) {
-        """引数の値から、「3路選択条件」を返す(1.50～のラウンド判定)。;
-        0:=(条件値と一致), 1:<(条件値より大きい), 2:>(条件値より小さい);
-        """;
+    public string conv_comparison3(int n) {
+        // """引数の値から、「3路選択条件」を返す(1.50～のラウンド判定)。;
+        // 0:=(条件値と一致), 1:<(条件値より大きい), 2:>(条件値より小さい);
+        // """;
         if (n == 0) {
             return "=";
         } else if (n == 1) {
@@ -1147,9 +1176,10 @@ class CWBinaryBase(object):
             return ">";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_comparison3(n):
+    public static int unconv_comparison3(string n) {
         if (n == "=") {
             return 0;
         } else if (n == "<") {
@@ -1158,16 +1188,18 @@ class CWBinaryBase(object):
             return 2;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
 //-------------------------------------------------------------------------------
 // 効果モーション関連
 //-------------------------------------------------------------------------------
 
-    public UNK conv_effectmotion_element(n) {
-        """引数の値から、効果モーションの「属性」を返す。;
-        0:All(全), 1:Health(肉体), 2:Mind(精神), 3:Miracle(神聖),;
-        4:Magic(魔力), 5:Fire(炎), 6:Ice(冷);
-        """;
+    public string conv_effectmotion_element(int n) {
+        // """引数の値から、効果モーションの「属性」を返す。;
+        // 0:All(全), 1:Health(肉体), 2:Mind(精神), 3:Miracle(神聖),;
+        // 4:Magic(魔力), 5:Fire(炎), 6:Ice(冷);
+        // """;
         if (n == 0) {
             return "All";
         } else if (n == 1) {
@@ -1184,9 +1216,10 @@ class CWBinaryBase(object):
             return "Ice";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_effectmotion_element(n):
+    public static string unconv_effectmotion_element(int n) {
         if (n == "All") {
             return 0;
         } else if (n == "Health") {
@@ -1203,12 +1236,14 @@ class CWBinaryBase(object):
             return 6;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_effectmotion_type(tabn, n) {
-        """引数の値から、効果モーションの「種類」を返す。;
-        tabn: 大分類。;
-        n: 小分類。;
-        """;
+    public string conv_effectmotion_type(int tabn, int n) {
+        // """引数の値から、効果モーションの「種類」を返す。;
+        // tabn: 大分類。;
+        // n: 小分類。;
+        // """;
         if (tabn == 0) {
             if (n == 0) {
                 return "Heal"                     // 回復
@@ -1218,6 +1253,7 @@ class CWBinaryBase(object):
                 return "Absorb"                   // 吸収
             } else {
                 throw new ValueError(this.fpath);
+            }
 
         } else if (tabn == 1) {
             if (n == 0) {
@@ -1230,6 +1266,7 @@ class CWBinaryBase(object):
                 return "DisPoison"                // 中毒解除
             } else {
                 throw new ValueError(this.fpath);
+            }
 
         } else if (tabn == 2) {
             if (n == 0) {
@@ -1238,6 +1275,7 @@ class CWBinaryBase(object):
                 return "LoseSkillPower"           // 精神力不能
             } else {
                 throw new ValueError(this.fpath);
+            }
 
         } else if (tabn == 3) {
             if (n == 0) {
@@ -1254,6 +1292,7 @@ class CWBinaryBase(object):
                 return "Normal"                   // 正常状態
             } else {
                 throw new ValueError(this.fpath);
+            }
 
         } else if (tabn == 4) {
             if (n == 0) {
@@ -1274,6 +1313,7 @@ class CWBinaryBase(object):
                 return "DisAntiMagic"             // 魔法無効化解除
             } else {
                 throw new ValueError(this.fpath);
+            }
 
         } else if (tabn == 5) {
             if (n == 0) {
@@ -1286,6 +1326,7 @@ class CWBinaryBase(object):
                 return "EnhanceDefense"           // 防御力変化
             } else {
                 throw new ValueError(this.fpath);
+            }
 
         } else if (tabn == 6) {
             if (n == 0) {
@@ -1296,6 +1337,7 @@ class CWBinaryBase(object):
                 return "VanishBeast"              // 召喚獣消去
             } else {
                 throw new ValueError(this.fpath);
+            }
 
         } else if (tabn == 7) {
             if (n == 0) {
@@ -1318,18 +1360,21 @@ class CWBinaryBase(object):
                 return "CancelAction"            // 行動キャンセル(1.50)
             } else {
                 throw new ValueError(this.fpath);
+            }
 
         } else if (tabn == 8) {
             if (n == 0) {
                 return "SummonBeast"              // 召喚獣召喚
             } else {
                 throw new ValueError(this.fpath);
+            }
 
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_effectmotion_type(n, f):
+    public static UNK unconv_effectmotion_type(string n, UNK f) {
         if (n == "Heal") {
             return 0, 0;
         } else if (n == "Damage") {
@@ -1413,7 +1458,7 @@ class CWBinaryBase(object):
             return 7, 6;
         } else if (n == "DealSkillCard") {
             return 7, 7;
-        elif n == "CancelAction": // 1.50
+        } else if  (n == "CancelAction") { // 1.50
             f.check_version(1.50);
             return 7, 8;
 
@@ -1426,11 +1471,13 @@ class CWBinaryBase(object):
 
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
     public UNK conv_effectmotion_damagetype(n) {
-        """引数の値から、効果モーションの「属性」を返す。;
-        0:levelratio(レベル比), 1:normal(効果値), 2:max(最大値);
-        """;
+        // """引数の値から、効果モーションの「属性」を返す。;
+        // 0:levelratio(レベル比), 1:normal(効果値), 2:max(最大値);
+        // """;
         if (n == 0) {
             return "LevelRatio";
         } else if (n == 1) {
@@ -1440,8 +1487,7 @@ class CWBinaryBase(object):
         } else {
             throw new ValueError(this.fpath);
 
-    @staticmethod;
-    def unconv_effectmotion_damagetype(n):
+    public static int unconv_effectmotion_damagetype(string n) {
         if (n == "LevelRatio") {
             return 0;
         } else if (n == "Normal") {
@@ -1450,16 +1496,18 @@ class CWBinaryBase(object):
             return 2;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
 //-------------------------------------------------------------------------------
 // スキル・アイテム・召喚獣関連
 //-------------------------------------------------------------------------------
 
-    public UNK conv_card_effecttype(n) {
-        """引数の値から、「効果属性」の種類を返す。;
-        0:Physic(物理属性), 1:Magic(魔法属性), 2:MagicalPhysic(魔法的物理属性),;
-        3:PhysicalMagic(物理的魔法属性), 4:null(無属性);
-        """;
+    public string conv_card_effecttype(int n) {
+        // """引数の値から、「効果属性」の種類を返す。;
+        // 0:Physic(物理属性), 1:Magic(魔法属性), 2:MagicalPhysic(魔法的物理属性),;
+        // 3:PhysicalMagic(物理的魔法属性), 4:null(無属性);
+        // """;
         if (n == 0) {
             return "Physic";
         } else if (n == 1) {
@@ -1472,9 +1520,10 @@ class CWBinaryBase(object):
             return "None";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_card_effecttype(n):
+    public static int unconv_card_effecttype(string n) {
         if (n == "Physic") {
             return 0;
         } else if (n == "Magic") {
@@ -1487,11 +1536,13 @@ class CWBinaryBase(object):
             return 4;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_card_resisttype(n) {
-        """引数の値から、「抵抗属性」の種類を返す。;
-        0:Avoid(物理属性), 1:Resist(抵抗属性), 3:Unfail(必中属性);
-        """;
+    public string conv_card_resisttype(int n) {
+        // """引数の値から、「抵抗属性」の種類を返す。;
+        // 0:Avoid(物理属性), 1:Resist(抵抗属性), 3:Unfail(必中属性);
+        // """;
         if (n == 0) {
             return "Avoid";
         } else if (n == 1) {
@@ -1500,9 +1551,10 @@ class CWBinaryBase(object):
             return "Unfail";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_card_resisttype(n):
+    public static int unconv_card_resisttype(string n) {
         if (n == "Avoid") {
             return 0;
         } else if (n == "Resist") {
@@ -1511,12 +1563,14 @@ class CWBinaryBase(object):
             return 2;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_card_visualeffect(n) {
-        """引数の値から、「視覚的効果」の種類を返す。;
-        0:null(無し), 1:Reverse(反転),;
-        2:Horizontal(横), 3:Vertical(縦);
-        """;
+    public string conv_card_visualeffect(int n) {
+        // """引数の値から、「視覚的効果」の種類を返す。;
+        // 0:null(無し), 1:Reverse(反転),;
+        // 2:Horizontal(横), 3:Vertical(縦);
+        // """;
         if (n == 0) {
             return "None";
         } else if (n == 1) {
@@ -1527,9 +1581,10 @@ class CWBinaryBase(object):
             return "Vertical";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_card_visualeffect(n):
+    public static int unconv_card_visualeffect(string n) {
         if (n == "None") {
             return 0;
         } else if (n == "Reverse") {
@@ -1540,12 +1595,14 @@ class CWBinaryBase(object):
             return 3;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
     public UNK conv_card_physicalability(n) {
-        """引数の値から、身体的要素の種類を返す。;
-        0:Dex(器用), 1:Agl(素早さ), 2:Int(知力);
-        3:Str(筋力), 4:Vit(生命), 5:Min(精神);
-        """;
+        // """引数の値から、身体的要素の種類を返す。;
+        // 0:Dex(器用), 1:Agl(素早さ), 2:Int(知力);
+        // 3:Str(筋力), 4:Vit(生命), 5:Min(精神);
+        // """;
         if (n == 0) {
             return "Dex";
         } else if (n == 1) {
@@ -1560,9 +1617,10 @@ class CWBinaryBase(object):
             return "Min";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_card_physicalability(n):
+    public static int unconv_card_physicalability(string n) {
         if (n == "Dex") {
             return 0;
         } else if (n == "Agl") {
@@ -1577,13 +1635,15 @@ class CWBinaryBase(object):
             return 5;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_card_mentalability(n) {
-        """引数の値から、精神的要素の種類を返す。;
-        1:Aggressive(好戦), -1:Unaggressive(平和), 2:Cheerful(社交),;
-        -2:Uncheerful(内向), 3:Brave(勇敢), -3:Unbrave(臆病), 4:Cautious(慎重),;
-        -4:Uncautious(大胆), 5:Trickish(狡猾), -5:Untrickish(正直);
-        """;
+    public string conv_card_mentalability(int n) {
+        // """引数の値から、精神的要素の種類を返す。;
+        // 1:Aggressive(好戦), -1:Unaggressive(平和), 2:Cheerful(社交),;
+        // -2:Uncheerful(内向), 3:Brave(勇敢), -3:Unbrave(臆病), 4:Cautious(慎重),;
+        // -4:Uncautious(大胆), 5:Trickish(狡猾), -5:Untrickish(正直);
+        // """;
         if (n == 1) {
             return "Aggressive";
         } else if (n == -1) {
@@ -1606,9 +1666,10 @@ class CWBinaryBase(object):
             return "Untrickish";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_card_mentalability(n):
+    public static int unconv_card_mentalability(string n) {
         if (n == "Aggressive") {
             return 1;
         } else if (n == "Unaggressive") {
@@ -1631,12 +1692,14 @@ class CWBinaryBase(object):
             return -5;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_card_target(n) {
-        """引数の値から、効果目標の種類を返す。;
-        0:null(対象無し), 1:User(使用者), 2:Party(味方),;
-        3:Enemy(敵方) ,4:Both(双方);
-        """;
+    public string conv_card_target(int n) {
+        // """引数の値から、効果目標の種類を返す。;
+        // 0:null(対象無し), 1:User(使用者), 2:Party(味方),;
+        // 3:Enemy(敵方) ,4:Both(双方);
+        // """;
         if (n == 0) {
             return "None";
         } else if (n == 1) {
@@ -1649,9 +1712,10 @@ class CWBinaryBase(object):
             return "Both";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_card_target(n):
+    public static int unconv_card_target(string n){
         if (n == "None") {
             return 0;
         } else if (n == "User") {
@@ -1664,12 +1728,14 @@ class CWBinaryBase(object):
             return 4;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
     public UNK conv_card_premium(n) {
-        """引数の値から、希少度の種類を返す。;
-        一時的に所持しているだけのF9でなくなるカードの場合は+3されている。;
-        0:Normal, 2:Rare, 1:Premium;
-        """;
+        // """引数の値から、希少度の種類を返す。;
+        // 一時的に所持しているだけのF9でなくなるカードの場合は+3されている。;
+        // 0:Normal, 2:Rare, 1:Premium;
+        // """;
         if (n == 0) {
             return "Normal";
         } else if (n == 1) {
@@ -1678,9 +1744,10 @@ class CWBinaryBase(object):
             return "Premium";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_card_premium(n):
+    public static int unconv_card_premium(string n) {
         if (n == "Normal") {
             return 0;
         } else if (n == "Rare") {
@@ -1689,32 +1756,35 @@ class CWBinaryBase(object):
             return 2;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
 //-------------------------------------------------------------------------------
 //　キャラクター関連
 //-------------------------------------------------------------------------------
 
-    public UNK conv_mentality(n) {
-        """引数の値から、精神状態の種類を返す。;
-        ここでは「"0"=正常状態」以外の判別は適当。;
-        """;
+    public string conv_mentality(int n) {
+        // """引数の値から、精神状態の種類を返す。;
+        // ここでは「"0"=正常状態」以外の判別は適当。;
+        // """;
         if (n == 0) {
-            return "Normal"            // 正常状態
+            return "Normal";            // 正常状態
         } else if (n == 1) {
-            return "Sleep"             // 睡眠状態
+            return "Sleep";             // 睡眠状態
         } else if (n == 2) {
-            return "Confuse"           // 混乱状態
+            return "Confuse";           // 混乱状態
         } else if (n == 3) {
-            return "Overheat"          // 激昂状態
+            return "Overheat";          // 激昂状態
         } else if (n == 4) {
-            return "Brave"             // 勇敢状態
+            return "Brave";             // 勇敢状態
         } else if (n == 5) {
-            return "Panic"             // 恐慌状態
+            return "Panic";             // 恐慌状態
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_mentality(n):
+    public static int unconv_mentality(string n) {
         if (n == "Normal") {
             return 0;
         } else if (n == "Sleep") {
@@ -1729,36 +1799,41 @@ class CWBinaryBase(object):
             return 5;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
 //-------------------------------------------------------------------------------
 //　宿データ関連
 //-------------------------------------------------------------------------------
 
-    public UNK conv_yadotype(n) {
-        """引数の値から、宿の種類を返す。;
-        1:Normal(ノーマル宿), 2:Debug(デバッグ宿);
-        """;
+    public string conv_yadotype(int n) {
+        // """引数の値から、宿の種類を返す。;
+        // 1:Normal(ノーマル宿), 2:Debug(デバッグ宿);
+        // """;
         if (n == 1) {
             return "Normal";
         } else if (n == 2) {
             return "Debug";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_yadotype(n):
+    public static int unconv_yadotype(string n) {
         if (n == "Normal") {
             return 1;
         } else if (n == "Debug") {
             return 2;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_yado_summaryview(n) {
-        """引数の値から、張り紙の表示の種類を返す。;
-        0:隠蔽シナリオ、終了済シナリオを表示しない, 1:隠蔽シナリオを表示しない,;
-        2:全てのシナリオを表示, 3:適応レベルのシナリオのみを表示;
-        """;
+    public string conv_yado_summaryview(int n) {
+        // """引数の値から、張り紙の表示の種類を返す。;
+        // 0:隠蔽シナリオ、終了済シナリオを表示しない, 1:隠蔽シナリオを表示しない,;
+        // 2:全てのシナリオを表示, 3:適応レベルのシナリオのみを表示;
+        // """;
         if (n == 0) {
             return "HideHiddenAndCompleteScenario";
         } else if (n == 1) {
@@ -1769,9 +1844,10 @@ class CWBinaryBase(object):
             return "ShowFittingScenario";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_yado_summaryview(n):
+    public static int unconv_yado_summaryview(string n):
         if (n == "HideHiddenAndCompleteScenario") {
             return 0;
         } else if (n == "HideHiddenScenario") {
@@ -1782,12 +1858,14 @@ class CWBinaryBase(object):
             return 3;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_yado_bgchange(n) {
-        """引数の値から、背景の切り替え方式の種類を返す。;
-        0:アニメーションなし, 1:短冊式,;
-        2:色変換式, 3:ドット置換式;
-        """;
+    public string conv_yado_bgchange(int n) {
+        // """引数の値から、背景の切り替え方式の種類を返す。;
+        // 0:アニメーションなし, 1:短冊式,;
+        // 2:色変換式, 3:ドット置換式;
+        // """;
         if (n == 0) {
             return "NoAnimation";
         } else if (n == 1) {
@@ -1798,9 +1876,10 @@ class CWBinaryBase(object):
             return "ReplaceDot";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_yado_bgchange(n):
+    public static int unconv_yado_bgchange(string n) {
         if (n == "NoAnimation") {
             return 0;
         } else if (n == "ReedShape") {
@@ -1811,35 +1890,40 @@ class CWBinaryBase(object):
             return 3;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
 //-------------------------------------------------------------------------------
 //　特殊セル関連(1.50～)
 //-------------------------------------------------------------------------------
 
     public UNK conv_borderingtype(n) {
-        """引数の値から、テキストセルの縁取り方式を返す。;
-        0:縁取り形式1, 1:縁取り形式2;
-        """;
+        // """引数の値から、テキストセルの縁取り方式を返す。;
+        // 0:縁取り形式1, 1:縁取り形式2;
+        // """;
         if (n == 0) {
             return "Outline";
         } else if (n == 1) {
             return "Inline";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_borderingtype(n):
+    public static int unconv_borderingtype(string n) {
         if (n == "Outline") {
             return 0;
         } else if (n == "Inline") {
             return 1;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_blendmode(n) {
-        """引数の値から、カラーセルの合成方法を返す。;
-        0,1:上書き, 2:加算, 3:減算, 4:乗算;
-        """;
+    public string conv_blendmode(int n) {
+        // """引数の値から、カラーセルの合成方法を返す。;
+        // 0,1:上書き, 2:加算, 3:減算, 4:乗算;
+        // """;
         if (n in (0, 1)) {
             return "Normal";
         } else if (n == 2) {
@@ -1850,9 +1934,9 @@ class CWBinaryBase(object):
             return "Multiply";
         } else {
             throw new ValueError(this.fpath);
+        }
 
-    @staticmethod;
-    def unconv_blendmode(n):
+    public static int unconv_blendmode(string n) {
         if (n == "Normal") {
             return 0;
         } else if (n == "Add") {
@@ -1863,11 +1947,13 @@ class CWBinaryBase(object):
             return 4;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
+        }
+    }
 
-    public UNK conv_gradientdir(n) {
-        """引数の値から、グラデーション方向を返す。;
-        0: グラデーション無し, 1:左から右, 2: 上から下;
-        """;
+    public string conv_gradientdir(int n) {
+        // """引数の値から、グラデーション方向を返す。;
+        // 0: グラデーション無し, 1:左から右, 2: 上から下;
+        // """;
         if (n == 0) {
             return "None";
         } else if (n == 1) {
@@ -1876,9 +1962,10 @@ class CWBinaryBase(object):
             return "TopToBottom";
         } else {
             throw new ValueError(this.fpath);
+        }
+    }
 
-    @staticmethod;
-    def unconv_gradientdir(n):
+    public static int unconv_gradientdir(string n) {
         if (n == "None") {
             return 0;
         } else if (n == "LeftToRight") {
@@ -1887,10 +1974,5 @@ class CWBinaryBase(object):
             return 2;
         } else {
             throw new cw.binary.cwfile.UnsupportedError();
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
-
+        }
+    }
