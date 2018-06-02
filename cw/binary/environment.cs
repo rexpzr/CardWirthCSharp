@@ -7,12 +7,11 @@ import base;
 import cw;
 
 
-class Environment(base.CWBinaryBase):
-    """Environment.wyd(type=-1);
-    システム設定とかゴシップとか終了印とかいろいろまとめているデータ。;
-    """;
-    public UNK __init__(parent, f, yadodata=false, versiononly=false) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
+class Environment : base.CWBinaryBase {
+    // """Environment.wyd(type=-1);
+    // システム設定とかゴシップとか終了印とかいろいろまとめているデータ。;
+    // """;
+    public Environment(UNK parent, UNK f, bool yadodata=false, bool versiononly=false) : base(parent, f, yadodata) {
         this.name = os.path.basename(os.path.dirname(this.fpath));
         this.type = -1;
         this.dataversion = f.string();
@@ -20,45 +19,49 @@ class Environment(base.CWBinaryBase):
             this.dataversion_int = int(this.dataversion[len("DATAVERSION_"):]);
         } else {
             this.dataversion_int = 0;
+        }
 
         if (versiononly) {
             return;
+        }
 
-        this.yadotype = f.byte() // 宿タイプ(1:通常, 2:デバッグ)
-        this.drawcard_speed = f.dword() // カード速度
-        this.drawbg_speed = f.dword() // 背景速度
-        this.message_speed = f.dword() // メッセージ速度
-        this.play_bgm = f.bool() // BGM再生
-        this.play_sound = f.bool() // 効果音再生
+        this.yadotype = f.byte(); // 宿タイプ(1:通常, 2:デバッグ)
+        this.drawcard_speed = f.dword(); // カード速度
+        this.drawbg_speed = f.dword(); // 背景速度
+        this.message_speed = f.dword(); // メッセージ速度
+        this.play_bgm = f.bool(); // BGM再生
+        this.play_sound = f.bool(); // 効果音再生
         if (10 <= this.dataversion_int) {
-            this.correct_scaledown = f.bool() // カードのスムージング(縮小)
-            this.correct_scaleup = f.bool() // カードのスムージング(拡大)
+            this.correct_scaledown = f.bool(); // カードのスムージング(縮小)
+            this.correct_scaleup = f.bool(); // カードのスムージング(拡大)
         } else {
-            _b = f.bool() // レアリティのないカードも買い戻せるようにする
-            _b = f.bool() // 売却・破棄時に確認メッセージの表示
-        this.autoselect_party = f.bool() // 宿を開いた時に最後のパーティを選択
-        this.clickcancel = f.bool() // 背景右クリックでキャンセル
+            _b = f.bool(); // レアリティのないカードも買い戻せるようにする
+            _b = f.bool(); // 売却・破棄時に確認メッセージの表示
+        }
+        this.autoselect_party = f.bool(); // 宿を開いた時に最後のパーティを選択
+        this.clickcancel = f.bool(); // 背景右クリックでキャンセル
         if (10 <= this.dataversion_int) {
-            this.effect_getmoney = f.bool() // 所持金増減時に点滅させる
-            this.clickjump = f.bool() // 右クリックで待機時間を飛ばす
-            this.keep_levelmax = f.bool() // レベルを最大値に維持する
+            this.effect_getmoney = f.bool(); // 所持金増減時に点滅させる
+            this.clickjump = f.bool(); // 右クリックで待機時間を飛ばす
+            this.keep_levelmax = f.bool(); // レベルを最大値に維持する
+        }
         if (11 <= this.dataversion_int) {
-            this.bgeffectatselmode = f.bool() // 選択モードでカーテンをかける
+            this.bgeffectatselmode = f.bool(); // 選択モードでカーテンをかける
         } else {
             this.bgeffectatselmode = true;
-        this.viewtype_poster = f.byte() // 貼紙の表示条件
-        this.bgcolor_message = f.dword() // メッセージ背景濃度
-        this.use_decofont = f.bool() // 装飾フォントの使用
+        }
+        this.viewtype_poster = f.byte(); // 貼紙の表示条件
+        this.bgcolor_message = f.dword(); // メッセージ背景濃度
+        this.use_decofont = f.bool(); // 装飾フォントの使用
         this.changetype_bg = f.byte() // 背景切替方式
-        this.compstamps = f.string(true) // 終了印のリスト
-        this.scenarioname = f.string() // 選択中パーティのいるシナリオ名(用途不明)
-        this.gossips = f.string(true) // ゴシップのリスト
+        this.compstamps = f.string(true); // 終了印のリスト
+        this.scenarioname = f.string(); // 選択中パーティのいるシナリオ名(用途不明)
+        this.gossips = f.string(true); // ゴシップのリスト
         if (10 <= this.dataversion_int) {
             // 1.28以降
             // カード置場のカードデータ
             unusedcards_num = f.dword();
-            this.unusedcards = [UnusedCard(self, f);
-                                        for _cnt in xrange(unusedcards_num)];
+            this.unusedcards = [UnusedCard(self, f) for _cnt in xrange(unusedcards_num)];
             // カード置場と荷物袋のカードヘッダ
             yadocards_num = f.dword();
             this.yadocards = [YadoCard(self, f) for _cnt in xrange(yadocards_num)];
@@ -69,6 +72,7 @@ class Environment(base.CWBinaryBase):
             this.unusedcards = [];
             this.yadocards = [];
             this.money = 0;
+        }
         // 選択中のパーティ名
         this.partyname = f.string();
 
@@ -83,6 +87,7 @@ class Environment(base.CWBinaryBase):
         this.errorcards = [];
 
         this.data = null;
+    }
 
     public UNK get_data() {
         if (this.data == null) {
@@ -105,12 +110,16 @@ class Environment(base.CWBinaryBase):
             foreach (var compstamp in cw.util.decodetextlist(this.compstamps)) {
                 if (compstamp) {
                     e.append(cw.data.make_element("CompleteStamp", compstamp));
+                }
+            }
             this.data.append(e);
 
             e = cw.data.make_element("Gossips");
             foreach (var gossip in cw.util.decodetextlist(this.gossips)) {
                 if (gossip) {
                     e.append(cw.data.make_element("Gossip", gossip));
+                }
+            }
             this.data.append(e);
 
             // 保管庫のカードのxml出力
@@ -119,24 +128,30 @@ class Environment(base.CWBinaryBase):
                 if (unusedcard.data) {
                     try {
                         unusedcard.create_xml2(this.get_dir(), cardorder=i);
-                    except Exception:
+                    } catch (Exception e) {
                         cw.util.print_ex();
                         this.errorcards.append(unusedcard);
+                    }
                 } else {
                     this.errorcards.append(unusedcard);
+                }
+            }
+        }
 
         return this.data;
+    }
 
     public UNK get_cardtypedict() {
         d = {};
 
         foreach (var card in this.yadocards) {
             d[card.fname] = card.type;
+        }
 
         return d;
+    }
 
-    @staticmethod;
-    def unconv(f, data, table):
+    public static void unconv(UNK f, UNK data, UNK table) {
         yadotype = 1 // 常に通常宿とする
         play_bgm = true;
         play_sound = true;
@@ -166,9 +181,12 @@ class Environment(base.CWBinaryBase):
             changetype_bg = 2;
         } else if (cw.cwpy.setting.transition == "PixelDissolve") {
             changetype_bg = 3;
+        }
 
-        def roundval(value):
+        int roundval(UNK value) { // TODO
             return int(round((value-5) / 10.0 * 8.0)) + 4;
+        }
+
         drawcard_speed = roundval(cw.cwpy.setting.get_dealspeed(false));
         drawbg_speed = roundval(cw.cwpy.setting.transitionspeed);
         message_speed = roundval(cw.cwpy.setting.messagespeed);
@@ -181,18 +199,26 @@ class Environment(base.CWBinaryBase):
                         money = cw.util.numwrap(money, 0, 999999);
                     } else if (prop.tag == "NowSelectingParty") {
                         partyname = table["party"].get(prop.text, "");
+                    }
+                }
             } else if (e.tag == "CompleteStamps") {
                 seq = [];
                 foreach (var cse in e) {
                     if (cse.text) {
                         seq.append(cse.text);
+                    }
+                }
                 compstamps = cw.util.encodetextlist(seq);
             } else if (e.tag == "Gossips") {
                 seq = [];
                 foreach (var ge in e) {
                     if (ge.text) {
                         seq.append(ge.text);
+                    }
+                }
                 gossips = cw.util.encodetextlist(seq);
+            }
+        }
 
         f.write_string("DATAVERSION_10");
         f.write_byte(yadotype);
@@ -219,19 +245,22 @@ class Environment(base.CWBinaryBase):
         f.write_dword(len(unusedcards));
         foreach (var fname, card in unusedcards) {
             UnusedCard.unconv(f, card, fname);
+        }
         yadocards = table["yadocards"];
         f.write_dword(len(yadocards));
         foreach (var fname, card in yadocards.values()) {
             YadoCard.unconv(f, card, fname);
+        }
         f.write_dword(money);
         f.write_string(partyname);
+    }
+}
 
-class UnusedCard(base.CWBinaryBase):
-    """カード置き場のカードのデータ。;
-    this.dataにwidファイルから読み込んだカードデータがある。;
-    """;
-    public UNK __init__(parent, f, yadodata=false) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
+class UnusedCard : base.CWBinaryBase {
+    // """カード置き場のカードのデータ。;
+    // this.dataにwidファイルから読み込んだカードデータがある。;
+    // """;
+    public UnusedCard(UNK parent, UNK f, bool yadodata=false) : base(parent, f, yadodata) {
         if (f) {
             this.fname = f.rawstring();
             this.uselimit = f.dword();
@@ -239,38 +268,46 @@ class UnusedCard(base.CWBinaryBase):
         } else {
             this.fname = "";
             this.uselimit = 0;
+        }
         this.data = null;
+    }
 
-    public UNK set_data(data) {
-        """widファイルから読み込んだカードデータを関連づける""";
+    public void set_data(UNK data) {
+        // """widファイルから読み込んだカードデータを関連づける""";
         this.data = data;
+    }
 
     public UNK get_data() {
         return this.data.get_data();
+    }
 
     public UNK create_xml(dpath) {
         return this.create_xml2(dpath, -1);
+    }
 
     public UNK create_xml2(dpath, cardorder) {
-        """this.data.create_xml()""";
+        // """this.data.create_xml()""";
         this.data.limit = this.uselimit;
         path = this.data.create_xml(dpath);
         yadodb = this.get_root().yadodb;
         if (yadodb) {
             yadodb.insert_card(path, commit=false, cardorder=cardorder);
+        }
         return path;
+    }
 
-    @staticmethod;
-    def unconv(f, data, fname):
+    public static void unconv(UNK f, UNK data, UNK fname) {
         f.write_rawstring(cw.util.splitext(fname)[0]);
         f.write_dword(data.getint("Property/UseLimit", 0));
         f.write_byte(0);
+    }
+}
 
-class YadoCard(base.CWBinaryBase):
-    """カード置き場のカードと荷物袋のカードのデータ。;
-    ここのtypeで宿にあるカードのタイプ(技能・アイテム・召喚獣)を判別できる。;
-    """;
-    public UNK __init__(parent, f, yadodata=false) {
+class YadoCard : base.CWBinaryBase {
+    // """カード置き場のカードと荷物袋のカードのデータ。;
+    // ここのtypeで宿にあるカードのタイプ(技能・アイテム・召喚獣)を判別できる。;
+    // """;
+    public YadoCard(UNK parent, UNK f, bool yadodata=false) {
         base.CWBinaryBase.__init__(self, parent, f, yadodata);
         f.byte();
         f.byte();
@@ -279,9 +316,9 @@ class YadoCard(base.CWBinaryBase):
         this.type = f.byte();
         this.fname = f.rawstring();
         this.number = f.dword() // 個数
+    }
 
-    @staticmethod;
-    def unconv(f, data, fname):
+    public static void unconv(UNK f, UNK data, UNK fname) {
         name = data.gettext("Property/Name", "");
         description = data.gettext("Property/Description", "");
         if (data.tag == "SkillCard") {
@@ -290,6 +327,7 @@ class YadoCard(base.CWBinaryBase):
             restype = 2;
         } else if (data.tag == "BeastCard") {
             restype = 3;
+        }
         number = 1;
 
         f.write_byte(0);
@@ -299,9 +337,5 @@ class YadoCard(base.CWBinaryBase):
         f.write_byte(restype);
         f.write_rawstring(cw.util.splitext(fname)[0]);
         f.write_dword(number);
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+    }
+}

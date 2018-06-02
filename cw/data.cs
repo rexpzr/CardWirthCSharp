@@ -134,7 +134,8 @@ class SystemData{
         this._init_sparea_mcards();
     }
 
-    public void _init_xmlpaths(bool xmlonly=false)    {
+    public void _init_xmlpaths(bool xmlonly=false) 
+    {
         UNK dpaths;
 
         this._areas.clear();
@@ -148,8 +149,8 @@ class SystemData{
         dpaths = (cw.util.join_paths(cw.cwpy.skindir, u"Resource/Xml", cw.cwpy.status),
                   cw.util.join_paths(u"Data/SkinBase/Resource/Xml", cw.cwpy.status))
 
-        for (dpath in dpaths){
-            for (fname in os.listdir(dpath)){
+        foreach (var dpath in dpaths){
+            foreach(var fname in os.listdir(dpath)){
                 path = cw.util.join_paths(dpath, fname);
 
                 if (os.path.isfile(path) && fname.endswith(".xml"))
@@ -174,7 +175,7 @@ class SystemData{
         // """
         d = {};
 
-        for (key in this._areas.iterkeys())
+        foreach (var key in this._areas.iterkeys())
         {
             if (key in cw.AREAS_TRADE)
             {
