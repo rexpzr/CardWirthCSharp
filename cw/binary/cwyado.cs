@@ -386,7 +386,7 @@ class CWYado {
 
     public UNK load_yadofile(UNK path) {
         // """ファイル("wch", "wcp", "wpl", "wpt", "wyd", "wrm")を読み込む。""";
-        with cwfile.CWFile(path, "rb") as f { // TODO
+        with (cwfile.CWFile(path, "rb") as f) { // TODO
 
             if (path.endswith(".wyd")) {
                 data = environment.Environment(null, f, true);
@@ -681,10 +681,10 @@ class UnconvCWYado {
                     f.close();
                 }
                 return data, fpath;
-            } catch Exception, ex { // TODO
+            } catch (Exception ex) {
                 cw.util.print_ex(file=sys.stderr);
                 cw.util.remove(fpath);
-                throw new ex;
+                throw ex;
             }
         }
 
@@ -740,7 +740,7 @@ class UnconvCWYado {
                     f.close();
                 }
 
-            } catch (cw.binary.cwfile.UnsupportedError, ex) { // TODO
+            } catch (cw.binary.cwfile.UnsupportedError ex) { // TODO
                 if (ex.msg) {
                     s = ex.msg;
                 } else {
@@ -773,7 +773,7 @@ class UnconvCWYado {
 
                     yadocards[header.fpath] = os.path.basename(fpath), data;
 
-                } catch (cw.binary.cwfile.UnsupportedError, ex) { // TODO
+                } catch (cw.binary.cwfile.UnsupportedError ex) {
                     if (ex.msg) {
                         s = ex.msg;
                     } else {
@@ -886,7 +886,7 @@ class UnconvCWYado {
                     f.close();
                 }
 
-            } catch (cw.binary.cwfile.UnsupportedError, ex) { // TODO
+            } catch (cw.binary.cwfile.UnsupportedError ex) {
                 if (ex.msg) {
                     s = ex.msg;
                 } else {
