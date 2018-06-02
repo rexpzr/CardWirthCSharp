@@ -13,7 +13,7 @@ import cw;
 
 class CWBinaryBase {
     public CWBinaryBase(UNK parent, UNK f, bool yadodata=false, UNK materialdir="Material", bool image_export=true) {
-        this.set_root(parent); // TODO
+        this.set_root(parent);
         this.xmltype = this.__class__.__name__; // TODO
         if (hasattr(f, "name")) {
             this.fpath = f.name;
@@ -33,7 +33,7 @@ class CWBinaryBase {
         }
     }
 
-    public UNK set_root(parent) {
+    public void set_root(UNK parent) {
         if (parent) {
             this.root = parent.root;
         } else {
@@ -45,11 +45,11 @@ class CWBinaryBase {
         return this.root();
     }
 
-    public UNK set_dir(UNK path) {
+    public void set_dir(UNK path) {
         this.get_root().dir = path;
     }
 
-    public UNK get_dir() {
+    public string get_dir() {
         try {
             return this.get_root().dir;
         } catch (Exception e) {
@@ -57,11 +57,11 @@ class CWBinaryBase {
         }
     }
 
-    public UNK set_imgdir(UNK path) {
+    public void set_imgdir(UNK path) {
         this.get_root().imgdir = path;
     }
 
-    public UNK get_imgdir() {
+    public string get_imgdir() {
         try {
             return this.get_root().imgdir;
         } catch (Exception e) {
@@ -99,7 +99,7 @@ class CWBinaryBase {
         }
     }
 
-    public UNK set_image_export(UNK image_export, bool force=false) {
+    public void set_image_export(UNK image_export, bool force=false) {
         // """XML変換時に格納イメージをエクスポートするか設定する。""";
         this._image_export = image_export;
         this._force_exportsetting = force;

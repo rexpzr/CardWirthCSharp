@@ -17,7 +17,7 @@ class Coupon : base.CWBinaryBase {
             this.value = f.dword();
             if (dataversion <= 4) {
                 if (_120gene.match(this.name)) {
-                    this.value = int(this.name[13:]);
+                    this.value = (int)(this.name[13:]);
                     this.name = this.name[:12];
                 }
             }
@@ -32,14 +32,14 @@ class Coupon : base.CWBinaryBase {
     public UNK get_data() {
         if (this.data == null) {
             this.data = cw.data.make_element("Coupon", this.name);
-            this.data.set("value", str(this.value));
+            this.data.set("value", (string)(this.value));
         }
         return this.data;
     }
 
     public static void unconv(UNK f, UNK data) {
         name = data.text;
-        value = int(data.get("value"));
+        value = (int)(data.get("value"));
 
         f.write_string(name);
         f.write_dword(value);

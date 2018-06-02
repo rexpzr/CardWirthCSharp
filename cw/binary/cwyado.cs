@@ -211,7 +211,7 @@ class CWYado {
         return this.dir;
     }
 
-    public UNK load() {
+    public void load() {
         // """宿ファイルを読み込む。;
         // 種類はtypeで判別できる(wydは"-1"、wptは"4"となっている)。;
         // """;
@@ -228,7 +228,7 @@ class CWYado {
 
         this.curnum_n = 0;
         this.curnum = 0;
-        this.maxnum = len(this.yadofiles) + len(this.cardfiles) + 1;
+        this.maxnum = this.yadofiles.Count + this.cardfiles.Count + 1;
 
         foreach (var path in this.yadofiles) {
             this.message = u"%s を読込中..." % (os.path.basename(path));
@@ -320,13 +320,15 @@ class CWYado {
         // ２枚目以降にはコピーしたデータを渡す。
         // 同一データを使いまわすと複数カードが同一素材を参照してしまうので
         dictrecord = set();
-        def get_dictdata(cardname):
+        UNK get_dictdata(UNK cardname) { // TODO
             if (cardname in dictrecord) {
                 data = copy.deepcopy(carddatadict.get(cardname));
             } else {
                 data = carddatadict.get(cardname);
                 dictrecord.add(cardname);
+            }
             return data;
+        }
 
         if (10 <= this.dataversion_int) {
             // wplの荷物袋のカードリストにカードデータ(wid)と種類のデータを付与する。
@@ -334,21 +336,24 @@ class CWYado {
                 foreach (var card in wpl.cards) {
                     card.type = cardtypes.get(card.fname);
                     card.set_data(get_dictdata(card.fname));
+                }
+            }
 
             // wydのカード置き場のカードリストにカードデータ(wid)と
             // 種類のデータを付与する。
             foreach (var card in this.wyd.unusedcards) {
                 card.type = cardtypes.get(card.fname);
                 card.data = get_dictdata(card.fname);
+            }
 
         } else {
             // 宿で販売されているカードをカード置場に置く
             foreach (var fname, card in carddatadict.iteritems()) {
                 carddata = cw.binary.environment.UnusedCard(null, null, true);
-                cd = {;
-                    ".wck":1,;
-                    ".wci":2,;
-                    ".wcb":3;
+                cd = {
+                    ".wck":1,
+                    ".wci":2,
+                    ".wcb":3
                 };
                 type = cd.get(os.path.splitext(fname)[1], 0);
                 if (type) {
@@ -357,6 +362,9 @@ class CWYado {
                     carddata.uselimit = card.limit;
                     carddata.set_data(card);
                     this.wyd.unusedcards.append(carddata);
+                }
+            }
+        }
 
     //---------------------------------------------------------------------------
     // ここまで
@@ -370,14 +378,15 @@ class CWYado {
         this.datalist.extend(this.wrms);
         this.datalist.append(this.wyd);
 
-        this.maxnum = len(this.datalist);
-        this.maxnum += len(this.otherfiles);
-        this.maxnum += len(this.otherdirs);
-        this.maxnum += len(this.nowadventuringparties);
+        this.maxnum = this.datalist.Count;
+        this.maxnum += this.otherfiles.Count;
+        this.maxnum += this.otherdirs.Count;
+        this.maxnum += this.nowadventuringparties.Count;
+    }
 
-    public UNK load_yadofile(path) {
-        """ファイル("wch", "wcp", "wpl", "wpt", "wyd", "wrm")を読み込む。""";
-        with cwfile.CWFile(path, "rb") as f:
+    public UNK load_yadofile(UNK path) {
+        // """ファイル("wch", "wcp", "wpl", "wpt", "wyd", "wrm")を読み込む。""";
+        with cwfile.CWFile(path, "rb") as f { // TODO
 
             if (path.endswith(".wyd")) {
                 data = environment.Environment(null, f, true);
@@ -402,22 +411,27 @@ class CWYado {
                 cards, albums = party.load_album120(null, f);
                 foreach (var data in cards) {
                     this.wcps.append(data);
+                }
                 foreach (var albumdata in albums) {
                     this.wrms.append(albumdata);
+                }
                 data = null;
             } else {
                 f.close();
                 throw new ValueError(path);
+            }
             f.close();
+        }
 
         return data;
+    }
 
-    public UNK load_cardfile(path, d) {
-        """引数のファイル(wid, wsmファイル)を読み込む。;
-        読み込みに際し、wydファイルから作成できる;
-        ファイルネームでカードの種類を判別する辞書が必要。;
-        """;
-        with cwfile.CWFile(path, "rb") as f:
+    public UNK load_cardfile(UNK path, UNK d) {
+        // """引数のファイル(wid, wsmファイル)を読み込む。;
+        // 読み込みに際し、wydファイルから作成できる;
+        // ファイルネームでカードの種類を判別する辞書が必要。;
+        // """;
+        with cwfile.CWFile(path, "rb") as f { // TODO
             // 1:スキル, 2:アイテム, 3:召喚獣
             fname = os.path.basename(path);
             if (fname.lower().endswith(".wcl")) {
@@ -431,7 +445,7 @@ class CWYado {
                 };
                 foreach (var ext in (".wck", ".wci", ".wcb")) {
                     if (os.path.isfile(name + ext)) {
-                        with cwfile.CWFile(name + ext, "rb") as f2:
+                        with cwfile.CWFile(name + ext, "rb") as f2: // TODO
                             data = cd[ext](null, f2, true);
                             f2.close();
                         _dataversion = f.string();
@@ -439,8 +453,10 @@ class CWYado {
                         data.image = f.image();
                         data.fname = os.path.basename(name + ext);
                         break;
+                    }
                 } else {
                     throw new ValueError(path);
+                }
             } else {
                 // 1.28以降のカード置場と荷物袋
                 restype = d.get(cw.util.splitext(fname)[0]);
@@ -454,15 +470,20 @@ class CWYado {
                 } else {
                     f.close();
                     throw new ValueError(path);
+                }
+            }
 
             f.close();
+        }
 
         return data;
+    }
 
-    public UNK create_log(party, partymembers) {
-        """シナリオ進行状況とF9用データの変換を行う。""";
+    public void create_log(UNK party, UNK partymembers) {
+        // """シナリオ進行状況とF9用データの変換を行う。""";
         if (!partymembers.nowadventuring) {
             return;
+        }
         // log
         element = cw.data.make_element("ScenarioLog");
         // Property
@@ -491,6 +512,7 @@ class CWYado {
         partymembers.set_materialdir("");
         foreach (var bgimg in partymembers.bgimgs) {
             e_bgimgs.append(bgimg.get_data());
+        }
         element.append(e_bgimgs);
 
         // flag
@@ -500,6 +522,7 @@ class CWYado {
         foreach (var name, value in partymembers.flags.iteritems()) {
             e = cw.data.make_element("Flag", name, {"value": str(value)});
             e_flag.append(e);
+        }
 
         // step
         e_step = cw.data.make_element("Steps");
@@ -508,6 +531,7 @@ class CWYado {
         foreach (var name, value in partymembers.steps.iteritems()) {
             e = cw.data.make_element("Step", name, {"value": str(value)});
             e_step.append(e);
+        }
 
         // gossip(無し)
         e_gossip = cw.data.make_element("Gossips");
@@ -524,6 +548,7 @@ class CWYado {
         foreach (var resid in partymembers.infocards) {
             e = cw.data.make_element("InfoCard", str(resid));
             e_info.append(e);
+        }
 
         // FriendCard
         e_cast = cw.data.make_element("CastCards");
@@ -531,6 +556,7 @@ class CWYado {
 
         foreach (var resid in reversed(partymembers.friendcards)) {
             e_cast.append(cw.data.make_element("FriendCard", str(resid)));
+        }
 
         // DeletedFile(無し)
         e_del = cw.data.make_element("DeletedFiles");
@@ -547,6 +573,7 @@ class CWYado {
             fpath = cw.util.join_paths(fpath);
             e = cw.data.make_element("LostAdventurer", fpath);
             e_lost.append(e);
+        }
 
         // ファイル書き込み
         etree = cw.data.xml2etree(element=element);
@@ -571,6 +598,7 @@ class CWYado {
             fpath = cw.util.splitext(fpath)[0];
             e = cw.data.make_element("LostAdventurer", fpath);
             e_members.append(e);
+        }
 
         etree = cw.data.xml2etree(element=element);
         etree.write(cw.util.join_paths(cw.tempdir, u"ScenarioLog/Party/Party.xml"));
@@ -582,6 +610,7 @@ class CWYado {
                                                     os.path.basename(adventurer.xmlpath));
             etree = cw.data.xml2etree(element=adventurer.get_f9data());
             etree.write(dstpath);
+        }
 
         // 荷物袋内のカード群(ファイルパスのみ)
         element = cw.data.make_element("BackpackFiles");
@@ -591,6 +620,7 @@ class CWYado {
         carddb.close();
         foreach (var fpath in fpaths) {
             element.append(cw.data.make_element("File", fpath));
+        }
         path = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Backpack.xml");
         etree = cw.data.xml2etree(element=element);
         etree.write(path);
@@ -602,9 +632,9 @@ class CWYado {
 }
 
 class UnconvCWYado {
-    """宿データを逆変換してdstpathへ保存する。;
-    """;
-    public UNK __init__(ydata, dstpath, targetengine) {
+    // """宿データを逆変換してdstpathへ保存する。;
+    // """;
+    public UnconvCWYado(UNK ydata, UNK dstpath, UNK targetengine) {
         this.ydata = ydata;
         this.targetengine = targetengine;
         this.name = this.ydata.name;
@@ -614,48 +644,54 @@ class UnconvCWYado {
         this.message = "";
         this.curnum = 0;
         this.maxnum = 1;
-        this.maxnum += len(ydata.storehouse);
-        this.maxnum += len(ydata.standbys);
-        this.maxnum += len(ydata.partys) * 2;
-        this.maxnum += len(ydata.album);
+        this.maxnum += ydata.storehouse.Count;
+        this.maxnum += ydata.standbys.Count;
+        this.maxnum += ydata.partys.Count * 2;
+        this.maxnum += ydata.album.Count;
         // エラーログ
         this.errorlog = "";
+    }
 
-    public UNK write_errorlog(s) {
+    public void write_errorlog(string s) {
         this.errorlog += s + "\n";
+    }
 
-    public UNK convert() {
+    public void convert() {
         // 変換中情報
         table = { "yadoname":this.name };
 
-        def create_fpath(name, ext):
+        UNK create_fpath(UNK name, UNK ext) { // TODO
             fpath = util.join_paths(this.dir, util.check_filename(name) + ext);
             fpath = util.check_duplicate(fpath);
             return fpath;
+        }
 
-        def write_card(header):
+        UNK write_card(UNK header) { // TODO
             data = cw.data.xml2element(header.fpath);
             fpath = create_fpath(header.name, ".wid");
             try {
-                with cwfile.CWFileWriter(fpath, "wb",;
-                         targetengine=this.targetengine,;
-                         write_errorlog=this.write_errorlog) as f:
+                with cwfile.CWFileWriter(fpath, "wb", targetengine=this.targetengine, write_errorlog=this.write_errorlog) as f { // TODO
                     if (header.type == "SkillCard") {
                         skill.SkillCard.unconv(f, data, false);
                     } else if (header.type == "ItemCard") {
                         item.ItemCard.unconv(f, data, false);
                     } else if (header.type == "BeastCard") {
                         beast.BeastCard.unconv(f, data, false);
+                    }
                     f.flush();
                     f.close();
+                }
                 return data, fpath;
-            except Exception, ex:
+            } catch Exception, ex { // TODO
                 cw.util.print_ex(file=sys.stderr);
                 cw.util.remove(fpath);
                 throw new ex;
+            }
+        }
 
         if (!os.path.isdir(this.dir)) {
             os.makedirs(this.dir);
+        }
 
         // カード置場のカード(*.wid)
         unusedcards = [];
@@ -667,16 +703,19 @@ class UnconvCWYado {
                 data, fpath = write_card(header);
                 unusedcards.append((os.path.basename(fpath), data));
                 yadocards[header.fpath] = os.path.basename(fpath), data;
-            except cw.binary.cwfile.UnsupportedError, ex:
+            } catch (cw.binary.cwfile.UnsupportedError, ex) { // TODO
                 if (ex.msg) {
                     s = ex.msg;
                 } else {
                     s = u"%s は対象エンジンで使用できないため、変換しません。\n" % (header.name);
+                }
                 this.write_errorlog(s);
-            except Exception:
+            } catch (Exception e) {
                 cw.util.print_ex(file=sys.stderr);
                 s = u"%s は変換できませんでした。\n" % (header.name);
                 this.write_errorlog(s);
+            }
+        }
         table["unusedcards"] = unusedcards;
 
         // 待機中冒険者(*.wcp)とそのヘッダ(*.wch)
@@ -690,34 +729,35 @@ class UnconvCWYado {
 
                 ppath = create_fpath(header.name, ".wcp");
                 hpath = create_fpath(header.name, ".wch");
-                with cwfile.CWFileWriter(ppath, "wb",;
-                        targetengine=this.targetengine,;
-                        write_errorlog=this.write_errorlog) as f:
+                with (cwfile.CWFileWriter(ppath, "wb", targetengine=this.targetengine, write_errorlog=this.write_errorlog) as f) { // TODO
                     adventurer.AdventurerCard.unconv(f, data);
                     f.flush();
                     f.close();
+                }
 
-                with cwfile.CWFileWriter(hpath, "wb",;
-                        targetengine=this.targetengine,;
-                        write_errorlog=this.write_errorlog) as f:
+                with (cwfile.CWFileWriter(hpath, "wb", targetengine=this.targetengine, write_errorlog=this.write_errorlog) as f) { // TODO
                     adventurer.AdventurerHeader.unconv(f, data, ppath);
                     f.flush();
                     f.close();
+                }
 
-            except cw.binary.cwfile.UnsupportedError, ex:
+            } catch (cw.binary.cwfile.UnsupportedError, ex) { // TODO
                 if (ex.msg) {
                     s = ex.msg;
                 } else {
                     s = u"%s は対象エンジンで使用できないため、変換しません。\n" % (header.name);
+                }
                 this.write_errorlog(s);
                 cw.util.remove(ppath);
                 cw.util.remove(hpath);
-            except Exception:
+            } catch (Exception e) {
                 cw.util.print_ex(file=sys.stderr);
                 s = u"%s は変換できませんでした。\n" % (header.name);
                 this.write_errorlog(s);
                 cw.util.remove(ppath);
                 cw.util.remove(hpath);
+            }
+        }
 
         // 荷物袋のカード(*.wid)
         parties = [];
@@ -734,16 +774,20 @@ class UnconvCWYado {
 
                     yadocards[header.fpath] = os.path.basename(fpath), data;
 
-                except cw.binary.cwfile.UnsupportedError, ex:
+                } catch (cw.binary.cwfile.UnsupportedError, ex) { // TODO
                     if (ex.msg) {
                         s = ex.msg;
                     } else {
                         s = u"%s の所持する %s は対象エンジンで使用できないため、変換しません。\n" % (partyheader.name, header.name);
+                    }
                     this.write_errorlog(s);
-                except Exception:
+                } catch (Exception e) {
                     cw.util.print_ex(file=sys.stderr);
                     s = u"%s の %s は変換できませんでした。\n" % (partyheader.name, header.name);
                     this.write_errorlog(s);
+                }
+            }
+        }
 
         table["yadocards"] = yadocards;
 
@@ -759,6 +803,7 @@ class UnconvCWYado {
                 // log
                 if (os.path.isdir(cw.util.join_paths(cw.tempdir, u"ScenarioLog"))) {
                     cw.util.remove(cw.util.join_paths(cw.tempdir, u"ScenarioLog"));
+                }
                 path = cw.util.splitext(pt.data.fpath)[0] + ".wsl";
                 if (os.path.isfile(path)) {
                     cw.util.decompress_zip(path, cw.tempdir, "ScenarioLog");
@@ -766,10 +811,12 @@ class UnconvCWYado {
                     scenarioname = etree.gettext("Property/Name");
                     if (!scenarioname) {
                         scenarioname = "noname";
+                    }
                     logdir = cw.util.join_paths(cw.tempdir, u"ScenarioLog");
                 } else {
                     scenarioname = "";
                     logdir = "";
+                }
 
                 atbl = { "yadoname":this.ydata.name };
                 names = partyheader.get_membernames();
@@ -777,47 +824,51 @@ class UnconvCWYado {
                 foreach (var member in partyheader.members) {
                     atbl[member] = names[i];
                     i += 1;
+                }
                 atbl["adventurers"] = atbl;
 
                 fpath1 = create_fpath(pt.name, ".wpl");
-                with cwfile.CWFileWriter(fpath1, "wb",;
-                        targetengine=this.targetengine,;
-                        write_errorlog=this.write_errorlog) as f:
+                with (cwfile.CWFileWriter(fpath1, "wb", targetengine=this.targetengine, write_errorlog=this.write_errorlog) as f) { // TODO
                     party.Party.unconv(f, pt.data.find("."), atbl, scenarioname);
                     f.flush();
                     f.close();
+                }
 
                 fpath2 = create_fpath(pt.name, ".wpt");
-                with cwfile.CWFileWriter(fpath2, "wb",;
-                        targetengine=this.targetengine,;
-                        write_errorlog=this.write_errorlog) as f:
+                with (cwfile.CWFileWriter(fpath2, "wb", targetengine=this.targetengine, write_errorlog=this.write_errorlog) as f) { // TODO
                     party.PartyMembers.unconv(f, pt, table, logdir);
                     f.flush();
                     f.close();
+                }
 
                 if (partyheader.fpath.lower().startswith("yado")) {
                     relpath = cw.util.relpath(partyheader.fpath, yadodir);
                 } else {
                     relpath = cw.util.relpath(partyheader.fpath, tempdir);
+                }
                 relpath = cw.util.join_paths(relpath);
                 partytable[relpath] = cw.util.splitext(os.path.basename(fpath2))[0];
 
                 if (logdir) {
                     cw.util.remove(cw.util.join_paths(cw.tempdir, u"ScenarioLog"));
-            except cw.binary.cwfile.UnsupportedError, ex:
+                }
+            } catch (cw.binary.cwfile.UnsupportedError, ex) { // TODO
                 if (ex.msg) {
                     s = ex.msg;
                 } else {
                     s = u"%s は対象エンジンで使用できないため、変換しません。\n" % (partyheader.name);
+                }
                 this.write_errorlog(s);
                 cw.util.remove(fpath1);
                 cw.util.remove(fpath2);
-            except Exception:
+            } catch (Exception e) {
                 cw.util.print_ex(file=sys.stderr);
                 s = u"%s は変換できませんでした。\n" % (partyheader.name);
                 this.write_errorlog(s);
                 cw.util.remove(fpath1);
                 cw.util.remove(fpath2);
+            }
+        }
 
         table["party"] = partytable;
 
@@ -830,25 +881,27 @@ class UnconvCWYado {
                 data = cw.data.xml2element(header.fpath);
 
                 fpath = create_fpath(header.name, ".wrm");
-                with cwfile.CWFileWriter(fpath, "wb",;
-                        targetengine=this.targetengine,;
-                        write_errorlog=this.write_errorlog) as f:
+                with (cwfile.CWFileWriter(fpath, "wb", targetengine=this.targetengine, write_errorlog=this.write_errorlog) as f) { // TODO
                     album.Album.unconv(f, data);
                     f.flush();
                     f.close();
+                }
 
-            except cw.binary.cwfile.UnsupportedError, ex:
+            } catch (cw.binary.cwfile.UnsupportedError, ex) { // TODO
                 if (ex.msg) {
                     s = ex.msg;
                 } else {
                     s = u"%s は対象エンジンで使用できないため、変換しません。\n" % (header.name);
+                }
                 this.write_errorlog(s);
                 cw.util.remove(fpath);
-            except Exception:
+            } catch (Exception e) {
                 cw.util.print_ex(file=sys.stderr);
                 s = u"%s は変換できませんでした。\n" % (header.name);
                 this.write_errorlog(s);
                 cw.util.remove(fpath);
+            }
+        }
 
         // Environment.wyd
         this.message = u"宿情報を変換中...";
@@ -856,16 +909,16 @@ class UnconvCWYado {
         try {
             data = this.ydata.environment.find(".");
             fpath = cw.util.join_paths(this.dir, "Environment.wyd");
-            with cwfile.CWFileWriter(fpath, "wb",;
-                        targetengine=this.targetengine,;
-                        write_errorlog=this.write_errorlog) as f:
+            with (cwfile.CWFileWriter(fpath, "wb", targetengine=this.targetengine, write_errorlog=this.write_errorlog) as f) { // TODO
                 environment.Environment.unconv(f, data, table);
                 f.flush();
                 f.close();
+            }
 
-        except Exception:
+        } catch (Exception e) {
             cw.util.print_ex(file=sys.stderr);
             s = u"宿情報は変換できませんでした。\n";
             this.write_errorlog(s);
-
+        }
+    }
 }
