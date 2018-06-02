@@ -16,7 +16,7 @@ class Environment : base.CWBinaryBase {
         this.type = -1;
         this.dataversion = f.string();
         if (this.dataversion.startswith("DATAVERSION_")) {
-            this.dataversion_int = int(this.dataversion[len("DATAVERSION_"):]);
+            this.dataversion_int = int.Parse(this.dataversion[len("DATAVERSION_"):]);
         } else {
             this.dataversion_int = 0;
         }
@@ -100,7 +100,7 @@ class Environment : base.CWBinaryBase {
             prop.append(e);
             e = cw.data.make_element("Skin", this.skinname);
             prop.append(e);
-            e = cw.data.make_element("Cashbox", str(this.money));
+            e = cw.data.make_element("Cashbox", (this.money).ToString());
             prop.append(e);
             e = cw.data.make_element("NowSelectingParty", this.cwpypartyname);
             prop.append(e);
@@ -195,7 +195,7 @@ class Environment : base.CWBinaryBase {
             if (e.tag == "Property") {
                 foreach (var prop in e) {
                     if (prop.tag == "Cashbox") {
-                        money = int(prop.text);
+                        money = int.Parse(prop.text);
                         money = cw.util.numwrap(money, 0, 999999);
                     } else if (prop.tag == "NowSelectingParty") {
                         partyname = table["party"].get(prop.text, "");
