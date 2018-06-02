@@ -32,7 +32,7 @@ class Coupon : base.CWBinaryBase {
     public UNK get_data() {
         if (this.data == null) {
             this.data = cw.data.make_element("Coupon", this.name);
-            this.data.set("value", (string)(this.value));
+            this.data.set("value", (this.value).ToString());
         }
         return this.data;
     }

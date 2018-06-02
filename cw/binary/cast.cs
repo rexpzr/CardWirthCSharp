@@ -129,7 +129,7 @@ class CastCard : base.CWBinaryBase
 
             prop = cw.data.make_element("Property");
 
-            e = cw.data.make_element("Id", str(this.id));
+            e = cw.data.make_element("Id", (this.id).ToString());
             prop.append(e);
             e = cw.data.make_element("Name", this.name);
             prop.append(e);
@@ -137,92 +137,92 @@ class CastCard : base.CWBinaryBase
             prop.append(e);
             e = cw.data.make_element("Description", this.description);
             prop.append(e);
-            e = cw.data.make_element("Level", str(this.level));
+            e = cw.data.make_element("Level", (this.level).ToString());
             prop.append(e);
-            e = cw.data.make_element("Money", str(this.money));
+            e = cw.data.make_element("Money", (this.money).ToString());
             prop.append(e);
-            e = cw.data.make_element("Life", str(this.life));
-            e.set("max", str(this.maxlife));
+            e = cw.data.make_element("Life", (this.life).ToString());
+            e.set("max", (this.maxlife).ToString());
             prop.append(e);
 
             fe = cw.data.make_element("Feature");
             e = cw.data.make_element("Type");
-            e.set("undead", str(this.undead));
-            e.set("automaton", str(this.automaton));
-            e.set("unholy", str(this.unholy));
-            e.set("constructure", str(this.constructure));
+            e.set("undead", (this.undead).ToString());
+            e.set("automaton", (this.automaton).ToString());
+            e.set("unholy", (this.unholy).ToString());
+            e.set("constructure", (this.constructure).ToString());
             fe.append(e);
             e = cw.data.make_element("NoEffect");
-            e.set("weapon", str(this.noeffect_weapon));
-            e.set("magic", str(this.noeffect_magic));
+            e.set("weapon", (this.noeffect_weapon).ToString());
+            e.set("magic", (this.noeffect_magic).ToString());
             fe.append(e);
             e = cw.data.make_element("Resist");
-            e.set("fire", str(this.resist_fire));
-            e.set("ice", str(this.resist_ice));
+            e.set("fire", (this.resist_fire).ToString());
+            e.set("ice", (this.resist_ice).ToString());
             fe.append(e);
             e = cw.data.make_element("Weakness");
-            e.set("fire", str(this.weakness_fire));
-            e.set("ice", str(this.weakness_ice));
+            e.set("fire", (this.weakness_fire).ToString());
+            e.set("ice", (this.weakness_ice).ToString());
             fe.append(e);
             prop.append(fe);
 
             ae = cw.data.make_element("Ability");
             e = cw.data.make_element("Physical");
-            e.set("dex", str(this.dex));
-            e.set("agl", str(this.agl));
-            e.set("int", str(this.int));
-            e.set("str", str(this.str));
-            e.set("vit", str(this.vit));
-            e.set("min", str(this.min));
+            e.set("dex", (this.dex).ToString());
+            e.set("agl", (this.agl).ToString());
+            e.set("int", (this.int).ToString());
+            e.set("str", (this.str).ToString());
+            e.set("vit", (this.vit).ToString());
+            e.set("min", (this.min).ToString());
             ae.append(e);
             e = cw.data.make_element("Mental");
-            e.set("aggressive", str(this.aggressive));
-            e.set("cheerful", str(this.cheerful));
-            e.set("brave", str(this.brave));
-            e.set("cautious", str(this.cautious));
-            e.set("trickish", str(this.trickish));
+            e.set("aggressive", (this.aggressive).ToString());
+            e.set("cheerful", (this.cheerful).ToString());
+            e.set("brave", (this.brave).ToString());
+            e.set("cautious", (this.cautious).ToString());
+            e.set("trickish", (this.trickish).ToString());
             ae.append(e);
             e = cw.data.make_element("Enhance");
-            e.set("avoid", str(this.avoid));
-            e.set("resist", str(this.resist));
-            e.set("defense", str(this.defense));
+            e.set("avoid", (this.avoid).ToString());
+            e.set("resist", (this.resist).ToString());
+            e.set("defense", (this.defense).ToString());
             ae.append(e);
             prop.append(ae);
 
             se = cw.data.make_element("Status");
             e = cw.data.make_element("Mentality", this.conv_mentality(this.mentality));
-            e.set("duration", str(this.duration_mentality));
+            e.set("duration", (this.duration_mentality).ToString());
             se.append(e);
-            e = cw.data.make_element("Paralyze", str(this.paralyze));
+            e = cw.data.make_element("Paralyze", (this.paralyze).ToString());
             se.append(e);
-            e = cw.data.make_element("Poison", str(this.poison));
+            e = cw.data.make_element("Poison", (this.poison).ToString());
             se.append(e);
             e = cw.data.make_element("Bind");
-            e.set("duration", str(this.duration_bind));
+            e.set("duration", (this.duration_bind).ToString());
             se.append(e);
             e = cw.data.make_element("Silence");
-            e.set("duration", str(this.duration_silence));
+            e.set("duration", (this.duration_silence).ToString());
             se.append(e);
             e = cw.data.make_element("FaceUp");
-            e.set("duration", str(this.duration_faceup));
+            e.set("duration", (this.duration_faceup).ToString());
             se.append(e);
             e = cw.data.make_element("AntiMagic");
-            e.set("duration", str(this.duration_antimagic));
+            e.set("duration", (this.duration_antimagic).ToString());
             se.append(e);
             prop.append(se);
 
             ee = cw.data.make_element("Enhance");
-            e = cw.data.make_element("Action", str(this.enhance_action));
-            e.set("duration", str(this.duration_enhance_action));
+            e = cw.data.make_element("Action", (this.enhance_action).ToString());
+            e.set("duration", (this.duration_enhance_action).ToString());
             ee.append(e);
-            e = cw.data.make_element("Avoid", str(this.enhance_avoid));
-            e.set("duration", str(this.duration_enhance_avoid));
+            e = cw.data.make_element("Avoid", (this.enhance_avoid).ToString());
+            e.set("duration", (this.duration_enhance_avoid).ToString());
             ee.append(e);
-            e = cw.data.make_element("Resist", str(this.enhance_resist));
-            e.set("duration", str(this.duration_enhance_resist));
+            e = cw.data.make_element("Resist", (this.enhance_resist).ToString());
+            e.set("duration", (this.duration_enhance_resist).ToString());
             ee.append(e);
-            e = cw.data.make_element("Defense", str(this.enhance_defense));
-            e.set("duration", str(this.duration_enhance_defense));
+            e = cw.data.make_element("Defense", (this.enhance_defense).ToString());
+            e.set("duration", (this.duration_enhance_defense).ToString());
             ee.append(e);
             prop.append(ee);
 
@@ -327,7 +327,7 @@ class CastCard : base.CWBinaryBase
             if (e.tag == "Property") {
                 foreach (var prop in e) {
                     if (prop.tag == "Id") {
-                        resid = int(prop.text);
+                        resid = int.Parse(prop.text);
                     } else if (prop.tag == "Name") {
                         name = prop.text;
                     } else if (prop.tag in ("ImagePath", "ImagePaths")) {
@@ -335,13 +335,13 @@ class CastCard : base.CWBinaryBase
                     } else if (prop.tag == "Description") {
                         description = prop.text;
                     } else if (prop.tag == "Level") {
-                        level = int(prop.text);
+                        level = int.Parse(prop.text);
                     } else if (prop.tag == "Money") {
-                        money = int(prop.text);
+                        money = int.Parse(prop.text);
                         money = cw.util.numwrap(money, 0, 100000);
                     } else if (prop.tag == "Life") {
-                        life = int(prop.text);
-                        maxlife = int(prop.get("max"));
+                        life = int.Parse(prop.text);
+                        maxlife = int.Parse(prop.get("max"));
                     } else if (prop.tag == "Feature") {
                         foreach (var fe in prop) {
                             if (fe.tag == "Type") {
@@ -363,57 +363,57 @@ class CastCard : base.CWBinaryBase
                     } else if (prop.tag == "Ability") {
                         foreach (var ae in prop) {
                             if (ae.tag == "Physical") {
-                                dex = int(ae.get("dex"));
-                                agl = int(ae.get("agl"));
-                                inte = int(ae.get("int"));
-                                stre = int(ae.get("str"));
-                                vit = int(ae.get("vit"));
-                                mind = int(ae.get("min"));
+                                dex = int.Parse(ae.get("dex"));
+                                agl = int.Parse(ae.get("agl"));
+                                inte = int.Parse(ae.get("int"));
+                                stre = int.Parse(ae.get("str"));
+                                vit = int.Parse(ae.get("vit"));
+                                mind = int.Parse(ae.get("min"));
                             } else if (ae.tag == "Mental") {
-                                aggressive = int(ae.get("aggressive"));
-                                cheerful = int(ae.get("cheerful"));
-                                brave = int(ae.get("brave"));
-                                cautious = int(ae.get("cautious"));
-                                trickish = int(ae.get("trickish"));
+                                aggressive = int.Parse(ae.get("aggressive"));
+                                cheerful = int.Parse(ae.get("cheerful"));
+                                brave = int.Parse(ae.get("brave"));
+                                cautious = int.Parse(ae.get("cautious"));
+                                trickish = int.Parse(ae.get("trickish"));
                             } else if (ae.tag == "Enhance") {
-                                avoid = int(ae.get("avoid"));
-                                resist = int(ae.get("resist"));
-                                defense = int(ae.get("defense"));
+                                avoid = int.Parse(ae.get("avoid"));
+                                resist = int.Parse(ae.get("resist"));
+                                defense = int.Parse(ae.get("defense"));
                             }
                         }
                     } else if (prop.tag == "Status") {
                         foreach (var se in prop) {
                             if (se.tag == "Mentality") {
                                 mentality = base.CWBinaryBase.unconv_mentality(se.text);
-                                duration_mentality = int(se.get("duration"));
+                                duration_mentality = int.Parse(se.get("duration"));
                             } else if (se.tag == "Paralyze") {
-                                paralyze = int(se.text);
+                                paralyze = int.Parse(se.text);
                             } else if (se.tag == "Poison") {
-                                poison = int(se.text);
+                                poison = int.Parse(se.text);
                             } else if (se.tag == "Bind") {
-                                duration_bind = int(se.get("duration"));
+                                duration_bind = int.Parse(se.get("duration"));
                             } else if (se.tag == "Silence") {
-                                duration_silence = int(se.get("duration"));
+                                duration_silence = int.Parse(se.get("duration"));
                             } else if (se.tag == "FaceUp") {
-                                duration_faceup = int(se.get("duration"));
+                                duration_faceup = int.Parse(se.get("duration"));
                             } else if (se.tag == "AntiMagic") {
-                                duration_antimagic = int(se.get("duration"));
+                                duration_antimagic = int.Parse(se.get("duration"));
                             }
                         }
                     } else if (prop.tag == "Enhance") {
                         foreach (var ee in prop) {
                             if (ee.tag == "Action") {
-                                enhance_action = int(ee.text);
-                                duration_enhance_action = int(ee.get("duration"));
+                                enhance_action = int.Parse(ee.text);
+                                duration_enhance_action = int.Parse(ee.get("duration"));
                             } else if (ee.tag == "Avoid") {
-                                enhance_avoid = int(ee.text);
-                                duration_enhance_avoid = int(ee.get("duration"));
+                                enhance_avoid = int.Parse(ee.text);
+                                duration_enhance_avoid = int.Parse(ee.get("duration"));
                             } else if (ee.tag == "Resist") {
-                                enhance_resist = int(ee.text);
-                                duration_enhance_resist = int(ee.get("duration"));
+                                enhance_resist = int.Parse(ee.text);
+                                duration_enhance_resist = int.Parse(ee.get("duration"));
                             } else if (ee.tag == "Defense") {
-                                enhance_defense = int(ee.text);
-                                duration_enhance_defense = int(ee.get("duration"));
+                                enhance_defense = int.Parse(ee.text);
+                                duration_enhance_defense = int.Parse(ee.get("duration"));
                             }
                         }
                     } else if (prop.tag == "Coupons") {

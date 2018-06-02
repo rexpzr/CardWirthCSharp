@@ -146,7 +146,7 @@ class CWBinaryBase {
 
             // シナリオデータは先頭にidを付与
             if (!this.is_yadodata()) {
-                name = str(this.id).zfill(2) + "_" + name;
+                name = (this.id).ToString().zfill(2) + "_" + name;
             }
 
             path = util.join_paths(this.get_dir(), this.xmltype, name);

@@ -493,12 +493,12 @@ class CWYado {
         e_prop.append(e);
         e = cw.data.make_element("WsnPath", partymembers.scenariopath);
         e_prop.append(e);
-        e = cw.data.make_element("RoundAutoStart", str(false));
+        e = cw.data.make_element("RoundAutoStart", (false).ToString());
         e_prop.append(e);
 
-        e = cw.data.make_element("Debug", str(bool(this.wyd.yadotype == 2)));
+        e = cw.data.make_element("Debug", (this.wyd.yadotype == 2).ToString());
         e_prop.append(e);
-        e = cw.data.make_element("AreaId", str(partymembers.areaid));
+        e = cw.data.make_element("AreaId", (partymembers.areaid).ToString());
         e_prop.append(e);
 
         e = cw.data.make_element("MusicPath", partymembers.music);
@@ -520,7 +520,7 @@ class CWYado {
         element.append(e_flag);
 
         foreach (var name, value in partymembers.flags.iteritems()) {
-            e = cw.data.make_element("Flag", name, {"value": str(value)});
+            e = cw.data.make_element("Flag", name, {"value": (value).ToString()});
             e_flag.append(e);
         }
 
@@ -529,7 +529,7 @@ class CWYado {
         element.append(e_step);
 
         foreach (var name, value in partymembers.steps.iteritems()) {
-            e = cw.data.make_element("Step", name, {"value": str(value)});
+            e = cw.data.make_element("Step", name, {"value": (value).ToString()});
             e_step.append(e);
         }
 
@@ -546,7 +546,7 @@ class CWYado {
         element.append(e_info);
 
         foreach (var resid in partymembers.infocards) {
-            e = cw.data.make_element("InfoCard", str(resid));
+            e = cw.data.make_element("InfoCard", (resid).ToString());
             e_info.append(e);
         }
 
@@ -555,7 +555,7 @@ class CWYado {
         element.append(e_cast);
 
         foreach (var resid in reversed(partymembers.friendcards)) {
-            e_cast.append(cw.data.make_element("FriendCard", str(resid)));
+            e_cast.append(cw.data.make_element("FriendCard", (resid).ToString()));
         }
 
         // DeletedFile(無し)
@@ -588,7 +588,7 @@ class CWYado {
         e_name = cw.data.make_element("Name", partymembers.name);
         e_prop.append(e_name);
         // Money
-        e_money = cw.data.make_element("Money", str(partymembers.money_beforeadventure));
+        e_money = cw.data.make_element("Money", (partymembers.money_beforeadventure).ToString());
         e_prop.append(e_money);
         // Members
         e_members = cw.data.make_element("Members");
@@ -606,8 +606,7 @@ class CWYado {
         // member
         os.makedirs(cw.util.join_paths(cw.tempdir, u"ScenarioLog/Members"));
         foreach (var adventurer in partymembers.adventurers + partymembers.vanisheds) {
-            dstpath = cw.util.join_paths(cw.util.join_paths(cw.tempdir, u"ScenarioLog/Members"),;
-                                                    os.path.basename(adventurer.xmlpath));
+            dstpath = cw.util.join_paths(cw.util.join_paths(cw.tempdir, u"ScenarioLog/Members"), os.path.basename(adventurer.xmlpath));
             etree = cw.data.xml2etree(element=adventurer.get_f9data());
             etree.write(dstpath);
         }
@@ -670,7 +669,7 @@ class UnconvCWYado {
             data = cw.data.xml2element(header.fpath);
             fpath = create_fpath(header.name, ".wid");
             try {
-                with cwfile.CWFileWriter(fpath, "wb", targetengine=this.targetengine, write_errorlog=this.write_errorlog) as f { // TODO
+                with (cwfile.CWFileWriter(fpath, "wb", targetengine=this.targetengine, write_errorlog=this.write_errorlog) as f) { // TODO
                     if (header.type == "SkillCard") {
                         skill.SkillCard.unconv(f, data, false);
                     } else if (header.type == "ItemCard") {

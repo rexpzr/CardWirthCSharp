@@ -102,7 +102,7 @@ class SkillCard : base.CWBinaryBase {
             }
             this.data = cw.data.make_element("SkillCard");
             prop = cw.data.make_element("Property");
-            e = cw.data.make_element("Id", str(this.id));
+            e = cw.data.make_element("Id", (this.id).ToString());
             prop.append(e);
             e = cw.data.make_element("Name", this.name);
             prop.append(e);
@@ -114,28 +114,28 @@ class SkillCard : base.CWBinaryBase {
             prop.append(e);
             e = cw.data.make_element("Author", this.scenario_author);
             prop.append(e);
-            e = cw.data.make_element("Level", str(this.level));
+            e = cw.data.make_element("Level", (this.level).ToString());
             prop.append(e);
             e = cw.data.make_element("Ability");
             e.set("physical", this.conv_card_physicalability(this.p_ability));
             e.set("mental", this.conv_card_mentalability(this.m_ability));
             prop.append(e);
             e = cw.data.make_element("Target", this.conv_card_target(this.target));
-            e.set("allrange", str(this.target_all));
+            e.set("allrange", (this.target_all).ToString());
             prop.append(e);
             e = cw.data.make_element("EffectType", this.conv_card_effecttype(this.effect_type));
-            e.set("spell", str(this.silence));
+            e.set("spell", (this.silence).ToString());
             prop.append(e);
             e = cw.data.make_element("ResistType", this.conv_card_resisttype(this.resist_type));
             prop.append(e);
-            e = cw.data.make_element("SuccessRate", str(this.success_rate));
+            e = cw.data.make_element("SuccessRate", (this.success_rate).ToString());
             prop.append(e);
             e = cw.data.make_element("VisualEffect", this.conv_card_visualeffect(this.visual_effect));
             prop.append(e);
             e = cw.data.make_element("Enhance");
-            e.set("avoid", str(this.enhance_avoid));
-            e.set("resist", str(this.enhance_resist));
-            e.set("defense", str(this.enhance_defense));
+            e.set("avoid", (this.enhance_avoid).ToString());
+            e.set("resist", (this.enhance_resist).ToString());
+            e.set("defense", (this.enhance_defense).ToString());
             prop.append(e);
             e = cw.data.make_element("SoundPath", this.get_materialpath(this.sound_effect));
             prop.append(e);
@@ -150,9 +150,9 @@ class SkillCard : base.CWBinaryBase {
                 e = cw.data.make_element("Premium", this.conv_card_premium(this.premium));
             }
             prop.append(e);
-            e = cw.data.make_element("UseLimit", str(this.limit));
+            e = cw.data.make_element("UseLimit", (this.limit).ToString());
             prop.append(e);
-            e = cw.data.make_element("Hold", str(this.hold));
+            e = cw.data.make_element("Hold", (this.hold).ToString());
             prop.append(e);
             this.data.append(prop);
             e = cw.data.make_element("Motions");
@@ -203,7 +203,7 @@ class SkillCard : base.CWBinaryBase {
             if (e.tag == "Property") {
                 foreach (var prop in e) {
                     if (prop.tag == "Id") {
-                        resid = int(prop.text);
+                        resid = int.Parse(prop.text);
                     } else if (prop.tag == "Name") {
                         name = prop.text;
                     } else if (prop.tag in ("ImagePath", "ImagePaths")) {
@@ -215,7 +215,7 @@ class SkillCard : base.CWBinaryBase {
                     } else if (prop.tag == "Author") {
                         scenario_author = prop.text;
                     } else if (prop.tag == "Level") {
-                        level = int(prop.text);
+                        level = int.Parse(prop.text);
                     } else if (prop.tag == "Ability") {
                         p_ability = base.CWBinaryBase.unconv_card_physicalability(prop.get("physical"));
                         m_ability = base.CWBinaryBase.unconv_card_mentalability(prop.get("mental"));
@@ -228,13 +228,13 @@ class SkillCard : base.CWBinaryBase {
                     } else if (prop.tag == "ResistType") {
                         resist_type = base.CWBinaryBase.unconv_card_resisttype(prop.text);
                     } else if (prop.tag == "SuccessRate") {
-                        success_rate = int(prop.text);
+                        success_rate = int.Parse(prop.text);
                     } else if (prop.tag == "VisualEffect") {
                         visual_effect = base.CWBinaryBase.unconv_card_visualeffect(prop.text);
                     } else if (prop.tag == "Enhance") {
-                        enhance_avoid = int(prop.get("avoid"));
-                        enhance_resist = int(prop.get("resist"));
-                        enhance_defense = int(prop.get("defense"));
+                        enhance_avoid = int.Parse(prop.get("avoid"));
+                        enhance_resist = int.Parse(prop.get("resist"));
+                        enhance_defense = int.Parse(prop.get("defense"));
                     } else if (prop.tag == "SoundPath") {
                         sound_effect = base.CWBinaryBase.materialpath(prop.text);
                         f.check_soundoptions(prop);
@@ -267,7 +267,7 @@ class SkillCard : base.CWBinaryBase {
                             premium += 3;
                         }
                     } else if (prop.tag == "UseLimit") {
-                        limit = int(prop.text);
+                        limit = int.Parse(prop.text);
                     } else if (prop.tag == "Hold") {
                         hold = cw.util.str2bool(prop.text);
                     } else if (prop.tag == "LinkId") {
