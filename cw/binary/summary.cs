@@ -6,18 +6,17 @@ import base;
 import cw;
 
 
-class Summary(base.CWBinaryBase):
-    """見出しデータ(Summary.wsm)。;
-    type:見出しデータには"-1"の値を付与する。;
-    """;
-    def __init__(self, parent, f, yadodata=false, nameonly=false, materialdir="Material", image_export=true,;
-                 wpt120=false):
-        base.CWBinaryBase.__init__(self, parent, f, yadodata, materialdir, image_export);
+class Summary : base.CWBinaryBase {
+    // """見出しデータ(Summary.wsm)。;
+    // type:見出しデータには"-1"の値を付与する。;
+    // """;
+    public Summary(UNK parent, UNK f, bool yadodata=false, bool nameonly=false, string materialdir="Material", bool image_export=true, bool wpt120=false) : base(parent, f, yadodata, materialdir, image_export) {
         this.type = -1;
         this.image = f.image();
         this.name = f.string();
         if (nameonly) {
             return;
+        }
         this.description = f.string();
         this.author = f.string();
         this.required_coupons = f.string(true);
@@ -35,24 +34,29 @@ class Summary(base.CWBinaryBase):
             // version 5～6は存在しない
             this.version = 7;
             this.area_id = this.area_id - 70000;
+        }
         steps_num = f.dword();
         this.steps = [Step(self, f) for _cnt in xrange(steps_num)];
         flags_num = f.dword();
         this.flags = [Flag(self, f) for _cnt in xrange(flags_num)];
         if (wpt120) {
             return;
-        _w = f.dword() // 不明
+        }
+        _w = f.dword(); // 不明
         if (0 < this.version) {
             this.level_min = f.dword();
             this.level_max = f.dword();
         } else {
             this.level_min = 0;
             this.level_max = 0;
+        }
         // タグとスキンタイプ。読み込みが終わった後から操作する
         this.skintype = "";
         this.tags = "";
 
         this.data = null;
+    }
+
 
     public UNK get_data() {
         if (this.data == null) {
@@ -60,6 +64,7 @@ class Summary(base.CWBinaryBase):
                 this.imgpath = this.export_image();
             } else {
                 this.imgpath = "";
+            }
             this.data = cw.data.make_element("Summary");
             prop = cw.data.make_element("Property");
             e = cw.data.make_element("Name", this.name);
@@ -87,17 +92,20 @@ class Summary(base.CWBinaryBase):
             e = cw.data.make_element("Flags");
             foreach (var flag in this.flags) {
                 e.append(flag.get_data());
+            }
             this.data.append(e);
             e = cw.data.make_element("Steps");
             foreach (var step in this.steps) {
                 e.append(step.get_data());
+            }
             this.data.append(e);
             e = cw.data.make_element("Labels", "");
             this.data.append(e);
+        }
         return this.data;
+    }
 
-    @staticmethod;
-    def unconv(f, data):
+    public static void unconv(UNK f, UNK data) {
         image = null;
         name = "";
         description = "";
@@ -129,10 +137,14 @@ class Summary(base.CWBinaryBase):
                         required_coupons_num = int(prop.get("number"));
                     } else if (prop.tag == "StartAreaId") {
                         level_max = int(prop.text);
+                    }
+                }
             } else if (e.tag == "Flags") {
                 flags = e;
             } else if (e.tag == "Steps") {
                 steps = e;
+            }
+        }
 
         f.write_image(image);
         f.write_string(name);
@@ -144,22 +156,26 @@ class Summary(base.CWBinaryBase):
         f.write_dword(len(steps));
         foreach (var step in steps) {
             Step.unconv(f, step);
+        }
         f.write_dword(len(flags));
         foreach (var flag in flags) {
             Flag.unconv(f, flag);
+        }
         f.write_dword(0) // 不明
         f.write_dword(level_min);
         f.write_dword(level_max);
+    }
+}
 
-class Step(base.CWBinaryBase):
-    """ステップ定義。""";
-    public UNK __init__(parent, f, yadodata=false) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
+class Step : base.CWBinaryBase {
+    // """ステップ定義。""";
+    public Step(UNK parent, UNK f, bool yadodata=false) : base(parent, f, yadodata) {
         this.name = f.string();
         this.default = f.dword();
         this.variable_names = [f.string() for _cnt in xrange(10)];
 
         this.data = null;
+    }
 
     public UNK get_data() {
         if (this.data == null) {
@@ -187,35 +203,42 @@ class Step(base.CWBinaryBase):
             this.data.append(e);
             e = cw.data.make_element("Value9", this.variable_names[9]);
             this.data.append(e);
+        }
         return this.data;
+    }
 
-    @staticmethod;
-    def unconv(f, data):
+    public static void unconv(UNK f, UNK data) {
         name = "";
         default = int(data.get("default"));
         if (data.getbool(".", "spchars", false)) {
             f.check_wsnversion("2");
+        }
         variable_names = [""] * 10;
         foreach (var e in data) {
             if (e.tag == "Name") {
                 name = e.text;
             } else if (e.tag.startswith("Value")) {
                 variable_names[int(e.tag[5:])] = e.text;
+            }
+        }
 
         f.write_string(name);
         f.write_dword(default);
         foreach (var variable_name in variable_names) {
             f.write_string(variable_name);
+        }
+    }
+}
 
-class Flag(base.CWBinaryBase):
-    """フラグ定義。""";
-    public UNK __init__(parent, f, yadodata=false) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
+class Flag : base.CWBinaryBase {
+    // """フラグ定義。""";
+    public Flag(UNK parent, UNK f, bool yadodata=false) : base(parent, f, yadodata) {
         this.name = f.string();
         this.default = f.bool();
         this.variable_names = [f.string() for _cnt in xrange(2)];
 
         this.data = null;
+    }
 
     public UNK get_data() {
         if (this.data == null) {
@@ -227,14 +250,16 @@ class Flag(base.CWBinaryBase):
             this.data.append(e);
             e = cw.data.make_element("false", this.variable_names[1]);
             this.data.append(e);
+        }
         return this.data;
+    }
 
-    @staticmethod;
-    def unconv(f, data):
+    public static void unconv(UNK f, UNK data) {
         name = "";
         default = cw.util.str2bool(data.get("default"));
         if (data.getbool(".", "spchars", false)) {
             f.check_wsnversion("2");
+        }
         variable_names = [""] * 2;
         foreach (var e in data) {
             if (e.tag == "Name") {
@@ -243,14 +268,13 @@ class Flag(base.CWBinaryBase):
                 variable_names[0] = e.text;
             } else if (e.tag == "false") {
                 variable_names[1] = e.text;
+            }
+        }
 
         f.write_string(name);
         f.write_bool(default);
         foreach (var variable_name in variable_names) {
             f.write_string(variable_name);
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+        }
+    }
+}
