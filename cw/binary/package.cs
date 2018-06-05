@@ -1,28 +1,20 @@
-//!/usr/bin/env python
-// -*- coding: utf-8 -*-
-
-import base;
-import event;
-
-import cw;
-
-
-class Package(base.CWBinaryBase):
-    """widファイルの情報カードのデータ。;
-    type:InfoCardと区別が付くように、Packageは暫定的に"7"とする。;
-    """;
-    public UNK __init__(parent, f, yadodata=false, nameonly=false, materialdir="Material", image_export=true) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata, materialdir, image_export);
+class Package : base.CWBinaryBase {
+    // """widファイルの情報カードのデータ。;
+    // type:InfoCardと区別が付くように、Packageは暫定的に"7"とする。;
+    // """;
+    public Package(UNK parent, UNK f, bool yadodata=false, bool nameonly=false, string materialdir="Material", bool image_export=true) : base(parent, f, yadodata, materialdir, image_export) {
         this.type = 7;
         f.dword() // 不明
         this.name = f.string();
         this.id = f.dword();
         if (nameonly) {
             return;
+        }
         events_num = f.dword();
         this.events = [event.SimpleEvent(self, f) for _cnt in xrange(events_num)];
 
         this.data = null;
+    }
 
     public UNK get_data() {
         if (this.data == null) {
@@ -36,11 +28,13 @@ class Package(base.CWBinaryBase):
             e = cw.data.make_element("Events");
             foreach (var event in this.events) {
                 e.append(event.get_data());
+            }
             this.data.append(e);
+        }
         return this.data;
+    }
 
-    @staticmethod;
-    def unconv(f, data):
+    public static void unconv(UNK f, UNKdata) {
         name = "";
         resid = 0;
         events = [];
@@ -52,8 +46,12 @@ class Package(base.CWBinaryBase):
                         resid = int(prop.text);
                     } else if (prop.tag == "Name") {
                         name = prop.text;
+                    }
+                }
             } else if (e.tag == "Events") {
                 events = e;
+            }
+        }
 
         f.write_dword(0) // 不明
         f.write_string(name);
@@ -61,9 +59,6 @@ class Package(base.CWBinaryBase):
         f.write_dword(len(events));
         foreach (var evt in events) {
             event.SimpleEvent.unconv(f, evt);
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+        }
+    }
+}
