@@ -30,8 +30,8 @@ class Adventurer : base.CWBinaryBase {
             // 1.20のアルバムデータ
             this.id = 0;
 
-            _dw = f.dword() // 不明
-            _dw = f.dword() // 不明(表示順？)
+            _dw = f.dword(); // 不明
+            _dw = f.dword(); // 不明(表示順？)
             this.name = f.string();
             this.imgpath = "";
             this.level = f.dword();
@@ -65,17 +65,17 @@ class Adventurer : base.CWBinaryBase {
             this.weakness_fire = f.bool();
             this.weakness_ice = f.bool();
 
-            _dw = f.dword() // 不明
-            _dw = f.dword() // 不明
-            _dw = f.dword() // 不明
-            _dw = f.dword() // 不明
-            _dw = f.dword() // 不明
-            _dw = f.dword() // 不明
-            _dw = f.dword() // 不明
-            _dw = f.dword() // 不明
-            _dw = f.dword() // 不明
-            _dw = f.dword() // 不明
-            _dw = f.dword() // 不明
+            _dw = f.dword(); // 不明
+            _dw = f.dword(); // 不明
+            _dw = f.dword(); // 不明
+            _dw = f.dword(); // 不明
+            _dw = f.dword(); // 不明
+            _dw = f.dword(); // 不明
+            _dw = f.dword(); // 不明
+            _dw = f.dword(); // 不明
+            _dw = f.dword(); // 不明
+            _dw = f.dword(); // 不明
+            _dw = f.dword(); // 不明
 
             this.image = f.image();
             this.description = f.string(true).replace("TEXT\\n", "", 1);
@@ -997,12 +997,12 @@ class AdventurerHeader : base.CWBinaryBase {
             }
         }
 
-        f.write_word(0) // 不明
+        f.write_word(0); // 不明
         f.write_string(name);
         f.write_image(image);
         f.write_word(level);
         f.write_string(coupons, true);
-        f.write_word(0) // 不明
+        f.write_word(0); // 不明
         f.write_word(ep);
         f.write_word(dex);
         f.write_word(agl);

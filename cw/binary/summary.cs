@@ -161,7 +161,7 @@ class Summary : base.CWBinaryBase {
         foreach (var flag in flags) {
             Flag.unconv(f, flag);
         }
-        f.write_dword(0) // 不明
+        f.write_dword(0); // 不明
         f.write_dword(level_min);
         f.write_dword(level_max);
     }

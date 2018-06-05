@@ -19,15 +19,14 @@ import cw.binary.beast;
 import bgimage;
 
 
-class Party(base.CWBinaryBase):
-    """wplファイル(type=2)。パーティの見出しデータ。;
-    パーティの所持金や名前はここ。;
-    宿の画像も格納しているが必要ないと思うので破棄。;
-    F9のためにゴシップと終了印を記憶しているような事は無い;
-    (その2つはF9で戻らない)。;
-    """;
-    public UNK __init__(parent, f, yadodata=false, dataversion=10) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
+class Party : base.CWBinaryBase) {
+    // """wplファイル(type=2)。パーティの見出しデータ。;
+    // パーティの所持金や名前はここ。;
+    // 宿の画像も格納しているが必要ないと思うので破棄。;
+    // F9のためにゴシップと終了印を記憶しているような事は無い;
+    // (その2つはF9で戻らない)。;
+    // """;
+    public Party(UNK parent, UNK f, bool yadodata=false, UNK dataversion=10) : base(parent, f, yadodata) {
         this.type = 2;
         this.fname = this.get_fname();
         if (10 <= dataversion) {
@@ -39,6 +38,8 @@ class Party(base.CWBinaryBase):
             foreach (var member in cw.util.decodetextlist(f.string(true))) {
                 if (member != "") {
                     this.memberslist.append(util.check_filename(member));
+                }
+            }
             this.name = f.string();
             this.money = f.dword() // 冒険中の現在値
             this.nowadventuring = f.bool();
@@ -48,12 +49,15 @@ class Party(base.CWBinaryBase):
             foreach (var member in cw.util.decodetextlist(f.string(true))) {
                 if (member != "") {
                     this.memberslist.append(util.check_filename(member));
+                }
+            }
             dataversion_str = f.string();
             _scenarioname = f.string() // プレイ中のシナリオ名
             f.image() // 宿の埋め込み画像は破棄
             this.name = "";
             this.money = 0;
             this.nowadventuring = f.bool();
+        }
 
         // 読み込み後に操作
         this.cards = [];
@@ -61,6 +65,7 @@ class Party(base.CWBinaryBase):
         this.errorcards = [];
 
         this.data = null;
+    }
 
     public UNK get_data() {
         if (this.data == null) {
@@ -78,14 +83,17 @@ class Party(base.CWBinaryBase):
             prop.append(me);
 
             this.data.append(prop);
+        }
 
         return this.data;
+    }
 
     public UNK create_xml(dpath) {
         path = base.CWBinaryBase.create_xml(self, dpath);
         yadodb = this.get_root().yadodb;
         if (yadodb) {
             yadodb.insert_party(path, commit=false);
+        }
 
         // 荷物袋内のカード
         cdpath = os.path.dirname(path);
@@ -100,19 +108,22 @@ class Party(base.CWBinaryBase):
                 order += 1;
             } else {
                 this.errorcards.append(card);
+            }
+        }
         carddb.commit();
         carddb.close();
 
         return path;
+    }
 
-    @staticmethod;
-    def unconv(f, data, table, scenarioname):
+    public static UNK unconv(UNK f, UNK data, UNK table, UNK scenarioname) {
         if (scenarioname) {
             yadoname = scenarioname;
             nowadventuring = true;
         } else {
             yadoname = table["yadoname"];
             nowadventuring = false;
+        }
         imgpath = "Resource/Image/Card/COMMAND0";
         imgpath = cw.util.find_resource(cw.util.join_paths(cw.cwpy.skindir, imgpath), cw.cwpy.rsrc.ext_img);
         image = base.CWBinaryBase.import_image(f, imgpath, fullpath=true);
@@ -134,7 +145,13 @@ class Party(base.CWBinaryBase):
                         foreach (var me in prop) {
                             if (me.tag == "Member" && me.text && me.text in atbl) {
                                 seq.append(atbl[me.text]);
+                            }
+                        }
                         memberslist = cw.util.encodetextlist(seq);
+                    }
+                }
+            }
+        }
 
         f.write_word(0) // 不明
         f.write_string(yadoname);
@@ -143,31 +160,35 @@ class Party(base.CWBinaryBase):
         f.write_string(name);
         f.write_dword(money);
         f.write_bool(nowadventuring);
+    }
+}
 
-class PartyMembers(base.CWBinaryBase):
-    """wptファイル(type=3)。パーティメンバと;
-    荷物袋に入っているカードリストを格納している。;
-    """;
-    public UNK __init__(parent, f, yadodata=false, dataversion=10) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
+class PartyMembers : base.CWBinaryBase {
+    // """wptファイル(type=3)。パーティメンバと;
+    // 荷物袋に入っているカードリストを格納している。;
+    // """;
+    public PartyMembers(UNK parent, UNK f, bool yadodata=false, UNK dataversion=10) : base(parent, f, yadodata) {
         this.type = 3;
         this.fname = this.get_fname();
         if (10 <= dataversion) {
             adventurers_num = f.byte() - 30;
         } else {
             adventurers_num = f.byte() - 10;
-        _b = f.byte() // 不明(0)
-        _b = f.byte() // 不明(0)
-        _b = f.byte() // 不明(0)
-        _b = f.byte() // 不明(5)
+        }
+        _b = f.byte(); // 不明(0)
+        _b = f.byte();// 不明(0)
+        _b = f.byte(); // 不明(0)
+        _b = f.byte(); // 不明(5)
         this.adventurers = [];
         vanisheds_num = 0;
         foreach (var i in xrange(adventurers_num)) {
             this.adventurers.append(adventurer.AdventurerWithImage(self, f));
             if (10 <= dataversion) {
-                vanisheds_num = f.byte() // 最後のメンバが消滅メンバの数を持っている？
+                vanisheds_num = f.byte(); // 最後のメンバが消滅メンバの数を持っている？
             } else {
-                _b = f.byte() // 不明(0)
+                _b = f.byte(); // 不明(0)
+            }
+        }
         this.vanisheds = [];
         if (0 < vanisheds_num) {
             _dw = f.dword() // 不明(0)
@@ -175,11 +196,14 @@ class PartyMembers(base.CWBinaryBase):
                 this.vanisheds.append(adventurer.AdventurerWithImage(self, f));
                 if (i + 1 < vanisheds_num) {
                     _b = f.byte();
+                }
+            }
             this.vanisheds.reverse();
         } else {
             _b = f.byte() // 不明(0)
             _b = f.byte() // 不明(0)
             _b = f.byte() // 不明(0)
+        }
         if (10 <= dataversion) {
             // 1.28以降
             this.name = f.string() // パーティ名
@@ -203,17 +227,21 @@ class PartyMembers(base.CWBinaryBase):
                 } else if (type == 3) {
                     carddata = cw.binary.beast.BeastCard(null, f, true);
                 } else {
-                    throw new ValueError(this.fname);
+                    throw ValueError(this.fname);
+                }
                 card = BackpackCard(self, null);
                 card.fname = carddata.name;
                 if (type in (2, 3)) {
                     card.uselimit = carddata.limit;
                 } else {
                     card.uselimit = 0;
+                }
                 // F9で戻るカードかどうかはレアリティの部分に格納されているため処理不要
                 card.mine = true;
                 card.set_data(carddata);
                 this.cards.append(card);
+            }
+        }
 
         // 対応する *.wpl
         this.wpl = null;
@@ -225,7 +253,7 @@ class PartyMembers(base.CWBinaryBase):
             // ここから先はプレイ中のシナリオの状況が記録されている
             this.money_beforeadventure = f.dword() // 冒険前の所持金。冒険中でなければ0
             this.nowadventuring = f.bool();
-            if this.nowadventuring: // 冒険中か
+            if (this.nowadventuring) { // 冒険中か
                 _w = f.word() // 不明(0)
                 this.scenariopath = f.rawstring() // シナリオ
                 this.areaid = f.dword();
@@ -236,42 +264,52 @@ class PartyMembers(base.CWBinaryBase):
                 this.music = f.rawstring();
                 bgimgs_num = f.dword();
                 this.bgimgs = [bgimage.BgImage(self, f) for _cnt in xrange(bgimgs_num)];
+            }
         } else {
             // 1.20以前では個人別に所持金があるためパーティの財布に集める
             this.money = 0;
             foreach (var adv in this.adventurers) {
                 this.money += adv.adventurer.money;
                 adv.adventurer.money = 0;
+            }
             this.money_beforeadventure = this.money // 1.20ではF9で所持金が戻らない
 
             this.nowadventuring = f.bool();
-            if this.nowadventuring: //冒険中か
+            if (this.nowadventuring) { //冒険中か
                 this.scenariopath = u"";
                 summary = cw.binary.summary.Summary(null, f, true, wpt120=true);
                 this.steps = {}.copy();
                 foreach (var step in summary.steps) {
                     this.steps[step.name] = step.default;
+                }
                 this.flags = {}.copy();
                 foreach (var flag in summary.flags) {
                     this.flags[flag.name] = flag.default;
-                this.scenariopath = f.rawstring() //シナリオ
+                }
+                this.scenariopath = f.rawstring(); //シナリオ
                 if (!os.path.isabs(this.scenariopath)) {
                     dpath = os.path.dirname(os.path.dirname(os.path.dirname(f.name)));
                     this.scenariopath = cw.util.join_paths(dpath, this.scenariopath);
+                }
                 this.areaid = f.dword();
                 this.friendcards = [];
                 fcardnum = f.dword();
                 foreach (var _i in xrange(fcardnum)) {
                     this.friendcards.append(f.dword());
+                }
                 this.infocards = [];
                 infonum = f.dword();
                 foreach (var _i in xrange(infonum)) {
                     this.infocards.append(f.dword());
+                }
                 this.music = f.rawstring();
                 bgimgs_num = f.dword();
                 this.bgimgs = [bgimage.BgImage(self, f) for _cnt in xrange(bgimgs_num)];
+            }
+        }
+    }
 
-    public UNK split_variables(text, step) {
+    public UNK split_variables(UNK text, UNK step) {
         d = {};
         foreach (var l in text.splitlines()) {
             index = l.rfind('=');
@@ -280,32 +318,42 @@ class PartyMembers(base.CWBinaryBase):
                     d[l[:index]] = int(l[index+1:]);
                 } else {
                     d[l[:index]] = bool(int(l[index+1:]));
+                }
+            }
+        }
         return d;
+    }
 
-    public UNK split_ids(text) {
+    public UNK split_ids(UNK text) {
         seq = [];
         foreach (var l in text.splitlines()) {
             if (l) {
                 seq.append(int(l));
+            }
+        }
         return seq;
+    }
 
-    public UNK create_xml(dpath) {
-        """adventurercardだけxml化する。""";
+    public UNK create_xml(UNK dpath) {
+        // """adventurercardだけxml化する。""";
         wpldata = this.wpl.get_data();
         me = wpldata.find("Property/Members");
         foreach (var adventurer in this.adventurers) {
             path = adventurer.create_xml(dpath);
             text = cw.util.splitext(os.path.basename(path))[0];
             me.append(cw.data.make_element("Member", text));
+        }
+    }
 
-    public UNK create_vanisheds_xml(dpath) {
+    public UNK create_vanisheds_xml(UNK dpath) {
         foreach (var adventurer in this.vanisheds) {
             data = adventurer.get_data();
             data.find("Property").set("lost", "true");
             adventurer.create_xml(dpath);
+        }
+    }
 
-    @staticmethod;
-    def join_variables(data):
+    public static UNK join_variables(UNK data) {
         seq = [];
         foreach (var e in data) {
             name = e.text;
@@ -314,25 +362,31 @@ class PartyMembers(base.CWBinaryBase):
                 value = "1";
             } else if (value == "false") {
                 value = "0";
+            }
             seq.append(name + "=" + value);
+        }
         if (seq) {
             seq.append("");
+        }
         return "\r\n".join(seq);
+    }
 
-    @staticmethod;
-    def join_ids(data):
+    public static UNK join_ids(UNK data) {
         seq = [];
         foreach (var e in data) {
             if (e.tag == "CastCard") {
                 seq.append(e.find("Property/Id").text);
             } else {
                 seq.append(e.text);
+            }
+        }
         if (seq) {
             seq.append("");
+        }
         return "\r\n".join(seq);
+    }
 
-    @staticmethod;
-    def unconv(f, party, table, logdir):
+    public static UNK unconv(UNK f, UNK party, UNK table, UNK logdir) {
         adventurers = [];
         vanisheds = [];
         cards = [];
@@ -349,6 +403,7 @@ class PartyMembers(base.CWBinaryBase):
 
         foreach (var member in party.members) {
             adventurers.append(member.find("."));
+        }
         name = party.name;
 
         if (logdir) {
@@ -367,12 +422,15 @@ class PartyMembers(base.CWBinaryBase):
             music = e_log.gettext("Property/MusicPath", "");
             if (!music) {
                 music = e_log.gettext("Property/MusicPaths/MusicPath", "");
+            }
             bgimgs = e_log.find("BgImages");
 
             foreach (var e in e_log.getfind("LostAdventurers")) {
                 path = cw.util.join_yadodir(e.text);
                 vanisheds.append(cw.data.xml2element(path));
+            }
             vanisheds.reverse();
+        }
 
         advnumpos = f.tell();
         advnum = 0;
@@ -388,33 +446,42 @@ class PartyMembers(base.CWBinaryBase):
                 logdata = cw.data.xml2element(fpath);
             } else {
                 logdata = null;
+            }
             try {
                 pos = f.tell();
                 adventurer.AdventurerWithImage.unconv(f, member, logdata);
                 if (i + 1 < len(adventurers)) {
-                    f.write_byte(0) // 不明
+                    f.write_byte(0); // 不明
+                }
                 advnum += 1;
-            except cw.binary.cwfile.UnsupportedError:
+            } catch (cw.binary.cwfile.UnsupportedError e) {
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = member.gettext("Property/Name", "");
                     s = u"%s の %s は対象エンジンで使用できないため、変換しません。\n" % (name, cardname);
                     errorlog.append(s);
-            except Exception:
+                }
+            } catch (Exception e) {
                 cw.util.print_ex(file=sys.stderr);
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = member.gettext("Property/Name", "");
                     s = u"%s の %s は変換できませんでした。\n" % (name, cardname);
                     errorlog.append(s);
+                }
+            }
+        }
 
         if (advnum == 0) {
             s = u"%s は全メンバが変換に失敗したため、変換しません。\n" % (name);
-            throw new cw.binary.cwfile.UnsupportedError(s);
+            throw cw.binary.cwfile.UnsupportedError(s);
+        }
 
         if (f.write_errorlog) {
             foreach (var s in errorlog) {
                 f.write_errorlog(s);
+            }
+        }
 
         tell = f.tell();
         f.seek(advnumpos);
@@ -432,34 +499,41 @@ class PartyMembers(base.CWBinaryBase):
                     logdata = cw.data.xml2element(fpath);
                 } else {
                     logdata = null;
+                }
                 try {
                     pos = f.tell();
                     adventurer.AdventurerWithImage.unconv(f, member, logdata);
                     if (i + 1 < len(vanisheds)) {
-                        f.write_byte(0) // 不明
+                        f.write_byte(0); // 不明
+                    }
                     vannum += 1;
-                except cw.binary.cwfile.UnsupportedError:
+                } catch (cw.binary.cwfile.UnsupportedError e) {
                     f.seek(pos);
                     if (f.write_errorlog) {
                         cardname = member.gettext("Property/Name", "");
                         s = u"%s の %s(消去前データ) は対象エンジンで使用できないため、変換しません。\n" % (name, cardname);
                         f.write_errorlog(s);
-                except Exception:
+                    }
+                } catch (Exception e) {
                     cw.util.print_ex(file=sys.stderr);
                     f.seek(pos);
                     if (f.write_errorlog) {
                         cardname = member.gettext("Property/Name", "");
                         s = u"%s の %s(消去前データ) は変換できませんでした。\n" % (name, cardname);
                         f.write_errorlog(s);
+                    }
+                }
+            }
             tell = f.tell();
             f.seek(vannumpos);
             f.write_byte(vannum);
             f.seek(tell);
 
         } else {
-            f.write_byte(0) // 不明
-            f.write_byte(0) // 不明
-            f.write_byte(0) // 不明
+            f.write_byte(0); // 不明
+            f.write_byte(0); // 不明
+            f.write_byte(0); // 不明
+        }
         f.write_string(name);
 
         backpacknumpos = f.tell();
@@ -474,18 +548,20 @@ class PartyMembers(base.CWBinaryBase):
                 scenariocard = cw.util.str2bool(data.get("scenariocard", "false"));
                 cards.append(BackpackCard.unconv(f, data, fpath, !scenariocard));
                 backpacknum += 1;
+            }
+        }
         tell = f.tell();
         f.seek(backpacknumpos);
         f.write_dword(backpacknum);
         f.seek(tell);
 
-        f.write_dword(cw.util.numwrap(party.money, 0, 999999)) // パーティの所持金(現在値)
+        f.write_dword(cw.util.numwrap(party.money, 0, 999999)); // パーティの所持金(現在値)
 
         // プレイ中のシナリオの状況
         if (nowadventuring) {
             f.write_dword(money_beforeadventure);
             f.write_bool(nowadventuring);
-            f.write_word(0) // 不明(0)
+            f.write_word(0); // 不明(0)
             f.write_rawstring(os.path.abspath(scenariopath));
             f.write_dword(areaid);
             f.write_rawstring(steps);
@@ -496,16 +572,19 @@ class PartyMembers(base.CWBinaryBase):
             f.write_dword(len(bgimgs));
             foreach (var bgimg in bgimgs) {
                 bgimage.BgImage.unconv(f, bgimg);
+            }
         } else {
             f.write_dword(0);
             f.write_bool(false);
+        }
+    }
+}
 
-class BackpackCard(base.CWBinaryBase):
-    """荷物袋に入っているカードのデータ。;
-    this.dataにwidファイルから読み込んだカードデータがある。;
-    """;
-    public UNK __init__(parent, f, yadodata=false) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
+class BackpackCard : base.CWBinaryBase {
+    // """荷物袋に入っているカードのデータ。;
+    // this.dataにwidファイルから読み込んだカードデータがある。;
+    // """;
+    public BackpackCard(UNK parent, UNK f, bool yadodata=false) : base(parent, f, yadodata) {
         if (f) {
             this.fname = f.rawstring();
             this.uselimit = f.dword();
@@ -514,32 +593,40 @@ class BackpackCard(base.CWBinaryBase):
             this.fname = u"";
             this.uselimit = 0;
             this.mine = false;
+        }
         this.data = null;
+    }
 
     public UNK set_data(data) {
-        """widファイルから読み込んだカードデータを関連づける""";
+        // """widファイルから読み込んだカードデータを関連づける""";
         this.data = data;
+    }
 
     public UNK get_data() {
         return this.data.get_data();
+    }
 
     public UNK create_xml(dpath) {
-        """this.data.create_xml()""";
+        // """this.data.create_xml()""";
         this.data.limit = this.uselimit;
         if (!this.mine) {
             this.data.set_image_export(false, true);
+        }
         data = this.data.get_data();
         if (!this.mine) {
             data.set("scenariocard", "true");
+        }
         return this.data.create_xml(dpath);
+    }
 
-    @staticmethod;
-    def unconv(f, data, fname, mine):
+    public static UNK unconv(UNK f, UNK data, UNK fname, UNK mine) {
         f.write_rawstring(cw.util.splitext(fname)[0]);
         f.write_dword(data.getint("Property/UseLimit", 0));
         f.write_bool(mine);
+    }
+}
 
-def load_album120(parent, f):
+UNK load_album120(UNK parent, UNK f) {
     _dw = f.dword() // 不明
     cardnum = f.dword() // アルバム人数
     cards = [];
@@ -573,11 +660,8 @@ def load_album120(parent, f):
             albums.append(albumdata);
         } else {
             cards.append(card);
+        }
+    }
 
     return cards, albums;
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+}

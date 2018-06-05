@@ -244,10 +244,10 @@ class MenuCard : base.CWBinaryBase {
             }
         }
 
-        f.write_byte(0) // 不明
+        f.write_byte(0); // 不明
         f.write_image(image);
         f.write_string(name);
-        f.write_dword(0) // 不明
+        f.write_dword(0); // 不明
         f.write_string(description, true);
         f.write_dword(events.Count);
         foreach (var evt in events) {

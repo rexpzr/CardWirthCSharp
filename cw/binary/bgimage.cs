@@ -6,10 +6,9 @@ import base;
 import cw;
 
 
-class BgImage(base.CWBinaryBase):
-    """背景のセルデータ。""";
-    public UNK __init__(parent, f, yadodata=false) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
+class BgImage : base.CWBinaryBase {
+    // """背景のセルデータ。""";
+    public BgImage(UNK parent, UNK f, bool yadodata=false) : base(parent, f, yadodata){
         this.left = f.dword();
         this.top = f.dword();
         this.width = f.dword();
@@ -24,6 +23,7 @@ class BgImage(base.CWBinaryBase):
         } else {
             dataversion = 6;
             this.width -= 60000;
+        }
         this.height = f.dword();
         if (dataversion <= 5) {
             this.type = cw.sprite.background.BG_IMAGE;
@@ -35,6 +35,7 @@ class BgImage(base.CWBinaryBase):
             } else {
                 this.flag = "";
                 this.unknown = 0;
+            }
         } else {
             bgtype = f.byte();
             if (bgtype == 2) {
@@ -68,10 +69,11 @@ class BgImage(base.CWBinaryBase):
                     this.btype = -1;
                     this.bcolor = (255, 255, 255, 255);
                     this.bwidth = 1;
-                f.byte() // 不明(100)
-                f.dword() // 不明(0)
-                f.dword() // 不明(0)
-                f.byte() // 不明(縦書き時:2,他:0)
+                }
+                f.byte(); // 不明(100)
+                f.dword(); // 不明(0)
+                f.dword(); // 不明(0)
+                f.byte(); // 不明(縦書き時:2,他:0)
                 this.flag = f.string();
                 this.unknown = f.byte();
 
@@ -93,21 +95,26 @@ class BgImage(base.CWBinaryBase):
                     this.color2 = (r, g, b, a);
                 } else {
                     this.color2 = (255, 255, 255, 255);
+                }
                 this.flag = f.string();
                 this.unknown = f.byte();
 
             } else {
-                throw new ValueError("Background type: %s" % (bgtype));
+                throw ValueError("Background type: %s" % (bgtype));
+            }
+        }
 
         this.data = null;
+    }
 
     public UNK get_data() {
         if (this.data == null) {
-            def makecolor(tag, color):
-                return cw.data.make_element(tag, attrs={"r":str(color[0]),;
-                                                        "g":str(color[1]),;
-                                                        "b":str(color[2]),;
+            UNK makecolor(UNK tag, UNK color) {
+                return cw.data.make_element(tag, attrs={"r":str(color[0]),
+                                                        "g":str(color[1]),
+                                                        "b":str(color[2]),
                                                         "a":str(color[3])});
+            }
 
             if (this.type == cw.sprite.background.BG_IMAGE) {
                 this.data = cw.data.make_element("BgImage");
@@ -120,10 +127,10 @@ class BgImage(base.CWBinaryBase):
 
                 e = cw.data.make_element("Text", this.text);
                 this.data.append(e);
-                e = cw.data.make_element("Font", this.fontface, attrs={"size": str(this.fontsize),;
-                                                                       "bold": str(this.bold),;
-                                                                       "italic": str(this.italic),;
-                                                                       "underline": str(this.underline),;
+                e = cw.data.make_element("Font", this.fontface, attrs={"size": str(this.fontsize),
+                                                                       "bold": str(this.bold),
+                                                                       "italic": str(this.italic),
+                                                                       "underline": str(this.underline),
                                                                        "strike": str(this.strike)});
                 this.data.append(e);
                 e = cw.data.make_element("Vertical", str(this.vertical));
@@ -133,10 +140,11 @@ class BgImage(base.CWBinaryBase):
 
                 if (this.bordering) {
                     btype = this.conv_borderingtype(this.btype);
-                    e = cw.data.make_element("Bordering", attrs={"type": btype,;
+                    e = cw.data.make_element("Bordering", attrs={"type": btype,
                                                                  "width": str(this.bwidth)});
                     e.append(makecolor("Color", this.bcolor));
                     this.data.append(e);
+                }
 
             } else if (this.type == cw.sprite.background.BG_COLOR) {
                 this.data = cw.data.make_element("ColorCell");
@@ -151,6 +159,8 @@ class BgImage(base.CWBinaryBase):
                     e = cw.data.make_element("Gradient", attrs={"direction": dire});
                     e.append(makecolor("EndColor", this.color2));
                     this.data.append(e);
+                }
+            }
 
             e = cw.data.make_element("Flag", this.flag);
             this.data.append(e);
@@ -162,10 +172,11 @@ class BgImage(base.CWBinaryBase):
             e.set("width", str(this.width));
             e.set("height", str(this.height));
             this.data.append(e);
+        }
         return this.data;
+    }
 
-    @staticmethod;
-    def unconv(f, data):
+    public static UNK unconv(UNK f, UNK data) {
         left = 0;
         top = 0;
         width = 0;
@@ -175,6 +186,7 @@ class BgImage(base.CWBinaryBase):
 
         if (data.get("cellname", "")) {
             f.check_wsnversion("1");
+        }
 
         // 背景画像
         imgpath = "";
@@ -200,12 +212,13 @@ class BgImage(base.CWBinaryBase):
         gradient = 0;
         color2 = (0, 0, 0, 255);
 
-        def getcolor(e, defcolor):
+        UNK getcolor(UNK e, UNK defcolor) {
             r = int(e.get("r", str(defcolor[0])));
             g = int(e.get("g", str(defcolor[1])));
             b = int(e.get("b", str(defcolor[2])));
             a = int(e.get("a", str(defcolor[3])));
             return (r, g, b, a);
+        }
 
         foreach (var e in data) {
             if (e.tag == "Flag") {
@@ -220,7 +233,7 @@ class BgImage(base.CWBinaryBase):
             } else if (data.tag == "BgImage") {
                 if (e.tag == "ImagePath") {
                     imgpath = e.text;
-
+                }
             } else if (data.tag == "TextCell") {
                 f.check_version(1.50);
                 if (e.tag == "Text") {
@@ -231,6 +244,8 @@ class BgImage(base.CWBinaryBase):
                     foreach (var e_font in e) {
                         if (e_font.tag == "Color") {
                             color = getcolor(e_font, color);
+                        }
+                    }
                     bold = cw.util.str2bool(e.get("bold", bold));
                     italic = cw.util.str2bool(e.get("italic", italic));
                     underline = cw.util.str2bool(e.get("underline", underline));
@@ -243,6 +258,9 @@ class BgImage(base.CWBinaryBase):
                     foreach (var e_bdr in e) {
                         if (e_bdr.tag == "Color") {
                             bcolor = getcolor(e_bdr, bcolor);
+                        }
+                    }
+                }
 
             } else if (data.tag == "ColorCell") {
                 f.check_version(1.50);
@@ -255,9 +273,14 @@ class BgImage(base.CWBinaryBase):
                     foreach (var e_grd in e) {
                         if (e_grd.tag == "EndColor") {
                             color2 = getcolor(e_grd, color2);
+                        }
+                    }
+                }
 
             } else if (data.tag == "PCCell") {
                 f.check_wsnversion("1");
+            }
+        }
 
         if (data.tag == "BgImage") {
             f.write_dword(left);
@@ -285,12 +308,12 @@ class BgImage(base.CWBinaryBase):
             f.write_ubyte(color[2]);
             f.write_ubyte(color[3]);
             style = 0;
-            if bold:        style |= 0b00000001;
-            if italic:      style |= 0b00000010;
-            if underline:   style |= 0b00000100;
-            if strike:      style |= 0b00001000;
-            if btype != -1: style |= 0b00010000;
-            if vertical:    style |= 0b00100000;
+            if (bold)        style |= 0b00000001;
+            if (italic)      style |= 0b00000010;
+            if (underline)   style |= 0b00000100;
+            if (strike)      style |= 0b00001000;
+            if (btype != -1) style |= 0b00010000;
+            if (vertical)    style |= 0b00100000;
             f.write_byte(style);
             if (btype != -1) {
                 f.write_byte(btype);
@@ -299,6 +322,7 @@ class BgImage(base.CWBinaryBase):
                 f.write_ubyte(bcolor[2]);
                 f.write_ubyte(bcolor[3]);
                 f.write_dword(bwidth);
+            }
             f.write_byte(100) // 不明(100)
             f.write_dword(0) // 不明(0)
             f.write_dword(0) // 不明(0)
@@ -319,14 +343,12 @@ class BgImage(base.CWBinaryBase):
                 f.write_ubyte(color2[1]);
                 f.write_ubyte(color2[0]);
                 f.write_ubyte(color2[3]);
+            }
             f.write_string(flag);
             f.write_byte(unknown);
 
         } else if (data.tag == "PCCell") {
             f.check_wsnversion("1");
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+        }
+    }
+}
