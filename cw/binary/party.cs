@@ -19,7 +19,7 @@ import cw.binary.beast;
 import bgimage;
 
 
-class Party : base.CWBinaryBase) {
+class Party : base.CWBinaryBase {
     // """wplファイル(type=2)。パーティの見出しデータ。;
     // パーティの所持金や名前はここ。;
     // 宿の画像も格納しているが必要ないと思うので破棄。;
@@ -490,9 +490,9 @@ class PartyMembers : base.CWBinaryBase {
 
         vannumpos = f.tell();
         vannum = 0;
-        f.write_byte(len(vanisheds)) // 消滅メンバの数？
+        f.write_byte(len(vanisheds)); // 消滅メンバの数？
         if (vanisheds) {
-            f.write_dword(0) // 不明
+            f.write_dword(0); // 不明
             foreach (var i, member in enumerate(vanisheds)) {
                 if (logdir) {
                     fpath = cw.util.join_paths(logdir, "Members", os.path.basename(member.fpath));
