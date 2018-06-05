@@ -1,6 +1,3 @@
-//!/usr/bin/env python
-// -*- coding: utf-8 -*-
-
 import sys;
 
 import base;
@@ -12,22 +9,22 @@ import coupon;
 import cw;
 
 
-class Adventurer(base.CWBinaryBase):
-    """冒険者データ。埋め込み画像はないので;
-    wch・wptファイルから個別に引っ張ってくる必要がある。;
-    """;
-    public UNK __init__(parent, f, yadodata=false, nameonly=false, album120=false) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
-
-        def add_128coupons():
-            epc = coupon.Coupon(self, null);
-            epc.name = u"＠ＥＰ";
-            epc.value = max(0, this.level - 1) * 10;
-            this.coupons.insert(0, epc);
-            lbc = coupon.Coupon(self, null);
-            lbc.name = u"＠レベル原点";
-            lbc.value = this.level;
-            this.coupons.insert(0, lbc);
+class Adventurer : base.CWBinaryBase {
+    private void Adventurer__add_128coupons() {
+        epc = coupon.Coupon(this, null);
+        epc.name = "＠ＥＰ";
+        epc.value = max(0, this.level - 1) * 10;
+        this.coupons.insert(0, epc);
+        lbc = coupon.Coupon(this, null);
+        lbc.name = "＠レベル原点";
+        lbc.value = this.level;
+        this.coupons.insert(0, lbc);
+    }
+    
+    // """冒険者データ。埋め込み画像はないので
+    // wch・wptファイルから個別に引っ張ってくる必要がある。
+    // """
+    public Adventurer(UNK parent, UNK f, bool yadodata=false, bool nameonly=false, bool album120=false) : base(parent, f, yadodata) {
 
         if (album120) {
             // 1.20のアルバムデータ
@@ -95,10 +92,12 @@ class Adventurer(base.CWBinaryBase):
             this.coupons = [];
             foreach (var _cnt in xrange(coupons_num)) {
                 c = coupon.Coupon(self, f, dataversion=4);
-                if (c.name == u"＿死亡") {
+                if (c.name == "＿死亡") {
                     this.is_dead = true;
+                }
                 this.coupons.append(c);
-            add_128coupons();
+            }
+            this.Adventurer__add_128coupons();
 
             // 精神状態
             this.mentality = 0;
@@ -133,11 +132,13 @@ class Adventurer(base.CWBinaryBase):
             this.f9data = null;
 
             return;
+        }
 
         this.image = null;
         this.name = f.string();
         if (nameonly) {
             return;
+        }
 
         idl = f.dword();
 
@@ -153,6 +154,7 @@ class Adventurer(base.CWBinaryBase):
         } else {
             dataversion = 5;
             this.id = idl - 50000;
+        }
 
         this.imgpath = "";
 
@@ -173,6 +175,7 @@ class Adventurer(base.CWBinaryBase):
             this.money = f.dword();
         } else {
             this.money = 0;
+        }
         this.description = f.string(true).replace("TEXT\\n", "", 1);
         this.life = f.dword();
         this.maxlife = f.dword();
@@ -233,22 +236,27 @@ class Adventurer(base.CWBinaryBase):
         coupons_num = f.dword();
         this.coupons = [coupon.Coupon(self, f, dataversion=dataversion) for _cnt in xrange(coupons_num)];
         if (dataversion <= 4) {
-            add_128coupons();
+            this.Adventurer__add_128coupons();
+        }
 
         this.data = null;
         this.f9data = null;
+    }
 
     public UNK get_data() {
         return this._get_data(false);
+    }
 
     public UNK get_f9data() {
         return this._get_data(true);
+    }
 
     public UNK _get_data(f9data) {
         if (f9data) {
             data = this.f9data;
         } else {
             data = this.data;
+        }
 
         if (data == null) {
             if (!this.imgpath) {
@@ -256,6 +264,8 @@ class Adventurer(base.CWBinaryBase):
                     this.imgpath = this.export_image();
                 } else {
                     this.imgpath = "";
+                }
+            }
 
             data = cw.data.make_element("Adventurer");
 
@@ -358,8 +368,8 @@ class Adventurer(base.CWBinaryBase):
 
             ce = cw.data.make_element("Coupons");
             if (f9data) {
-                // u"＿１"などの番号クーポン以降を除去
-                numcoupons = set([u"＿１", u"＿２", u"＿３", u"＿４", u"＿５", u"＿６"]);
+                // "＿１"などの番号クーポン以降を除去
+                numcoupons = set(["＿１", "＿２", "＿３", "＿４", "＿５", "＿６"]);
                 coupons = this.coupons;
                 cut = false;
                 foreach (var i, coupon in enumerate(coupons)) {
@@ -367,29 +377,39 @@ class Adventurer(base.CWBinaryBase):
                         coupons = coupons[:i];
                         cut = true;
                         break;
+                    }
+                }
 
-                if (!cut && cw.cwpy.msgs["number_1_coupon"] != u"＿１") {
-                    // バリアントによってはu"＿１"が別の文字列に置換されている
+                if (!cut && cw.cwpy.msgs["number_1_coupon"] != "＿１") {
+                    // バリアントによっては"＿１"が別の文字列に置換されている
                     // 可能性があるので、それを加えて再度判断する
                     numcoupons.add(cw.cwpy.msgs["number_1_coupon"]);
                     foreach (var i, coupon in enumerate(coupons)) {
                         if (coupon.name in numcoupons) {
                             coupons = coupons[:i];
                             break;
+                        }
+                    }
+                }
 
                 // '＾'で始まるクーポンは'＾'を取り除く
                 foreach (var coupon in coupons) {
-                    if (coupon.name.startswith(u"＾")) {
+                    if (coupon.name.startswith("＾")) {
                         cdata = coupon.get_data();
                         cdata.text = coupon.name[1:];
                         ce.append(cdata);
                     } else {
                         ce.append(coupon.get_data());
+                    }
+                }
             } else {
                 // '＾'で始まるクーポンはシナリオ内で削除済みのもの
                 foreach (var coupon in this.coupons) {
-                    if (!coupon.name.startswith(u"＾")) {
+                    if (!coupon.name.startswith("＾")) {
                         ce.append(coupon.get_data());
+                    }
+                }
+            }
 
             prop.append(ce);
 
@@ -400,6 +420,8 @@ class Adventurer(base.CWBinaryBase):
                 if (!f9data || card.premium <= 2) {
                     card.set_image_export(false, f9data);
                     e.append(card.get_data());
+                }
+            }
             data.append(e);
 
             e = cw.data.make_element("SkillCards");
@@ -407,6 +429,8 @@ class Adventurer(base.CWBinaryBase):
                 if (!f9data || card.premium <= 2) {
                     card.set_image_export(false, f9data);
                     e.append(card.get_data());
+                }
+            }
             data.append(e);
 
             e = cw.data.make_element("BeastCards");
@@ -414,30 +438,38 @@ class Adventurer(base.CWBinaryBase):
                 if (!f9data || card.premium <= 2) {
                     if (f9data && card.attachment) {
                         continue;
+                    }
                     card.set_image_export(false, f9data);
                     e.append(card.get_data());
+                }
+            }
             data.append(e);
 
             if (f9data) {
                 ccard = cw.character.Character(cw.data.CWPyElementTree(element=data));
                 ccard.set_fullrecovery();
+            }
+        }
 
         if (f9data) {
             this.f9data = data;
         } else {
             this.data = data;
+        }
 
         return data;
+    }
 
-    public UNK create_xml(dpath) {
+    public UNK create_xml(UNK dpath) {
         path = base.CWBinaryBase.create_xml(self, dpath);
         yadodb = this.get_root().yadodb;
         if (yadodb) {
             yadodb.insert_adventurer(path, album=false, commit=false);
+        }
         return path;
+    }
 
-    @staticmethod;
-    def unconv(f, data, logdata):
+    public static void unconv(f, data, logdata) {
         if (!logdata == null) {
             // 変換用にクーポンを整理
             coupons = cw.data.make_element("Coupons");
@@ -446,6 +478,7 @@ class Adventurer(base.CWBinaryBase):
             foreach (var e in data.getfind("Property/Coupons")) {
                 coupons1[e.text] = e;
                 coupons2.add(e);
+            }
 
             foreach (var e in logdata.getfind("Property/Coupons")) {
                 if (e.text in coupons1) {
@@ -454,13 +487,18 @@ class Adventurer(base.CWBinaryBase):
                     del coupons1[e.text];
                 } else {
                     // 削除されたクーポン
-                    coupons.append(cw.data.make_element("Coupon", u"＾" + e.text, { "value":e.get("value", "0") }));
+                    coupons.append(cw.data.make_element("Coupon", "＾" + e.text, { "value":e.get("value", "0") }));
+                }
+            }
             // 追加されたクーポン
             foreach (var e in data.getfind("Property/Coupons")) {
                 if (e in coupons2) {
                     coupons.append(e);
+                }
+            }
         } else {
             coupons = data.find("Property/Coupons");
+        }
 
         name = "";
         resid = 0;
@@ -552,6 +590,8 @@ class Adventurer(base.CWBinaryBase):
                             } else if (fe.tag == "Weakness") {
                                 weakness_fire = cw.util.str2bool(fe.get("fire"));
                                 weakness_ice = cw.util.str2bool(fe.get("ice"));
+                            }
+                        }
                     } else if (prop.tag == "Ability") {
                         foreach (var ae in prop) {
                             if (ae.tag == "Physical") {
@@ -571,6 +611,8 @@ class Adventurer(base.CWBinaryBase):
                                 avoid = int(ae.get("avoid"));
                                 resist = int(ae.get("resist"));
                                 defense = int(ae.get("defense"));
+                            }
+                        }
                     } else if (prop.tag == "Status") {
                         foreach (var se in prop) {
                             if (se.tag == "Mentality") {
@@ -588,6 +630,8 @@ class Adventurer(base.CWBinaryBase):
                                 duration_faceup = int(se.get("duration"));
                             } else if (se.tag == "AntiMagic") {
                                 duration_antimagic = int(se.get("duration"));
+                            }
+                        }
                     } else if (prop.tag == "Enhance") {
                         foreach (var ee in prop) {
                             if (ee.tag == "Action") {
@@ -602,10 +646,13 @@ class Adventurer(base.CWBinaryBase):
                             } else if (ee.tag == "Defense") {
                                 enhance_defense = int(ee.text);
                                 duration_enhance_defense = int(ee.get("duration"));
+                            }
+                        }
                     } else if (prop.tag == "Coupons") {
                         // このメソッドの冒頭を参照
-                        pass;
-
+                        // pass;
+                    }
+                }
             } else if (e.tag == "ItemCards") {
                 items = e;
 
@@ -614,6 +661,8 @@ class Adventurer(base.CWBinaryBase):
 
             } else if (e.tag == "BeastCards") {
                 beasts = e;
+            }
+        }
 
         f.write_string(name);
         f.write_dword(resid + 50000);
@@ -630,7 +679,7 @@ class Adventurer(base.CWBinaryBase):
         f.write_bool(weakness_ice);
 
         f.write_dword(level);
-        f.write_string("TEXT\n" + (description if description else u""), true);
+        f.write_string("TEXT\n" + (description if description else ""), true);
         f.write_dword(life);
         f.write_dword(maxlife);
 
@@ -679,19 +728,25 @@ class Adventurer(base.CWBinaryBase):
                 pos = f.tell();
                 item.ItemCard.unconv(f, card, true);
                 cardslen += 1;
-            except cw.binary.cwfile.UnsupportedError:
+            }
+            catch (cw.binary.cwfile.UnsupportedError e) {
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = card.gettext("Property/Name", "");
-                    s = u"%s の所持する %s は対象エンジンで使用できないため、変換しません。\n" % (name, cardname);
+                    s = "%s の所持する %s は対象エンジンで使用できないため、変換しません。\n" % (name, cardname);
                     f.write_errorlog(s);
-            except Exception:
+                }
+            }
+            catch (Exception e) {
                 cw.util.print_ex(file=sys.stderr);
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = card.gettext("Property/Name", "");
-                    s = u"%s の所持する %s は変換できませんでした。\n" % (name, cardname);
+                    s = "%s の所持する %s は変換できませんでした。\n" % (name, cardname);
                     f.write_errorlog(s);
+                }
+            }
+        }
         tell = f.tell();
         f.seek(lenpos);
         f.write_dword(cardslen);
@@ -705,19 +760,23 @@ class Adventurer(base.CWBinaryBase):
                 pos = f.tell();
                 skill.SkillCard.unconv(f, card, true);
                 cardslen += 1;
-            except cw.binary.cwfile.UnsupportedError:
+            } catch (cw.binary.cwfile.UnsupportedError e) {
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = card.gettext("Property/Name", "");
-                    s = u"%s の所持する %s は対象エンジンで使用できないため、変換しません。\n" % (name, cardname);
+                    s = "%s の所持する %s は対象エンジンで使用できないため、変換しません。\n" % (name, cardname); // TODO
                     f.write_errorlog(s);
-            except Exception:
+                }
+            } catch (Exception e) {
                 cw.util.print_ex(file=sys.stderr);
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = card.gettext("Property/Name", "");
-                    s = u"%s の所持する %s は変換できませんでした。\n" % (name, cardname);
+                    s = "%s の所持する %s は変換できませんでした。\n" % (name, cardname);
                     f.write_errorlog(s);
+                }
+            }
+        }
         tell = f.tell();
         f.seek(lenpos);
         f.write_dword(cardslen);
@@ -731,19 +790,23 @@ class Adventurer(base.CWBinaryBase):
                 pos = f.tell();
                 beast.BeastCard.unconv(f, card, true);
                 cardslen += 1;
-            except cw.binary.cwfile.UnsupportedError:
+            } catch (cw.binary.cwfile.UnsupportedError e) {
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = card.gettext("Property/Name", "");
-                    s = u"%s の所持する %s は対象エンジンで使用できないため、変換しません。\n" % (name, cardname);
+                    s = "%s の所持する %s は対象エンジンで使用できないため、変換しません。\n" % (name, cardname); // TODO
                     f.write_errorlog(s);
-            except Exception:
+                }
+            } catch (Exception e) {
                 cw.util.print_ex(file=sys.stderr);
                 f.seek(pos);
                 if (f.write_errorlog) {
                     cardname = card.gettext("Property/Name", "");
-                    s = u"%s の所持する %s は変換できませんでした。\n" % (name, cardname);
+                    s = "%s の所持する %s は変換できませんでした。\n" % (name, cardname); // TODO 
                     f.write_errorlog(s);
+                }
+            }
+        }
         tell = f.tell();
         f.seek(lenpos);
         f.write_dword(cardslen);
@@ -752,13 +815,15 @@ class Adventurer(base.CWBinaryBase):
         f.write_dword(len(coupons));
         foreach (var cp in coupons) {
             coupon.Coupon.unconv(f, cp);
+        }
 
         f.truncate();
+    }
+}
 
-class AdventurerCard(base.CWBinaryBase):
-    """wcpファイル(type=1)。冒険者データが中に入っているだけ。""";
-    public UNK __init__(parent, f, yadodata=false) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
+class AdventurerCard : base.CWBinaryBase {
+    // """wcpファイル(type=1)。冒険者データが中に入っているだけ。""";
+    public AdventurerCard(UNK parent, UNK f, bool yadodata=false) : base(parent, f, yadodata) {
         this.type = 1;
         this.fname = this.get_fname();
 
@@ -766,82 +831,94 @@ class AdventurerCard(base.CWBinaryBase):
             // 不明(0,0,0,0,0)
             foreach (var _cnt in xrange(5)) {
                 _b = f.byte();
+            }
 
             this.adventurer = Adventurer(self, f, yadodata=yadodata);
 
         } else {
             this.adventurer = null;
+        }
+    }
 
-    public UNK set_image(image) {
-        """埋め込み画像を取り込む時のメソッド。""";
+    public void set_image(image) {
+        // """埋め込み画像を取り込む時のメソッド。""";
         this.adventurer.image = image;
+    }
 
     public UNK get_data() {
         return this.adventurer.get_data();
+    }
 
     public UNK create_xml(dpath) {
-        """adventurerのデータだけxml化する。""";
+        // """adventurerのデータだけxml化する。""";
         return this.adventurer.create_xml(dpath);
+    }
 
-    @staticmethod;
-    def unconv(f, data):
-        f.write_byte(0) // 不明
-        f.write_byte(0) // 不明
-        f.write_byte(0) // 不明
-        f.write_byte(0) // 不明
-        f.write_byte(0) // 不明
+    public static void unconv(UNK f, UNK data) {
+        f.write_byte(0); // 不明
+        f.write_byte(0); // 不明
+        f.write_byte(0); // 不明
+        f.write_byte(0); // 不明
+        f.write_byte(0); // 不明
         Adventurer.unconv(f, data, null);
+    }
+}
 
-class AdventurerWithImage(base.CWBinaryBase):
-    """埋め込み画像付き冒険者データ。;
-    パーティデータを読み込むときに使う。;
-    """;
-    public UNK __init__(parent, f, yadodata=false) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
+class AdventurerWithImage : base.CWBinaryBase {
+    // """埋め込み画像付き冒険者データ。
+    // パーティデータを読み込むときに使う。
+    // """
+    public AdventurerWithImage(UNK parent, UNK f, bool yadodata=false) : base(parent, f, yadodata) {
         image = f.image();
         this.adventurer = Adventurer(self, f);
         this.adventurer.image = image;
+    }
 
     public UNK get_data() {
         return this.adventurer.get_data();
+    }
 
     public UNK get_f9data() {
         return this.adventurer.get_f9data();
+    }
 
-    public UNK create_xml(dpath) {
-        """adventurerのデータだけxml化する。""";
+    public UNK create_xml(UNK dpath) {
+        // """adventurerのデータだけxml化する。""";
         path = this.adventurer.create_xml(dpath);
         this.xmlpath = this.adventurer.xmlpath;
         return path;
+    }
 
-    @staticmethod;
-    def unconv(f, data, logdata):
-        e = data.find("Property/ImagePaths");
+    public static void unconv(UNK f, UNK data, UNK logdata) {
+        var e = data.find("Property/ImagePaths");
         if (e == null) {
             e = data.find("Property/ImagePath");
+        }
         f.write_image(base.CWBinaryBase.import_image(f, e, defpostype="Center"));
         if (logdata == null) {
             cw.character.Character(data=cw.data.xml2etree(element=data)).set_fullrecovery();
+        }
         Adventurer.unconv(f, data, logdata);
+    }
+}
 
-class AdventurerHeader(base.CWBinaryBase):
-    """wchファイル(type=0)。おそらく宿帳表示用の簡易データと思われる。;
-    必要なデータは埋め込み画像くらい？;
-    """;
-    public UNK __init__(parent, f, yadodata=false, dataversion=10) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
+class AdventurerHeader : base.CWBinaryBase {
+    // """wchファイル(type=0)。おそらく宿帳表示用の簡易データと思われる。;
+    // 必要なデータは埋め込み画像くらい？;
+    // """;
+    public AdventurerHeader(UNK parent, UNK f, bool yadodata=false, int dataversion=10) : base(parent, f, yadodata) {
         this.type = 0;
         this.fname = this.get_fname();
         if (10 <= dataversion) {
             // 1.28以降
-            _b = f.byte() // 不明(0)
-            _b = f.byte() // 不明(0)
+            _b = f.byte(); // 不明(0)
+            _b = f.byte(); // 不明(0)
             this.name = f.string();
             this.image = f.image();
             this.level = f.byte();
-            _b = f.byte() // 不明(0)
+            _b = f.byte(); // 不明(0)
             this.coupons = f.string(true);
-            _w = f.word() // 不明(0)
+            _w = f.word(); // 不明(0)
             // ここからは16ビット符号付き整数が並んでると思われるが面倒なので
             this.ep = f.byte();
             _b = f.byte();
@@ -863,15 +940,17 @@ class AdventurerHeader(base.CWBinaryBase):
             this.name = f.string();
             this.image = f.image();
             this.level = f.dword();
-            _dw = f.dword() // 不明(F)
+            _dw = f.dword(); // 不明(F)
             this.coupons = [];
             couponnum = f.dword();
             foreach (var _i in xrange(couponnum)) {
                 this.coupons.append(f.string());
+            }
             this.ep = this.level * 10;
+        }
+    }
 
-    @staticmethod;
-    def unconv(f, data, fname):
+    public static void unconv(UNK f, UNK data, UNK fname) {
         name = "";
         image = null;
         level = 0;
@@ -902,13 +981,21 @@ class AdventurerHeader(base.CWBinaryBase):
                                 stre = int(ae.get("str"));
                                 vit = int(ae.get("vit"));
                                 mind = int(ae.get("min"));
+                            }
+                        }
                     } else if (prop.tag == "Coupons") {
                         seq = [];
                         foreach (var ce in prop) {
                             seq.append(ce.text);
-                            if (ce.text == u"＠ＥＰ") {
+                            if (ce.text == "＠ＥＰ") {
                                 ep = int(ce.get("value", "0"));
+                            }
+                        }
                         coupons = cw.util.encodetextlist(seq);
+                    }
+                }
+            }
+        }
 
         f.write_word(0) // 不明
         f.write_string(name);
@@ -923,9 +1010,5 @@ class AdventurerHeader(base.CWBinaryBase):
         f.write_word(stre);
         f.write_word(vit);
         f.write_word(mind);
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+    }
+}

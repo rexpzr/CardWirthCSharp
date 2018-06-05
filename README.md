@@ -77,3 +77,10 @@ public static class F
 | ./cw/deck.cs | X |
 | ./cw/dice.cs | O |
 | ./cw/features.cs | O |
+
+## ツール
+
+./WORKING_TOOLS には、今回の書き換えに役立つツールを格納する
+
+* convert.sh …　python のスクリプトをある程度自動でC# へ書き換える。対応する括弧がなかったりするので、スクリプト実行後、手動での書き換えは必須。
+
