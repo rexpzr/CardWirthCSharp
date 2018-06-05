@@ -8,12 +8,11 @@ import event;
 import cw;
 
 
-class ItemCard(base.CWBinaryBase):
-    """widファイルのアイテムカードのデータ。;
-    hold(真偽値):true?だと自動選択されない。;
-    """;
-    public UNK __init__(parent, f, yadodata=false, nameonly=false, materialdir="Material", image_export=true) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata, materialdir, image_export);
+class ItemCard : base.CWBinaryBase {
+    // """widファイルのアイテムカードのデータ。;
+    // hold(真偽値):true?だと自動選択されない。;
+    // """;
+    public ItemCard(UNK parent, UNK f, bool yadodata=false, bool nameonly=false, string materialdir="Material", bool image_export=true) : base(parent, f, yadodata, materialdir, image_export){
         this.type = f.byte();
         this.image = f.image();
         this.imgpath = "";
@@ -32,12 +31,15 @@ class ItemCard(base.CWBinaryBase):
         } else {
             dataversion = 5;
             this.id = idl - 50000;
+        }
 
         if (nameonly) {
             return;
+        }
 
         if (5 <= dataversion) {
             this.fname = this.get_fname();
+        }
 
         this.description = f.string(true);
         this.p_ability = f.dword();
@@ -50,8 +52,7 @@ class ItemCard(base.CWBinaryBase):
         this.success_rate = f.dword();
         this.visual_effect = f.byte();
         motions_num = f.dword();
-        this.motions = [effectmotion.EffectMotion(self, f, dataversion=dataversion);
-                                          for _cnt in xrange(motions_num)];
+        this.motions = [effectmotion.EffectMotion(self, f, dataversion=dataversion) for _cnt in xrange(motions_num)];
         this.enhance_avoid = f.dword();
         this.enhance_resist = f.dword();
         this.enhance_defense = f.dword();
@@ -74,10 +75,13 @@ class ItemCard(base.CWBinaryBase):
                 this.premium = f.byte();
             } else {
                 this.premium = 0;
+            }
+        }
 
         // 宿データだとここに不明なデータ(4)が付加されている
         if (5 <= dataversion) {
             _dw = f.dword();
+        }
 
         this.limit = f.dword();
         this.limit_max = f.dword();
@@ -89,19 +93,24 @@ class ItemCard(base.CWBinaryBase):
         // 稀に無限使用可能なのに最大使用回数が設定されている事がある
         if (this.limit == 0 && !cw.cwpy.msgs["recycle_keycode"] in this.keycodes) {
             this.limit_max = 0;
+        }
 
         this.data = null;
+    }
 
     public UNK get_data() {
         if (this.data == null) {
             if (2 < this.premium) {
                 // シナリオで入手したカード
                 this.set_image_export(false, true);
+            }
             if (!this.imgpath) {
                 if (this.image) {
                     this.imgpath = this.export_image();
                 } else {
-                    this.imgpath = "";
+                   this.imgpath = "";
+                }
+            }
             this.data = cw.data.make_element("ItemCard");
             prop = cw.data.make_element("Property");
             e = cw.data.make_element("Id", str(this.id));
@@ -148,6 +157,7 @@ class ItemCard(base.CWBinaryBase):
                 e = cw.data.make_element("Premium", this.conv_card_premium(this.premium - 3));
             } else {
                 e = cw.data.make_element("Premium", this.conv_card_premium(this.premium));
+            }
             prop.append(e);
             e = cw.data.make_element("UseLimit", str(this.limit));
             e.set("max", str(this.limit_max));
@@ -165,15 +175,18 @@ class ItemCard(base.CWBinaryBase):
             e = cw.data.make_element("Motions");
             foreach (var motion in this.motions) {
                 e.append(motion.get_data());
+            }
             this.data.append(e);
             e = cw.data.make_element("Events");
             foreach (var event in this.events) {
                 e.append(event.get_data());
+            }
             this.data.append(e);
+        }
         return this.data;
+    }
 
-    @staticmethod;
-    def unconv(f, data, ownerisadventurer):
+    public static UNK unconv(UNK f, UNK data, UNK ownerisadventurer) {
         restype = 0;
         image = null;
         name = "";
@@ -251,22 +264,28 @@ class ItemCard(base.CWBinaryBase):
                     } else if (prop.tag == "KeyCodes") {
                         keycodes = cw.util.decodetextlist(prop.text);
                         // 5件まで絞り込む
-                        if (5 < len(keycodes)) {
+                        if (5 < keycodes.Count) {
                             keycodes2 = [];
                             foreach (var keycode in keycodes) {
                                 if (keycode) {
-                                    if (5 <= len(keycodes2)) {
+                                    if (5 <= keycodes2.Count) {
                                         f.check_wsnversion("");
                                         break;
                                     } else {
                                         keycodes2.append(keycode);
+                                    }
+                                }
+                            }
                             keycodes = keycodes2;
-                        if (len(keycodes) < 5) {
-                            keycodes.extend([""] * (5 - len(keycodes)));
+                        }
+                        if (keycodes.Count < 5) {
+                            keycodes.extend([""] * (5 - keycodes.Count));
+                        }
                     } else if (prop.tag == "Premium") {
                         premium = base.CWBinaryBase.unconv_card_premium(prop.text);
                         if (ownerisadventurer && scenariocard) {
                             premium += 3;
+                        }
                     } else if (prop.tag == "UseLimit") {
                         limit = int(prop.text);
                         limit_max = int(prop.get("max"));
@@ -281,10 +300,15 @@ class ItemCard(base.CWBinaryBase):
                     } else if (prop.tag == "LinkId") {
                         if (prop.text && prop.text != "0") {
                             f.check_wsnversion("1");
+                        }
+                    }
+                }
             } else if (e.tag == "Motions") {
                 motions = e;
             } else if (e.tag == "Events") {
                 events = e;
+            }
+        }
 
         f.write_byte(restype);
         f.write_image(image);
@@ -300,9 +324,10 @@ class ItemCard(base.CWBinaryBase):
         f.write_byte(resist_type);
         f.write_dword(success_rate);
         f.write_byte(visual_effect);
-        f.write_dword(len(motions));
+        f.write_dword(motions.Count);
         foreach (var motion in motions) {
             effectmotion.EffectMotion.unconv(f, motion);
+        }
         f.write_dword(enhance_avoid);
         f.write_dword(enhance_resist);
         f.write_dword(enhance_defense);
@@ -310,12 +335,14 @@ class ItemCard(base.CWBinaryBase):
         f.write_string(sound_effect2);
         foreach (var keycode in keycodes) {
             f.write_string(keycode);
+        }
         f.write_byte(premium);
         f.write_string(scenario_name);
         f.write_string(scenario_author);
-        f.write_dword(len(events));
+        f.write_dword(events.Count);
         foreach (var evt in events) {
             event.SimpleEvent.unconv(f, evt);
+        }
         f.write_bool(hold);
 
         // 宿データだとここに不明なデータ(4)が付加されている
@@ -327,9 +354,5 @@ class ItemCard(base.CWBinaryBase):
         f.write_dword(enhance_avoid2);
         f.write_dword(enhance_resist2);
         f.write_dword(enhance_defense2);
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+    }
+}
