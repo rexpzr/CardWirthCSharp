@@ -6,7 +6,7 @@ class Album : base.CWBinaryBase {
     public UNK level;
     
     // """wrmファイル(type=4)。鬼籍に入った冒険者のデータ。""";
-    public UNK __init__(UNK parent, UNK f, UNK? yadodata=false) : base(parent, f, yadodata) {
+    public Album(UNK parent, UNK f, bool yadodata=false) : base(parent, f, yadodata) {
         this.type = 4;
         this.fname = this.get_fname();
         if (f) {
