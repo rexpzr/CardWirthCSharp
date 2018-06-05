@@ -1,16 +1,12 @@
-//!/usr/bin/env python
-// -*- coding: utf-8 -*-
-
-import base;
-import coupon;
-
-import cw;
-
-
-class Album(base.CWBinaryBase):
-    """wrmファイル(type=4)。鬼籍に入った冒険者のデータ。""";
-    public UNK __init__(parent, f, yadodata=false) {
-        base.CWBinaryBase.__init__(self, parent, f, yadodata);
+class Album : base.CWBinaryBase {
+    public int type;
+    public UNK fname;
+    public string name;
+    public UNK image;
+    public UNK level;
+    
+    // """wrmファイル(type=4)。鬼籍に入った冒険者のデータ。""";
+    public UNK __init__(UNK parent, UNK f, UNK? yadodata=false) : base(parent, f, yadodata) {
         this.type = 4;
         this.fname = this.get_fname();
         if (f) {
@@ -19,9 +15,9 @@ class Album(base.CWBinaryBase):
             this.name = f.string();
             this.image = f.image();
             this.level = f.word();
-            _w = f.word() // 不明(能力修正？)
-            _w = f.word() // 不明(能力修正？)
-            _w = f.word() // 不明(能力修正？)
+            _w = f.word(); // 不明(能力修正？)
+            _w = f.word(); // 不明(能力修正？)
+            _w = f.word(); // 不明(能力修正？)
             // ここからは16ビット符号付き整数が並んでると思われるが面倒なので
             // 能力値
             this.dex = f.byte();
@@ -79,8 +75,10 @@ class Album(base.CWBinaryBase):
             this.defense = 0;
             this.description = u"";
             this.coupons = [];
+        }
 
         this.data = null;
+    }
 
     public UNK get_data() {
         if (this.data == null) {
@@ -88,6 +86,7 @@ class Album(base.CWBinaryBase):
                 this.imgpath = this.export_image();
             } else {
                 this.imgpath = "";
+            }
 
             this.data = cw.data.make_element("Album");
 
@@ -128,21 +127,25 @@ class Album(base.CWBinaryBase):
             ce = cw.data.make_element("Coupons");
             foreach (var coupon in this.coupons) {
                 ce.append(coupon.get_data());
+            }
             prop.append(ce);
 
             this.data.append(prop);
+        }
 
         return this.data;
+    }
 
-    public UNK create_xml(dpath) {
+    public UNK create_xml(string dpath) {
         path = base.CWBinaryBase.create_xml(self, dpath);
         yadodb = this.get_root().yadodb;
         if (yadodb) {
             yadodb.insert_adventurer(path, album=true, commit=false);
+        }
         return path;
+    }
 
-    @staticmethod;
-    def unconv(f, data):
+    public static void unconv(f, data) {
         name = "";
         image = null;
         level = 0;
@@ -193,17 +196,23 @@ class Album(base.CWBinaryBase):
                                 avoid = int(ae.get("avoid"));
                                 resist = int(ae.get("resist"));
                                 defense = int(ae.get("defense"));
+                            }
+                        }
                     } else if (prop.tag == "Coupons") {
                         coupons = prop;
+                    }
+                }
+            }
+        }
 
         f.write_byte(0);
         f.write_byte(0);
         f.write_string(name);
         f.write_image(image);
         f.write_word(level);
-        f.write_word(0) // 不明
-        f.write_word(0) // 不明
-        f.write_word(0) // 不明
+        f.write_word(0); // 不明
+        f.write_word(0); // 不明
+        f.write_word(0); // 不明
         f.write_word(dex);
         f.write_word(agl);
         f.write_word(inte);
@@ -223,9 +232,6 @@ class Album(base.CWBinaryBase):
         f.write_dword(len(coupons));
         foreach (var cp in coupons) {
             coupon.Coupon.unconv(f, cp);
-
-def main():
-    pass;
-
-if __name__ == "__main__":
-    main();
+        }
+    }
+}
