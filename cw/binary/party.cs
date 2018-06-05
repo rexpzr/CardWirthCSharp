@@ -434,7 +434,7 @@ class PartyMembers : base.CWBinaryBase {
 
         advnumpos = f.tell();
         advnum = 0;
-        f.write_byte(len(adventurers) + 30);
+        f.write_byte(adventurers.Count + 30);
         f.write_byte(0) // 不明
         f.write_byte(0) // 不明
         f.write_byte(0) // 不明
@@ -450,7 +450,7 @@ class PartyMembers : base.CWBinaryBase {
             try {
                 pos = f.tell();
                 adventurer.AdventurerWithImage.unconv(f, member, logdata);
-                if (i + 1 < len(adventurers)) {
+                if (i + 1 < adventurers.Count) {
                     f.write_byte(0); // 不明
                 }
                 advnum += 1;
@@ -490,7 +490,7 @@ class PartyMembers : base.CWBinaryBase {
 
         vannumpos = f.tell();
         vannum = 0;
-        f.write_byte(len(vanisheds)); // 消滅メンバの数？
+        f.write_byte(vanisheds.Count); // 消滅メンバの数？
         if (vanisheds) {
             f.write_dword(0); // 不明
             foreach (var i, member in enumerate(vanisheds)) {
@@ -503,7 +503,7 @@ class PartyMembers : base.CWBinaryBase {
                 try {
                     pos = f.tell();
                     adventurer.AdventurerWithImage.unconv(f, member, logdata);
-                    if (i + 1 < len(vanisheds)) {
+                    if (i + 1 < vanisheds.Count) {
                         f.write_byte(0); // 不明
                     }
                     vannum += 1;
@@ -538,7 +538,7 @@ class PartyMembers : base.CWBinaryBase {
 
         backpacknumpos = f.tell();
         backpacknum = 0;
-        f.write_dword(len(party.backpack));
+        f.write_dword(party.backpack.Count);
         btbl = table["yadocards"];
         // CardWirthでは削除されたカードはF9でも復活しないので変換不要
         foreach (var header in party.backpack) {
@@ -569,7 +569,7 @@ class PartyMembers : base.CWBinaryBase {
             f.write_rawstring(friendcards);
             f.write_rawstring(infocards);
             f.write_rawstring(music);
-            f.write_dword(len(bgimgs));
+            f.write_dword(bgimgs.Count);
             foreach (var bgimg in bgimgs) {
                 bgimage.BgImage.unconv(f, bgimg);
             }

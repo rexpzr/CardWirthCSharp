@@ -203,7 +203,7 @@ class CWFileWriter : io.BufferedWriter {
     public void write_rawstring(UNK s) {
         if (s) {
             s = (s + "\x00").encode(cw.MBCS);
-            this.write_dword(len(s));
+            this.write_dword(s.Count);
             this.write(s);
         } else {
             this.write_dword(1);
@@ -229,7 +229,7 @@ class CWFileWriter : io.BufferedWriter {
 
     public void write_image(UNK image) {
         if (image) {
-            this.write_dword(len(image));
+            this.write_dword(image.Count);
             this.write(image);
         } else {
             this.write_dword(0);
