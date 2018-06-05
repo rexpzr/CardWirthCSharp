@@ -153,11 +153,11 @@ class Summary : base.CWBinaryBase {
         f.write_string(required_coupons, true);
         f.write_dword(required_coupons_num);
         f.write_dword(area_id + 40000);
-        f.write_dword(len(steps));
+        f.write_dword(steps.Count);
         foreach (var step in steps) {
             Step.unconv(f, step);
         }
-        f.write_dword(len(flags));
+        f.write_dword(flags.Count);
         foreach (var flag in flags) {
             Flag.unconv(f, flag);
         }

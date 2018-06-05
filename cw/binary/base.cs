@@ -280,7 +280,7 @@ class CWBinaryBase {
                 CWBinaryBase.check_imgpath(f, e, defpostype);
                 imagepath = e.text;
             } else if (e.tag == "ImagePaths") {
-                if (1 < len(e)) {
+                if (1 < e.Count) {
                     f.check_wsnversion("1");
                 }
                 CWBinaryBase.check_imgpath(f, e.find("ImagePath"), defpostype);

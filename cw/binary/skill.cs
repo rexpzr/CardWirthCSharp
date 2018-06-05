@@ -244,11 +244,11 @@ class SkillCard : base.CWBinaryBase {
                     } else if (prop.tag == "KeyCodes") {
                         keycodes = cw.util.decodetextlist(prop.text);
                         // 5件まで絞り込む
-                        if (5 < len(keycodes)) {
+                        if (5 < keycodes.Count) {
                             keycodes2 = [];
                             foreach (var keycode in keycodes) {
                                 if (keycode) {
-                                    if (5 <= len(keycodes2)) {
+                                    if (5 <= keycodes2.Count) {
                                         f.check_wsnversion("");
                                         break;
                                     } else {
@@ -258,8 +258,8 @@ class SkillCard : base.CWBinaryBase {
                             }
                             keycodes = keycodes2;
                         }
-                        if (len(keycodes) < 5) {
-                            keycodes.extend([""] * (5 - len(keycodes)));
+                        if (keycodes.Count < 5) {
+                            keycodes.extend([""] * (5 - keycodes.Count));
                         }
                     } else if (prop.tag == "Premium") {
                         premium = base.CWBinaryBase.unconv_card_premium(prop.text);
@@ -296,7 +296,7 @@ class SkillCard : base.CWBinaryBase {
         f.write_byte(resist_type);
         f.write_dword(success_rate);
         f.write_byte(visual_effect);
-        f.write_dword(len(motions));
+        f.write_dword(motions.Count);
         foreach (var motion in motions) {
             effectmotion.EffectMotion.unconv(f, motion);
         }
@@ -311,7 +311,7 @@ class SkillCard : base.CWBinaryBase {
         f.write_byte(premium);
         f.write_string(scenario_name);
         f.write_string(scenario_author);
-        f.write_dword(len(events));
+        f.write_dword(events.Count);
         foreach (var evt in events) {
             event.SimpleEvent.unconv(f, evt);
         }

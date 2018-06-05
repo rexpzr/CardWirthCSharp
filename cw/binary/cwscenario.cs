@@ -140,10 +140,10 @@ class CWScenario{
             }
         }
 
-        this.maxnum = len(this.datalist);
-        this.maxnum += len(this.materials);
-        this.maxnum += len(this.otherfiles);
-        this.maxnum += len(this.otherdirs);
+        this.maxnum = this.datalist.Count;
+        this.maxnum += this.materials.Count;
+        this.maxnum += this.otherfiles.Count;
+        this.maxnum += this.otherdirs.Count;
     }
 
     public UNK load_file(UNK path, bool nameonly=false, bool decodewrap=false) {

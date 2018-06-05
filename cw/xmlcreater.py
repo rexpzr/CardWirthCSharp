@@ -604,7 +604,7 @@ def create_settings(setting, writeplayingdata=True, fpath="Settings.xml"):
                     e_dir = cw.data.make_element("Path", dname)
                     e_path.append(e_dir)
                 e.append(e_path)
-            if len(e):
+            if e.Count:
                 element.append(e)
 
         # カード編集ダイアログのブックマーク
@@ -779,7 +779,7 @@ def create_localsettings(element, local):
                 attrs["italic"] = str(italic)
             fe = cw.data.make_element("Font", name, attrs=attrs)
             e.append(fe)
-    if len(e):
+    if e.Count:
         element.append(e)
 
 def create_albumpage(path, lost=False, nocoupon=False):
@@ -943,7 +943,7 @@ def create_scenariolog(sdata, path, recording, logfilepath):
         e = cw.data.make_element(name, attrs={"r": str(color[0]),
                                                  "g": str(color[1]),
                                                  "b": str(color[2])})
-        if 4 <= len(color):
+        if 4 <= color.Count:
             e.set("a", str(color[3]))
         else:
             e.set("a", "255")

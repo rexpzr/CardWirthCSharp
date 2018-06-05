@@ -100,7 +100,7 @@ class Area : base.CWBinaryBase {
             } else if (e.tag == "BgImages") {
                 bgimgs = e;
             } else if (e.tag == "PlayerCardEvents") {
-                if (len(e)) {
+                if (e.Count) {
                     f.check_wsnversion("2");
                 }
             } else if (e.tag == "MenuCards") {
@@ -115,16 +115,16 @@ class Area : base.CWBinaryBase {
         f.write_dword(0); // 不明
         f.write_string(name);
         f.write_dword(resid + 40000);
-        f.write_dword(len(events));
+        f.write_dword(events.Count);
         foreach (var evt in events) {
             event.Event.unconv(f, evt);
         }
         f.write_byte(spreadtype);
-        f.write_dword(len(mcards));
+        f.write_dword(mcards.Count);
         foreach (var mcard in mcards) {
             MenuCard.unconv(f, mcard);
         }
-        f.write_dword(len(bgimgs));
+        f.write_dword(bgimgs.Count);
         foreach (var bgimg in bgimgs) {
             bgimage.BgImage.unconv(f, bgimg);
         }
@@ -211,7 +211,7 @@ class MenuCard : base.CWBinaryBase {
                         base.CWBinaryBase.check_imgpath(f, prop, "TopLeft");
                         imgpath = base.CWBinaryBase.materialpath(prop.text);
                     } else if (prop.tag == "ImagePaths") {
-                        if (1 < len(prop)) {
+                        if (1 < prop.Count) {
                             f.check_wsnversion("1");
                         } else {
                             base.CWBinaryBase.check_imgpath(f, prop.find("ImagePath"), "TopLeft");
@@ -249,7 +249,7 @@ class MenuCard : base.CWBinaryBase {
         f.write_string(name);
         f.write_dword(0) // 不明
         f.write_string(description, true);
-        f.write_dword(len(events));
+        f.write_dword(events.Count);
         foreach (var evt in events) {
             event.Event.unconv(f, evt);
         }
