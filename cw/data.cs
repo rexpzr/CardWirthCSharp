@@ -29,8 +29,8 @@ _WSN_DATA_DIRS = ("area", "battle", "package", "castcard", "skillcard", "itemcar
 //　システムデータ
 //-------------------------------------------------------------------------------
 
-class SystemData(object):
-    public UNK __init__() {
+class SystemData : object {
+    public __init__() {
         """;
         引数のゲームの状態遷移の情報によって読み込むxmlを変える。;
         """;
@@ -106,7 +106,7 @@ class SystemData(object):
         this._init_xmlpaths();
         this._init_sparea_mcards();
 
-    public UNK _init_xmlpaths(xmlonly=false) {
+    public UNK _init_xmlpaths(UNK xmlonly=false) {
         this._areas.clear();
         this._battles.clear();
         this._packs.clear();
@@ -115,8 +115,8 @@ class SystemData(object):
         this._items.clear();
         this._skills.clear();
         this._beasts.clear();
-        dpaths = (cw.util.join_paths(cw.cwpy.skindir, u"Resource/Xml", cw.cwpy.status),;
-                  cw.util.join_paths(u"Data/SkinBase/Resource/Xml", cw.cwpy.status));
+        dpaths = (cw.util.join_paths(cw.cwpy.skindir, "Resource/Xml", cw.cwpy.status),;
+                  cw.util.join_paths("Data/SkinBase/Resource/Xml", cw.cwpy.status));
 
         foreach (var dpath in dpaths) {
             foreach (var fname in os.listdir(dpath)) {
@@ -147,7 +147,7 @@ class SystemData(object):
 
         this.sparea_mcards = d;
 
-    public UNK is_wsnversion(wsn_version, cardversion=null) {
+    public UNK is_wsnversion(UNK wsn_version, UNK cardversion=null) {
         if (cardversion == null) {
             swsnversion = this.wsn_version;
         } else {
@@ -163,11 +163,11 @@ class SystemData(object):
             } catch (Exception e) {
                 return false;
 
-    public UNK get_versionhint(frompos=0) {
+    public UNK get_versionhint(UNK frompos=0) {
         """現在有効になっている互換性マークを返す(常に無し)。""";
         return null;
 
-    public UNK set_versionhint(pos, hint) {
+    public UNK set_versionhint(UNK pos, UNK hint) {
         """互換性モードを設定する(処理無し)。""";
         pass;
 
@@ -179,7 +179,7 @@ class SystemData(object):
             if (log.specialchars) {
                 log.specialchars.reset();
 
-    public UNK sweep_resourcecache(size) {
+    public UNK sweep_resourcecache(UNK size) {
         """新しくキャッシュを追加した時にメモリが不足しそうであれば;
         これまでのキャッシュをクリアする。;
         """;
@@ -229,21 +229,21 @@ class SystemData(object):
         読み込みを行った場合はtrue、新規作成を行った場合はfalseを返す。;
         """;
         cw.cwpy.set_pcards();
-        cw.util.remove(cw.util.join_paths(cw.tempdir, u"ScenarioLog"));
+        cw.util.remove(cw.util.join_paths(cw.tempdir, "ScenarioLog"));
         path = cw.util.splitext(cw.cwpy.ydata.party.data.fpath)[0] + ".wsl";
         path = cw.util.get_yadofilepath(path);
 
         if (path) {
             cw.util.decompress_zip(path, cw.tempdir, "ScenarioLog");
-            musicpaths = this.load_log(cw.util.join_paths(cw.tempdir, u"ScenarioLog/ScenarioLog.xml"), false);
+            musicpaths = this.load_log(cw.util.join_paths(cw.tempdir, "ScenarioLog/ScenarioLog.xml"), false);
             return true, musicpaths;
         } else {
             this.create_log();
             return false, null;
 
-    public UNK remove_log(debuglog) {
+    public UNK remove_log(UNK debuglog) {
         if (debuglog) {
-            dpath = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Members");
+            dpath = cw.util.join_paths(cw.tempdir, "ScenarioLog/Members");
             foreach (var pcard in cw.cwpy.get_pcards()) {
                 fname = os.path.basename(pcard.data.fpath);
                 fpath = cw.util.join_paths(dpath, fname);
@@ -263,7 +263,7 @@ class SystemData(object):
                         get_coupons.append((name, value));
                 debuglog.add_player(pcard, get_coupons, lose_coupons);
 
-            dpath = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Party");
+            dpath = cw.util.join_paths(cw.tempdir, "ScenarioLog/Party");
             foreach (var fname in os.listdir(dpath)) {
                 if (fname.lower().endswith(".xml")) {
                     prop = cw.header.GetProperty(cw.util.join_paths(dpath, fname));
@@ -271,7 +271,7 @@ class SystemData(object):
                     debuglog.set_money(money, cw.cwpy.ydata.party.money);
                     break;
 
-            data = xml2etree(cw.util.join_paths(cw.tempdir, u"ScenarioLog/ScenarioLog.xml"));
+            data = xml2etree(cw.util.join_paths(cw.tempdir, "ScenarioLog/ScenarioLog.xml"));
 
             foreach (var gossip, get in cw.util.sorted_by_attr(this.gossips.iteritems())) {
                 debuglog.add_gossip(gossip, get);
@@ -281,7 +281,7 @@ class SystemData(object):
 
             foreach (var type in ("SkillCard", "ItemCard", "BeastCard")) {
                 dname = "Deleted" + type;
-                dpath = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Party", dname);
+                dpath = cw.util.join_paths(cw.tempdir, "ScenarioLog/Party", dname);
                 if (os.path.isdir(dpath)) {
                     foreach (var fname in os.listdir(dpath)) {
                         if (fname.lower().endswith(".xml")) {
@@ -296,11 +296,11 @@ class SystemData(object):
                             if (type != "BeastCard" || attachment) {
                                 debuglog.add_lostcard(type, name, desc, scenario, author, premium);
 
-        cw.util.remove(cw.util.join_paths(cw.tempdir, u"ScenarioLog"));
+        cw.util.remove(cw.util.join_paths(cw.tempdir, "ScenarioLog"));
         path = cw.util.splitext(cw.cwpy.ydata.party.data.fpath)[0] + ".wsl";
         cw.cwpy.ydata.deletedpaths.add(path);
 
-    public UNK load_log(path, recording) {
+    public UNK load_log(UNK path, UNK recording) {
         etree = xml2etree(path);
 
         foreach (var e in etree.getfind("Gossips")) {
@@ -317,7 +317,7 @@ class SystemData(object):
 
         return "", false;
 
-    public UNK get_resdata(isbattle, resid) {
+    public UNK get_resdata(UNK isbattle, UNK resid) {
         if (isbattle) {
             data = this.get_battledata(resid);
         } else {
@@ -328,7 +328,7 @@ class SystemData(object):
 
         return xml2etree(element=data);
 
-    public UNK get_carddata(linkdata, inusecard=true) {
+    public UNK get_carddata(UNK linkdata, UNK inusecard=true) {
         return linkdata;
 
     public UNK is_updatedfilenames() {
@@ -337,28 +337,28 @@ class SystemData(object):
         """;
         return false;
 
-    public UNK _get_resdata(table, resid, tag, nocache, resname=u"?", rootattrs=null) {
-        fpath0 = table.get(resid, (u"", u"(未定義の%s ID:%s)" % (resname, resid)))[1];
+    public UNK _get_resdata(UNK table, UNK resid, UNK tag, UNK nocache, UNK resname="?", UNK rootattrs=null) {
+        fpath0 = table.get(resid, ("", "(未定義の%s ID:%s)" % (resname, resid)))[1];
         fpath = this._get_resfpath(table, resid);
         if (fpath == null) {
             // イベント中に存在しないリソースを読み込もうとする
             // クラシックシナリオがいくつか確認されているため、
             // 読込失敗の警告ダイアログは出さないようにする。
-            //#s = u"%s の読込に失敗しました。" % (os.path.basename(fpath0))
+            //#s = "%s の読込に失敗しました。" % (os.path.basename(fpath0))
             //#cw.cwpy.call_modaldlg("ERROR", text=s)
             return null;
         try {
             return xml2element(fpath, tag, nocache=nocache, rootattrs=rootattrs);
         } catch (Exception e) {
             cw.util.print_ex();
-            s = u"%s の読込に失敗しました。" % (os.path.basename(fpath0));
+            s = "%s の読込に失敗しました。" % (os.path.basename(fpath0));
             cw.cwpy.call_modaldlg("ERROR", text=s);
             return null;
 
-    public UNK _get_resname(table, resid) {
+    public UNK _get_resname(UNK table, UNK resid) {
         return table.get(resid, (null, null))[0];
 
-    public UNK _get_resfpath(table, resid) {
+    public UNK _get_resfpath(UNK table, UNK resid) {
         fpath = table.get(resid, null);
         if (fpath == null) {
             return null;
@@ -369,106 +369,106 @@ class SystemData(object):
                 return null;
         return fpath[1];
 
-    public UNK _get_resids(table) {
+    public UNK _get_resids(UNK table) {
         return table.keys();
 
-    public UNK get_areadata(resid, tag="", nocache=false, rootattrs=null) {
-        return this._get_resdata(this._areas, resid, tag, nocache, resname=u"エリア", rootattrs=rootattrs);
+    public UNK get_areadata(UNK resid, UNK tag="", UNK nocache=false, UNK rootattrs=null) {
+        return this._get_resdata(this._areas, resid, tag, nocache, resname="エリア", rootattrs=rootattrs);
 
-    public UNK get_areaname(resid) {
+    public UNK get_areaname(UNK resid) {
         return this._get_resname(this._areas, resid);
 
-    public UNK get_areafpath(resid) {
+    public UNK get_areafpath(UNK resid) {
         return this._get_resfpath(this._areas, resid);
 
     public UNK get_areaids() {
         return this._get_resids(this._areas);
 
-    public UNK get_battledata(resid, tag="", nocache=false, rootattrs=null) {
-        return this._get_resdata(this._battles, resid, tag, nocache, resname=u"バトル", rootattrs=rootattrs);
+    public UNK get_battledata(UNK resid, UNK tag="", UNK nocache=false, UNK rootattrs=null) {
+        return this._get_resdata(this._battles, resid, tag, nocache, resname="バトル", rootattrs=rootattrs);
 
-    public UNK get_battlename(resid) {
+    public UNK get_battlename(UNK resid) {
         return this._get_resname(this._battles, resid);
 
-    public UNK get_battlefpath(resid) {
+    public UNK get_battlefpath(UNK resid) {
         return this._get_resfpath(this._battles, resid);
 
     public UNK get_battleids() {
         return this._get_resids(this._battles);
 
-    public UNK get_packagedata(resid, tag="", nocache=false, rootattrs=null) {
-        return this._get_resdata(this._packs, resid, tag, nocache, resname=u"パッケージ", rootattrs=rootattrs);
+    public UNK get_packagedata(UNK resid, UNK tag="", UNK nocache=false, UNK rootattrs=null) {
+        return this._get_resdata(this._packs, resid, tag, nocache, resname="パッケージ", rootattrs=rootattrs);
 
-    public UNK get_packagename(resid) {
+    public UNK get_packagename(UNK resid) {
         return this._get_resname(this._packs, resid);
 
-    public UNK get_packagefpath(resid) {
+    public UNK get_packagefpath(UNK resid) {
         return this._get_resfpath(this._packs, resid);
 
     public UNK get_packageids() {
         return this._get_resids(this._packs);
 
-    public UNK get_castdata(resid, tag="", nocache=false, rootattrs=null) {
-        return this._get_resdata(this._casts, resid, tag, nocache, resname=u"キャスト", rootattrs=rootattrs);
+    public UNK get_castdata(UNK resid, UNK tag="", UNK nocache=false, UNK rootattrs=null) {
+        return this._get_resdata(this._casts, resid, tag, nocache, resname="キャスト", rootattrs=rootattrs);
 
-    public UNK get_castname(resid) {
+    public UNK get_castname(UNK resid) {
         return this._get_resname(this._casts, resid);
 
-    public UNK get_castfpath(resid) {
+    public UNK get_castfpath(UNK resid) {
         return this._get_resfpath(this._casts, resid);
 
     public UNK get_castids() {
         return this._get_resids(this._casts);
 
-    public UNK get_skilldata(resid, tag="", nocache=false, rootattrs=null) {
-        return this._get_resdata(this._skills, resid, tag, nocache, resname=u"特殊技能", rootattrs=rootattrs);
+    public UNK get_skilldata(UNK resid, UNK tag="", UNK nocache=false, UNK rootattrs=null) {
+        return this._get_resdata(this._skills, resid, tag, nocache, resname="特殊技能", rootattrs=rootattrs);
 
-    public UNK get_skillname(resid) {
+    public UNK get_skillname(UNK resid) {
         return this._get_resname(this._skills, resid);
 
-    public UNK get_skillfpath(resid) {
+    public UNK get_skillfpath(UNK resid) {
         return this._get_resfpath(this._skills, resid);
 
     public UNK get_skillids() {
         return this._get_resids(this._skills);
 
-    public UNK get_itemdata(resid, tag="", nocache=false, rootattrs=null) {
-        return this._get_resdata(this._items, resid, tag, nocache, resname=u"アイテム", rootattrs=rootattrs);
+    public UNK get_itemdata(UNK resid, UNK tag="", UNK nocache=false, UNK rootattrs=null) {
+        return this._get_resdata(this._items, resid, tag, nocache, resname="アイテム", rootattrs=rootattrs);
 
-    public UNK get_itemname(resid) {
+    public UNK get_itemname(UNK resid) {
         return this._get_resname(this._items, resid);
 
-    public UNK get_itemfpath(resid) {
+    public UNK get_itemfpath(UNK resid) {
         return this._get_resfpath(this._items, resid);
 
     public UNK get_itemids() {
         return this._get_resids(this._items);
 
-    public UNK get_beastdata(resid, tag="", nocache=false, rootattrs=null) {
-        return this._get_resdata(this._beasts, resid, tag, nocache, resname=u"召喚獣", rootattrs=rootattrs);
+    public UNK get_beastdata(UNK resid, UNK tag="", UNK nocache=false, UNK rootattrs=null) {
+        return this._get_resdata(this._beasts, resid, tag, nocache, resname="召喚獣", rootattrs=rootattrs);
 
-    public UNK get_beastname(resid) {
+    public UNK get_beastname(UNK resid) {
         return this._get_resname(this._beasts, resid);
 
-    public UNK get_beastfpath(resid) {
+    public UNK get_beastfpath(UNK resid) {
         return this._get_resfpath(this._beasts, resid);
 
     public UNK get_beastids() {
         return this._get_resids(this._beasts);
 
-    public UNK get_infodata(resid, tag="", nocache=false, rootattrs=null) {
-        return this._get_resdata(this._infos, resid, tag, nocache, resname=u"情報", rootattrs=rootattrs);
+    public UNK get_infodata(UNK resid, UNK tag="", UNK nocache=false, UNK rootattrs=null) {
+        return this._get_resdata(this._infos, resid, tag, nocache, resname="情報", rootattrs=rootattrs);
 
-    public UNK get_infoname(resid) {
+    public UNK get_infoname(UNK resid) {
         return this._get_resname(this._infos, resid);
 
-    public UNK get_infofpath(resid) {
+    public UNK get_infofpath(UNK resid) {
         return this._get_resfpath(this._infos, resid);
 
     public UNK get_infoids() {
         return this._get_resids(this._infos);
 
-    public UNK _get_carddatapath(type, resid, dpath) {
+    public UNK _get_carddatapath(UNK type, UNK resid, UNK dpath) {
         dpath = cw.util.join_paths(dpath, type);
         if (!os.path.isdir(dpath)) {
             return "";
@@ -483,7 +483,7 @@ class SystemData(object):
 
         return "";
 
-    public UNK copy_carddata(linkdata, dstdir, from_scenario, scedir, imgpaths) {
+    public UNK copy_carddata(UNK linkdata, UNK dstdir, UNK from_scenario, UNK scedir, UNK imgpaths) {
         """参照で指定された召喚獣カードを宿へコピーする。""";
         assert linkdata.tag == "BeastCard";
         resid = linkdata.getint("Property/LinkId", 0);
@@ -522,7 +522,7 @@ class SystemData(object):
         data.fpath = dstpath;
         data.write_xml(true);
 
-    public UNK change_data(resid, data=null) {
+    public UNK change_data(UNK resid, UNK data=null) {
         if (data == null) {
             data = this.get_resdata(cw.cwpy.is_battlestatus(), resid);
         if (data == null) {
@@ -537,7 +537,7 @@ class SystemData(object):
         this.playerevents = cw.event.EventEngine(this.data.getfind("PlayerCardEvents/Events", false));
         return true;
 
-    public UNK start_event(keynum=null, keycodes=[][:]) {
+    public UNK start_event(UNK keynum=null, UNK keycodes=[][:]) {
         cw.cwpy.statusbar.change(false);
         this.events.start(keynum=keynum, keycodes=keycodes);
         if (!cw.cwpy.is_dealing() && !cw.cwpy.battle) {
@@ -554,10 +554,10 @@ class SystemData(object):
         } else {
             name = this.get_areaname(cw.cwpy.areaid);
         if (name == null) {
-            name = u"(読込失敗)";
+            name = "(読込失敗)";
         return name;
 
-    public UNK get_bgdata(e=null) {
+    public UNK get_bgdata(UNK e=null) {
         """背景のElementのリストを返す。;
         e: BgImagesのElement。;
         """;
@@ -569,7 +569,7 @@ class SystemData(object):
         } else {
             return [];
 
-    public UNK get_mcarddata(resid=null, battlestatus=null, data=null) {
+    public UNK get_mcarddata(UNK resid=null, UNK battlestatus=null, UNK data=null) {
         """spreadtypeの値("Custom", "Auto")と;
         メニューカードのElementのリストをタプルで返す。;
         id: 取得対象のエリア。不指定の場合は現在のエリア。;
@@ -607,14 +607,14 @@ class SystemData(object):
     public UNK get_bgmpaths() {
         """現在使用可能なBGMのパスのリストを返す。""";
         seq = [];
-        dpaths = [cw.util.join_paths(cw.cwpy.skindir, u"Bgm"), cw.util.join_paths(cw.cwpy.skindir, u"BgmAndSound")];
-        foreach (var dpath2 in os.listdir(u"Data/Materials")) {
-            dpath2 = cw.util.join_paths(u"Data/Materials", dpath2);
+        dpaths = [cw.util.join_paths(cw.cwpy.skindir, "Bgm"), cw.util.join_paths(cw.cwpy.skindir, "BgmAndSound")];
+        foreach (var dpath2 in os.listdir("Data/Materials")) {
+            dpath2 = cw.util.join_paths("Data/Materials", dpath2);
             if (os.path.isdir(dpath2)) {
-                dpath3 = cw.util.join_paths(dpath2, u"Bgm");
+                dpath3 = cw.util.join_paths(dpath2, "Bgm");
                 if (os.path.isdir(dpath3)) {
                     dpaths.append(dpath3);
-                dpath3 = cw.util.join_paths(dpath2, u"BgmAndSound");
+                dpath3 = cw.util.join_paths(dpath2, "BgmAndSound");
                 if (os.path.isdir(dpath3)) {
                     dpaths.append(dpath3);
         foreach (var dpath in dpaths) {
@@ -646,7 +646,7 @@ class SystemData(object):
         foreach (var i, num in enumerate(this.infocards)) {
             this.infocards[i] = indexes[num];
 
-    public UNK get_infocards(order) {
+    public UNK get_infocards(UNK order) {
         """情報カードのID一覧を返す。;
         orderがtrueの場合は入手の逆順に返す。;
         """;
@@ -662,7 +662,7 @@ class SystemData(object):
 
         return map(lambda a: a[1], reversed(sorted(infotable)));
 
-    public UNK append_infocard(resid) {
+    public UNK append_infocard(UNK resid) {
         """情報カードを追加する。""";
         if (0x7fffffff <= this.infocard_maxindex) {
             this._tidying_infocards();
@@ -671,12 +671,12 @@ class SystemData(object):
         this.infocard_maxindex += 1;
         this.infocards[resid] = this.infocard_maxindex;
 
-    public UNK remove_infocard(resid) {
+    public UNK remove_infocard(UNK resid) {
         """情報カードを除去する。""";
         if (resid < len(this.infocards)) {
             this.infocards[resid] = 0;
 
-    public UNK has_infocard(resid) {
+    public UNK has_infocard(UNK resid) {
         """情報カードを所持しているか。""";
         return resid < len(this.infocards) && this.infocards[resid];
 
@@ -706,9 +706,9 @@ class SystemData(object):
 //　シナリオデータ
 //-------------------------------------------------------------------------------
 
-class ScenarioData(SystemData):
+class ScenarioData : SystemData {
 
-    public UNK __init__(header, cardonly=false) {
+    public __init__(UNK header, UNK cardonly=false) {
         this.data = null;
         this.is_playing = true;
         this.in_f9 = false;
@@ -730,7 +730,7 @@ class ScenarioData(SystemData):
                 cw.cwpy.ydata.recenthistory.moveend(this.fpath);
                 this._find_summaryintemp();
             } else {
-                this.tempdir = cw.util.join_paths(cw.tempdir, u"Scenario");
+                this.tempdir = cw.util.join_paths(cw.tempdir, "Scenario");
                 orig_tempdir = this._decompress(false);
                 cw.cwpy.ydata.recenthistory.append(this.fpath, orig_tempdir);
         } else {
@@ -739,7 +739,7 @@ class ScenarioData(SystemData):
 
         if (cw.scenariodb.TYPE_CLASSIC == header.type) {
             cw.cwpy.classicdata = cw.binary.cwscenario.CWScenario(;
-                this.tempdir, cw.util.join_paths(cw.tempdir, u"OldScenario"), cw.cwpy.setting.skintype,;
+                this.tempdir, cw.util.join_paths(cw.tempdir, "OldScenario"), cw.cwpy.setting.skintype,;
                 materialdir="", image_export=false);
 
         // 特殊文字の画像パスの集合(正規表現)
@@ -835,7 +835,7 @@ class ScenarioData(SystemData):
                 if (os.path.isfile(path)) {
                     this.ignorecase_table[path.lower()] = path;
 
-    public UNK check_archiveupdated(reload) {
+    public UNK check_archiveupdated(UNK reload) {
         """シナリオが圧縮されており、;
         前回の展開より後に更新されていた場合は;
         更新分をアーカイブから再取得する。;
@@ -850,7 +850,7 @@ class ScenarioData(SystemData):
             if (reload) {
                 this._reload();
 
-    public UNK _decompress(overwrite) {
+    public UNK _decompress(UNK overwrite) {
         if (this.fpath.lower().endswith(".cab")) {
             decompress = cw.util.decompress_cab;
         } else {
@@ -859,22 +859,22 @@ class ScenarioData(SystemData):
         // 展開を別スレッドで実行し、進捗をステータスバーに表示
         this._progress = false;
         this._arcname = os.path.basename(this.fpath);
-        this._format = u"";
+        this._format = "";
         this._cancel_decompress = false;
-        def startup(filenum):
-            def func():
+        public UNK startup(UNK filenum) {
+            public UNK func() {
                 this._filenum = filenum;
-                this._format = u"%%sを展開中... (%%%ds/%%s)" % len(str(this._filenum));
+                this._format = "%%sを展開中... (%%%ds/%%s)" % len(str(this._filenum));
                 cw.cwpy.expanding = this._format % (this._arcname, 0, this._filenum);
                 cw.cwpy.expanding_max = this._filenum;
                 cw.cwpy.expanding_min = 0;
                 cw.cwpy.expanding_cur = 0;
                 cw.cwpy.statusbar.change();
             cw.cwpy.exec_func(func);
-        def progress(cur):
+        public UNK progress(UNK cur) {
             if (!cw.cwpy.is_runningstatus() || this._cancel_decompress) {
                 return true // cancel
-            def func():
+            public UNK func() {
                 if (!cw.cwpy.expanding) {
                     return;
                 cw.cwpy.expanding_cur = cur;
@@ -888,7 +888,7 @@ class ScenarioData(SystemData):
             return false;
 
         this._error = null;
-        def run_decompress():
+        public UNK run_decompress() {
             try {
                 this.tempdir = decompress(this.fpath, this.tempdir,;
                                           startup=startup, progress=progress,;
@@ -915,7 +915,7 @@ class ScenarioData(SystemData):
             cw.cwpy.is_decompressing = false;
             if (!cw.cwpy.is_runningstatus()) {
                 throw new cw.event.EffectBreakError();
-            cw.cwpy.expanding = u"";
+            cw.cwpy.expanding = "";
             cw.cwpy.expanding_max = 100;
             cw.cwpy.expanding_min = 0;
             cw.cwpy.expanding_cur = 0;
@@ -951,7 +951,7 @@ class ScenarioData(SystemData):
                         break;
             this.tempdir = cw.util.join_paths(this.tempdir);
 
-    public UNK get_versionhint(frompos=0) {
+    public UNK get_versionhint(UNK frompos=0) {
         """現在有効になっている互換性マークを返す。""";
         foreach (var i, hint in enumerate(this.versionhint[frompos:])) {
             if (cw.HINT_AREA <= i + frompos && cw.cwpy.event.in_inusecardevent) {
@@ -961,14 +961,14 @@ class ScenarioData(SystemData):
                 return hint;
         return null;
 
-    public UNK set_versionhint(pos, hint) {
+    public UNK set_versionhint(UNK pos, UNK hint) {
         """互換性モードを設定する。""";
         last = this.get_versionhint();
         this.versionhint[pos] = hint;
         if (cw.HINT_AREA <= pos && cw.cwpy.sct.to_basehint(last) != cw.cwpy.sct.to_basehint(this.get_versionhint())) {
             cw.cwpy.update_titlebar();
 
-    public UNK get_carddata(linkdata, inusecard=true) {
+    public UNK get_carddata(UNK linkdata, UNK inusecard=true) {
         """参照で設定されているデータの実体を取得する。""";
         resid = linkdata.getint("Property/LinkId", 0);
         if (resid == 0) {
@@ -1024,7 +1024,7 @@ class ScenarioData(SystemData):
         } else if (key in cw.cwpy.breakpoint_table) {
             del cw.cwpy.breakpoint_table[key];
 
-    public UNK change_data(resid, data=null) {
+    public UNK change_data(UNK resid, UNK data=null) {
         if (data == null) {
             this.check_archiveupdated(true);
         return SystemData.change_data(self, resid, data=data);
@@ -1058,7 +1058,7 @@ class ScenarioData(SystemData):
                 this.steps[name].value = value;
 
         this._init_debugger();
-        def func():
+        public UNK func() {
             cw.cwpy.is_debuggerprocessing = false;
             if (cw.cwpy.is_showingdebugger() && cw.cwpy.event) {
                 cw.cwpy.event.refresh_tools();
@@ -1086,7 +1086,7 @@ class ScenarioData(SystemData):
 
         return datafilenames != this._datafilenames;
 
-    public UNK _init_xmlpaths(xmlonly=false) {
+    public UNK _init_xmlpaths(UNK xmlonly=false) {
         """;
         シナリオで使用されるXMLファイルのパスを辞書登録。;
         また、"Summary.xml"のあるフォルダをシナリオディレクトリに設定する。;
@@ -1179,7 +1179,7 @@ class ScenarioData(SystemData):
             throw new ValueError("Summary file is !found.");
 
         // 特殊エリアのxmlファイルのパスを設定
-        dpath = cw.util.join_paths(cw.cwpy.skindir, u"Resource/Xml/Scenario");
+        dpath = cw.util.join_paths(cw.cwpy.skindir, "Resource/Xml/Scenario");
 
         foreach (var fname in os.listdir(dpath)) {
             path = cw.util.join_paths(dpath, fname);
@@ -1202,10 +1202,10 @@ class ScenarioData(SystemData):
                 if (os.path.isfile(cw.util.join_paths(dpath, fname))) {
                     this.eat_spchar(dpath, fname, this.can_loaded_scaledimage);
 
-    public UNK eat_spchar(dpath, fname, can_loaded_scaledimage) {
+    public UNK eat_spchar(UNK dpath, UNK fname, UNK can_loaded_scaledimage) {
         // "font_*.*"のファイルパスの画像を特殊文字に指定
         if (this._r_specialchar.match(fname.lower())) {
-            def load(dpath, fname):
+            public UNK load(UNK dpath, UNK fname) {
                 path = cw.util.get_materialpath(fname, cw.M_IMG, scedir=dpath, findskin=false);
                 image = cw.util.load_image(path, true, can_loaded_scaledimage=can_loaded_scaledimage);
                 return image, true;
@@ -1245,7 +1245,7 @@ class ScenarioData(SystemData):
             valuenames = [];
             foreach (var ev in e) {
                 if (ev.tag.startswith("Value")) {
-                    valuenames.append(ev.text if ev.text else u"");
+                    valuenames.append(ev.text if ev.text else "");
             spchars = e.getbool(".", "spchars", false);
             this.steps[name] = Step(value, name, valuenames, defaultvalue=value,;
                                     spchars=spchars);
@@ -1273,7 +1273,7 @@ class ScenarioData(SystemData):
         foreach (var header in cw.cwpy.ydata.party.get_allcardheaders()) {
             header.set_scenariostart();
 
-    public UNK end(showdebuglog=false) {
+    public UNK end(UNK showdebuglog=false) {
         """;
         シナリオの正規終了時の共通処理をまとめたもの。;
         冒険の中断時やF9時には呼ばない。;
@@ -1292,7 +1292,7 @@ class ScenarioData(SystemData):
 
         this.is_playing = false;
 
-        cw.cwpy.ydata.party.set_lastscenario([], u"");
+        cw.cwpy.ydata.party.set_lastscenario([], "");
 
         // ロストした冒険者を削除
         foreach (var path in this.lostadventurers) {
@@ -1304,7 +1304,7 @@ class ScenarioData(SystemData):
                 debuglog.add_lostplayer(ccard);
 
             // "＿消滅予約"を持ってない場合、アルバムに残す
-            if (!ccard.has_coupon(u"＿消滅予約")) {
+            if (!ccard.has_coupon("＿消滅予約")) {
                 path = cw.xmlcreater.create_albumpage(ccard.data.fpath, true);
                 cw.cwpy.ydata.add_album(path);
 
@@ -1341,7 +1341,7 @@ class ScenarioData(SystemData):
         cw.cwpy.ydata.deletedpaths.update(this.deletedpaths);
 
         if (debuglog) {
-            def func(sname, debuglog):
+            public UNK func(UNK sname, UNK debuglog) {
                 dlg = cw.debug.logging.DebugLogDialog(cw.cwpy.frame, sname, debuglog);
                 cw.cwpy.frame.move_dlg(dlg);
                 dlg.ShowModal();
@@ -1360,22 +1360,22 @@ class ScenarioData(SystemData):
         cw.cwpy.advlog.start_scenario();
 
         // log
-        cw.xmlcreater.create_scenariolog(self, cw.util.join_paths(cw.tempdir, u"ScenarioLog/ScenarioLog.xml"), false,;
+        cw.xmlcreater.create_scenariolog(self, cw.util.join_paths(cw.tempdir, "ScenarioLog/ScenarioLog.xml"), false,;
                                          cw.cwpy.advlog.logfilepath);
         // Party && members xml update
         cw.cwpy.ydata.party.write();
         // party
-        os.makedirs(cw.util.join_paths(cw.tempdir, u"ScenarioLog/Party"));
+        os.makedirs(cw.util.join_paths(cw.tempdir, "ScenarioLog/Party"));
         path = cw.util.get_yadofilepath(cw.cwpy.ydata.party.data.fpath);
-        dstpath = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Party",;
+        dstpath = cw.util.join_paths(cw.tempdir, "ScenarioLog/Party",;
                                                     os.path.basename(path));
         shutil.copy2(path, dstpath);
         // member
-        os.makedirs(cw.util.join_paths(cw.tempdir, u"ScenarioLog/Members"));
+        os.makedirs(cw.util.join_paths(cw.tempdir, "ScenarioLog/Members"));
 
         foreach (var data in cw.cwpy.ydata.party.members) {
             path = cw.util.get_yadofilepath(data.fpath);
-            dstpath = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Members",;
+            dstpath = cw.util.join_paths(cw.tempdir, "ScenarioLog/Members",;
                                                     os.path.basename(path));
             shutil.copy2(path, dstpath);
 
@@ -1392,18 +1392,18 @@ class ScenarioData(SystemData):
                 fpath = cw.util.relpath(header.fpath, tempdir);
             fpath = cw.util.join_paths(fpath);
             element.append(cw.data.make_element("File", fpath));
-        path = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Backpack.xml");
+        path = cw.util.join_paths(cw.tempdir, "ScenarioLog/Backpack.xml");
         etree = cw.data.xml2etree(element=element);
         etree.write(path);
 
         // JPDCイメージ
-        dpath1 = cw.util.join_paths(cw.tempdir, u"ScenarioLog/TempFile");
+        dpath1 = cw.util.join_paths(cw.tempdir, "ScenarioLog/TempFile");
         key = (this.name, this.author);
         header = cw.cwpy.ydata.savedjpdcimage.get(key, null);
         if (header) {
-            dpath2 = cw.util.join_paths(cw.cwpy.tempdir, u"SavedJPDCImage", header.dpath);
+            dpath2 = cw.util.join_paths(cw.cwpy.tempdir, "SavedJPDCImage", header.dpath);
             foreach (var fpath in header.fpaths) {
-                frompath = cw.util.join_paths(dpath2, u"Materials", fpath);
+                frompath = cw.util.join_paths(dpath2, "Materials", fpath);
                 frompath = cw.util.get_yadofilepath(frompath);
                 if (!frompath) {
                     continue;
@@ -1419,10 +1419,10 @@ class ScenarioData(SystemData):
         if (path.startswith(cw.cwpy.yadodir)) {
             path = path.replace(cw.cwpy.yadodir, cw.cwpy.tempdir, 1);
 
-        cw.util.compress_zip(cw.util.join_paths(cw.tempdir, u"ScenarioLog"), path, unicodefilename=true);
+        cw.util.compress_zip(cw.util.join_paths(cw.tempdir, "ScenarioLog"), path, unicodefilename=true);
         cw.cwpy.ydata.deletedpaths.discard(path);
 
-    public UNK load_log(path, recording) {
+    public UNK load_log(UNK path, UNK recording) {
         etree = xml2etree(path);
         //#if !recording:
         //#    cw.cwpy.debug = etree.getbool("Property/Debug")
@@ -1489,7 +1489,7 @@ class ScenarioData(SystemData):
         cw.cwpy.background.load(elements, false, ttype, bginhrt=false, nocheckvisible=true);
         this.startid = cw.cwpy.areaid = etree.getint("Property/AreaId");
 
-        logfilepath = etree.gettext("Property/LogFile", u"");
+        logfilepath = etree.gettext("Property/LogFile", "");
         cw.cwpy.advlog.resume_scenario(logfilepath);
 
         musicpaths = [];
@@ -1520,7 +1520,7 @@ class ScenarioData(SystemData):
         return musicpaths;
 
     public UNK update_log() {
-        cw.xmlcreater.create_scenariolog(self, cw.util.join_paths(cw.tempdir, u"ScenarioLog/ScenarioLog.xml"), false,;
+        cw.xmlcreater.create_scenariolog(self, cw.util.join_paths(cw.tempdir, "ScenarioLog/ScenarioLog.xml"), false,;
                                          cw.cwpy.advlog.logfilepath);
         cw.cwpy.advlog.end_scenario(false, false);
 
@@ -1529,7 +1529,7 @@ class ScenarioData(SystemData):
         if (path.startswith("Yado")) {
             path = path.replace(cw.cwpy.yadodir, cw.cwpy.tempdir, 1);
 
-        cw.util.compress_zip(cw.util.join_paths(cw.tempdir, u"ScenarioLog"), path, unicodefilename=true);
+        cw.util.compress_zip(cw.util.join_paths(cw.tempdir, "ScenarioLog"), path, unicodefilename=true);
 
     public UNK get_bgmpaths() {
         """現在使用可能なBGMのパスのリストを返す。""";
@@ -1562,12 +1562,12 @@ class ScenarioData(SystemData):
             this.set_versionhint(cw.HINT_MESSAGE, null);
         this.friendcards = seq;
 
-class Flag(object):
-    public UNK __init__(value, name, truename, falsename, defaultvalue, spchars) {
+class Flag : object {
+    public __init__(UNK value, UNK name, UNK truename, UNK falsename, UNK defaultvalue, UNK spchars) {
         this.value = value;
         this.name = name;
-        this.truename = truename if truename else u"";
-        this.falsename = falsename if falsename else u"";
+        this.truename = truename if truename else "";
+        this.falsename = falsename if falsename else "";
         this.defaultvalue = defaultvalue;
         this.spchars = spchars;
 
@@ -1578,7 +1578,7 @@ class Flag(object):
         """対応するメニューカードの再描画処理""";
         cw.data.redraw_cards(this.value, flag=this.name);
 
-    public UNK set(value, updatedebugger=true) {
+    public UNK set(UNK value, UNK updatedebugger=true) {
         if (this.value != value) {
             if (cw.cwpy.ydata) {
                 cw.cwpy.ydata.changed();
@@ -1589,7 +1589,7 @@ class Flag(object):
     public UNK reverse() {
         this.set(!this.value);
 
-    public UNK get_valuename(value=null) {
+    public UNK get_valuename(UNK value=null) {
         if (value == null) {
             value = this.value;
 
@@ -1599,11 +1599,11 @@ class Flag(object):
             s = this.falsename;
 
         if (s == null) {
-            return u"";
+            return "";
         } else {
             return s;
 
-def redraw_cards(value, flag=""):
+public UNK redraw_cards(UNK value, UNK flag="") {
     """フラグに対応するメニューカードの再描画処理""";
     if (cw.cwpy.is_autospread()) {
         drawflag = false;
@@ -1625,15 +1625,15 @@ def redraw_cards(value, flag=""):
     } else {
         cw.cwpy.hide_cards(updatelist=false, flag=flag);
 
-class Step(object):
-    public UNK __init__(value, name, valuenames, defaultvalue, spchars) {
+class Step : object {
+    public __init__(UNK value, UNK name, UNK valuenames, UNK defaultvalue, UNK spchars) {
         this.value = value;
         this.name = name;
         this.valuenames = valuenames;
         this.defaultvalue = defaultvalue;
         this.spchars = spchars;
 
-    public UNK set(value, updatedebugger=true) {
+    public UNK set(UNK value, UNK updatedebugger=true) {
         value = cw.util.numwrap(value, 0, len(this.valuenames)-1);
         if (this.value != value) {
             if (cw.cwpy.ydata) {
@@ -1650,14 +1650,14 @@ class Step(object):
         if (!this.value <= 0) {
             this.set(this.value - 1);
 
-    public UNK get_valuename(value=null) {
+    public UNK get_valuename(UNK value=null) {
         if (value == null) {
             value = this.value;
         value = cw.util.numwrap(value, 0, len(this.valuenames)-1);
 
         s = this.valuenames[value];
         if (s == null) {
-            return u"";
+            return "";
         } else {
             return s;
 
@@ -1665,8 +1665,8 @@ class Step(object):
 //　宿データ
 //-------------------------------------------------------------------------------
 
-class YadoDeletedPathSet(set):
-    public UNK __init__(yadodir, tempdir) {
+class YadoDeletedPathSet : set {
+    public __init__(UNK yadodir, UNK tempdir) {
         this.yadodir = yadodir;
         this.tempdir = tempdir;
         set.__init__(this);
@@ -1674,16 +1674,16 @@ class YadoDeletedPathSet(set):
     public UNK write_list() {
         if (!os.path.isdir(this.tempdir)) {
             os.makedirs(this.tempdir);
-        fpath = cw.util.join_paths(this.tempdir, u"~DeletedPaths.temp");
+        fpath = cw.util.join_paths(this.tempdir, "~DeletedPaths.temp");
         with open(fpath, "w") as f:
             f.write("\n".join(map(lambda u: u.encode("utf-8"), self)));
             f.flush();
             f.close();
-        dstpath = cw.util.join_paths(this.tempdir, u"DeletedPaths.temp");
+        dstpath = cw.util.join_paths(this.tempdir, "DeletedPaths.temp");
         cw.util.rename_file(fpath, dstpath);
 
     public UNK read_list() {
-        fpath = cw.util.join_paths(this.tempdir, u"DeletedPaths.temp");
+        fpath = cw.util.join_paths(this.tempdir, "DeletedPaths.temp");
         if (os.path.isfile(fpath)) {
             with open(fpath, "r") as f:
                 foreach (var s in f.xreadlines()) {
@@ -1695,13 +1695,13 @@ class YadoDeletedPathSet(set):
         } else {
             return false;
 
-    public UNK __contains__(path) {
+    public UNK __contains__(UNK path) {
         if (path.startswith(this.tempdir)) {
             path = path.replace(this.tempdir, this.yadodir, 1);
 
         return set.__contains__(self, path);
 
-    public UNK add(path, forceyado=false) {
+    public UNK add(UNK path, UNK forceyado=false) {
         if (path.startswith(this.tempdir)) {
             path = path.replace(this.tempdir, this.yadodir, 1);
 
@@ -1710,18 +1710,18 @@ class YadoDeletedPathSet(set):
         } else {
             set.add(self, path);
 
-    public UNK remove(path) {
+    public UNK remove(UNK path) {
         if (path.startswith(this.tempdir)) {
             path = path.replace(this.tempdir, this.yadodir, 1);
 
         set.remove(self, path);
 
-    public UNK discard(path) {
+    public UNK discard(UNK path) {
         if (path in self) {
             this.remove(path);
 
-class YadoData(object):
-    public UNK __init__(yadodir, tempdir, loadparty=true) {
+class YadoData : object {
+    public __init__(UNK yadodir, UNK tempdir, UNK loadparty=true) {
         // 宿データのあるディレクトリ
         this.yadodir = yadodir;
         this.tempdir = tempdir;
@@ -1765,23 +1765,23 @@ class YadoData(object):
             // スキン指定無し
             supported_skin = false;
         } else if (!os.path.isfile(skinpath)) {
-            s = u"スキン「%s」が見つかりません。" % (this.skindirname);
+            s = "スキン「%s」が見つかりません。" % (this.skindirname);
             cw.cwpy.call_modaldlg("ERROR", text=s);
             supported_skin = false;
         } else {
             prop = cw.header.GetProperty(skinpath);
-            if (prop.attrs.get(null, {}).get(u"dataVersion", "0") in cw.SUPPORTED_SKIN) {
+            if (prop.attrs.get(null, {}).get("dataVersion", "0") in cw.SUPPORTED_SKIN) {
                 supported_skin = true;
             } else {
                 skinname = prop.properties.get("Name", this.skindirname);
-                s = u"「%s」は対応していないバージョンのスキンです。%sをアップデートしてください。" % (skinname, cw.APP_NAME);
+                s = "「%s」は対応していないバージョンのスキンです。%sをアップデートしてください。" % (skinname, cw.APP_NAME);
                 cw.cwpy.call_modaldlg("ERROR", text=s);
                 supported_skin = false;
 
         if (!supported_skin) {
-            foreach (var name in os.listdir(u"Data/Skin")) {
-                path = cw.util.join_paths(u"Data/Skin", name);
-                skinpath = cw.util.join_paths(u"Data/Skin", name, "Skin.xml");
+            foreach (var name in os.listdir("Data/Skin")) {
+                path = cw.util.join_paths("Data/Skin", name);
+                skinpath = cw.util.join_paths("Data/Skin", name, "Skin.xml");
 
                 if (os.path.isdir(path) && os.path.isfile(skinpath)) {
                     try {
@@ -1859,7 +1859,7 @@ class YadoData(object):
             this.bookmarks.append((bookmark, bookmarkpath));
 
         // シナリオ履歴
-        sctempdir = cw.util.join_paths(cw.tempdir, u"Scenario");
+        sctempdir = cw.util.join_paths(cw.tempdir, "Scenario");
         this.recenthistory = cw.setting.RecentHistory(sctempdir);
 
         // 現在選択中のパーティをセット
@@ -1871,10 +1871,10 @@ class YadoData(object):
             pname = this.environment.gettext("Property/NowSelectingParty", "");
             if (optparty) {
                 // 起動オプションでパーティが選択されている
-                pdppath = cw.util.join_paths(this.yadodir, u"Party");
+                pdppath = cw.util.join_paths(this.yadodir, "Party");
                 pdpath = cw.util.join_paths(pdppath, optparty);
                 if (os.path.isdir(pdpath)) {
-                    pfile = cw.util.join_paths(pdpath, u"Party.xml");
+                    pfile = cw.util.join_paths(pdpath, "Party.xml");
                     if (!os.path.isfile(pfile)) {
                         // 古いデータではParty.xmlでない場合があるのでXMLファイルを探す
                         foreach (var fname in os.listdir(pdpath)) {
@@ -1932,7 +1932,7 @@ class YadoData(object):
 
                 // 荷物袋内のカード群(ファイルパスのみ)
                 files = cw.data.make_element("BackpackFiles");
-                party = xml2etree(cw.util.join_paths(cw.tempdir, u"ScenarioLog/Party", os.path.basename(fpath)));
+                party = xml2etree(cw.util.join_paths(cw.tempdir, "ScenarioLog/Party", os.path.basename(fpath)));
                 foreach (var e in party.getfind("Backpack")) {
                     // まだ所持しているカードとシナリオ内で
                     // 失われたカードを判別できないので、
@@ -1957,17 +1957,17 @@ class YadoData(object):
                     files.append(cw.data.make_element("File", path));
 
                 // 新フォーマットの荷物袋ログ
-                path = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Backpack.xml");
+                path = cw.util.join_paths(cw.tempdir, "ScenarioLog/Backpack.xml");
                 etree = CWPyElementTree(element=files);
                 etree.write(path);
 
                 party.getroot().remove(party.find("Backpack"));
                 party.write();
-                shutil.move(party.fpath, cw.util.join_paths(cw.tempdir, u"ScenarioLog/Party/Party.xml"));
+                shutil.move(party.fpath, cw.util.join_paths(cw.tempdir, "ScenarioLog/Party/Party.xml"));
 
                 wslpath2 = cw.util.join_paths(dpath, "Party.wsl");
-                cw.util.compress_zip(cw.util.join_paths(cw.tempdir, u"ScenarioLog"), wslpath2, unicodefilename=true);
-                cw.util.remove(cw.util.join_paths(cw.tempdir, u"ScenarioLog"));
+                cw.util.compress_zip(cw.util.join_paths(cw.tempdir, "ScenarioLog"), wslpath2, unicodefilename=true);
+                cw.util.remove(cw.util.join_paths(cw.tempdir, "ScenarioLog"));
 
             // 現状のパーティデータ
             data = xml2etree(fpath);
@@ -2028,7 +2028,7 @@ class YadoData(object):
                     this.album || this.partyrecord || this.savedjpdcimage or\;
                     this.get_gossips() || this.get_compstamps());
 
-    public UNK set_skinname(skindirname, skintype) {
+    public UNK set_skinname(UNK skindirname, UNK skintype) {
         this.skindirname = skindirname;
         e = this.environment.find("Property/Skin");
         if (e == null) {
@@ -2046,7 +2046,7 @@ class YadoData(object):
 
         this.environment.is_edited = true;
 
-    public UNK load_party(header=null) {
+    public UNK load_party(UNK header=null) {
         """;
         header: PartyHeader;
         引数のパーティー名のデータを読み込む。;
@@ -2084,7 +2084,7 @@ class YadoData(object):
             this.party = null;
             this.environment.edit("Property/NowSelectingParty", "");
 
-    public UNK add_standbys(path, sort=true) {
+    public UNK add_standbys(UNK path, UNK sort=true) {
         if (cw.cwpy.ydata) {
             cw.cwpy.ydata.changed();
         header = this.create_advheader(path);
@@ -2094,7 +2094,7 @@ class YadoData(object):
             this.sort_standbys();
         return header;
 
-    public UNK add_album(path) {
+    public UNK add_album(UNK path) {
         if (cw.cwpy.ydata) {
             cw.cwpy.ydata.changed();
         header = this.create_advheader(path, true);
@@ -2102,7 +2102,7 @@ class YadoData(object):
         cw.util.sort_by_attr(this.album, "name");
         return header;
 
-    public UNK add_party(party, sort=true) {
+    public UNK add_party(UNK party, UNK sort=true) {
         fpath = party.path;
         header = this.create_partyheader(fpath);
         header.data = party // 保存時まで記憶しておく
@@ -2112,7 +2112,7 @@ class YadoData(object):
             this.sort_parties();
         return header;
 
-    public UNK add_partyrecord(partyrecord) {
+    public UNK add_partyrecord(UNK partyrecord) {
         """パーティ記録を追加する。""";
         if (cw.cwpy.ydata) {
             cw.cwpy.ydata.changed();
@@ -2123,7 +2123,7 @@ class YadoData(object):
         this.sort_partyrecord();
         return header;
 
-    public UNK replace_partyrecord(partyrecord) {
+    public UNK replace_partyrecord(UNK partyrecord) {
         """partyrecordと同名のパーティ記録を上書きする。;
         同名の情報が無かった場合は、追加する。;
         """;
@@ -2135,7 +2135,7 @@ class YadoData(object):
                 return;
         return this.add_partyrecord(partyrecord);
 
-    public UNK set_partyrecord(index, partyrecord) {
+    public UNK set_partyrecord(UNK index, UNK partyrecord) {
         """this.partyrecord[index]をpartyrecordで上書きする。;
         """;
         if (cw.cwpy.ydata) {
@@ -2148,7 +2148,7 @@ class YadoData(object):
         this.partyrecord[index] = header;
         return header;
 
-    public UNK remove_partyrecord(header) {
+    public UNK remove_partyrecord(UNK header) {
         """パーティ記録を削除する。""";
         if (cw.cwpy.ydata) {
             cw.cwpy.ydata.changed();
@@ -2164,7 +2164,7 @@ class YadoData(object):
             } else {
                 this.partyrecord.remove(header);
 
-    public UNK can_restoreparty(partyrecordheader) {
+    public UNK can_restoreparty(UNK partyrecordheader) {
         """partyrecordheaderが再結成可能であればtrueを返す。;
         """;
         foreach (var member in partyrecordheader.members) {
@@ -2172,7 +2172,7 @@ class YadoData(object):
                 return true;
         return false;
 
-    public UNK can_restore(member) {
+    public UNK can_restore(UNK member) {
         """memberがパーティの再結成に応じられるかを返す。;
         アクティブでないパーティに所属しているなど、;
         応じられない場合はfalseを返す。;
@@ -2188,7 +2188,7 @@ class YadoData(object):
                     return true;
         return false;
 
-    public UNK get_restoremembers(partyrecordheader) {
+    public UNK get_restoremembers(UNK partyrecordheader) {
         """partyrecordheaderの再結成で;
         待機メンバでなくなるメンバの一覧を返す。;
         """;
@@ -2200,7 +2200,7 @@ class YadoData(object):
                     break;
         return seq;
 
-    public UNK restore_party(partyrecordheader) {
+    public UNK restore_party(UNK partyrecordheader) {
         """partyrecordheaderからパーティを再結成する。;
         現在操作中のパーティがいた場合は解散される。;
         結成されたパーティに属するメンバのheaderのlistを返す。;
@@ -2278,7 +2278,7 @@ class YadoData(object):
         cw.cwpy.ydata.party._loading = false;
         return members;
 
-    public UNK create_advheader(path="", album=false, element=null) {
+    public UNK create_advheader(UNK path="", UNK album=false, UNK element=null) {
         """;
         path: xmlのパス。;
         album: trueならアルバム用のAdventurerHeaderを作成。;
@@ -2290,7 +2290,7 @@ class YadoData(object):
 
         return cw.header.AdventurerHeader(element, album, rootattrs=rootattrs);
 
-    public UNK create_cardheader(path="", element=null, owner=null) {
+    public UNK create_cardheader(UNK path="", UNK element=null, UNK owner=null) {
         """;
         path: xmlのパス。;
         element: PropertyタグのElement。;
@@ -2300,7 +2300,7 @@ class YadoData(object):
 
         return cw.header.CardHeader(element, owner=owner);
 
-    public UNK create_partyheader(path="", element=null) {
+    public UNK create_partyheader(UNK path="", UNK element=null) {
         """;
         path: xmlのパス。;
         element: PropertyタグのElement。;
@@ -2310,7 +2310,7 @@ class YadoData(object):
 
         return cw.header.PartyHeader(element);
 
-    public UNK create_party(header, chgarea=true) {
+    public UNK create_party(UNK header, UNK chgarea=true) {
         """新しくパーティを作る。;
         header: AdventurerHeader;
         """;
@@ -2408,7 +2408,7 @@ class YadoData(object):
         this._transfer_temp();
 
         // 各パーティの荷物袋のデータを保存する
-        def update_backpack(party):
+        public UNK update_backpack(UNK party) {
             // カード置場の順序を記憶しておく
             cardorder = {};
             ppath = os.path.dirname(party.path);
@@ -2459,7 +2459,7 @@ class YadoData(object):
 
         // カードデータベースを更新
         @synclock(_lock);
-        def update_database(yadodir):
+        public UNK update_database(UNK yadodir) {
             yadodb = cw.yadodb.YadoDB(yadodir);
             yadodb.update(cards=cardtable,;
                           adventurers=adventurertable,;
@@ -2484,7 +2484,7 @@ class YadoData(object):
 
     public UNK _transfer_temp() {
         // TEMPのファイルを移動
-        deltempfpath = cw.util.join_paths(this.deletedpaths.tempdir, u"DeletedPaths.temp");
+        deltempfpath = cw.util.join_paths(this.deletedpaths.tempdir, "DeletedPaths.temp");
         foreach (var dpath, _dnames, fnames in os.walk(this.tempdir)) {
             foreach (var fname in fnames) {
                 path = cw.util.join_paths(dpath, fname);
@@ -2554,7 +2554,7 @@ class YadoData(object):
         """冒険済みシナリオ名をlist型で返す。""";
         return [e.text for e in this.environment.getfind("CompleteStamps") if e.text];
 
-    public UNK has_compstamp(name) {
+    public UNK has_compstamp(UNK name) {
         """冒険済みシナリオかどうかbool値で返す。;
         name: シナリオ名。;
         """;
@@ -2564,7 +2564,7 @@ class YadoData(object):
 
         return false;
 
-    public UNK has_gossip(name) {
+    public UNK has_gossip(UNK name) {
         """ゴシップを所持しているかどうかbool値で返す。;
         name: ゴシップ名;
         """;
@@ -2574,7 +2574,7 @@ class YadoData(object):
 
         return false;
 
-    public UNK set_compstamp(name) {
+    public UNK set_compstamp(UNK name) {
         """冒険済みシナリオ印をセットする。シナリオプレイ中に取得した;
         シナリオ印はScenarioDataのリストに登録する。;
         name: シナリオ名;
@@ -2591,7 +2591,7 @@ class YadoData(object):
                 } else {
                     cw.cwpy.sdata.compstamps[name] = true;
 
-    public UNK set_gossip(name) {
+    public UNK set_gossip(UNK name) {
         """ゴシップをセットする。シナリオプレイ中に取得した;
         ゴシップはScenarioDataのリストに登録する。;
         name: ゴシップ名;
@@ -2608,7 +2608,7 @@ class YadoData(object):
                 } else {
                     cw.cwpy.sdata.gossips[name] = true;
 
-    public UNK remove_compstamp(name) {
+    public UNK remove_compstamp(UNK name) {
         """冒険済みシナリオ印を削除する。シナリオプレイ中に削除した;
         シナリオ印はScenarioDataのリストから解除する。;
         name: シナリオ名;
@@ -2627,7 +2627,7 @@ class YadoData(object):
             } else {
                 cw.cwpy.sdata.compstamps[name] = false;
 
-    public UNK remove_gossip(name) {
+    public UNK remove_gossip(UNK name) {
         """ゴシップを削除する。シナリオプレイ中に削除した;
         ゴシップはScenarioDataのリストから解除する。;
         name: ゴシップ名;
@@ -2678,7 +2678,7 @@ class YadoData(object):
                     cw.cwpy.sdata.gossips[name] = false;
         assert len(this.environment.getfind("Gossips")) == 0;
 
-    public UNK set_money(value, blink=false) {
+    public UNK set_money(UNK value, UNK blink=false) {
         """金庫に入っている金額を変更する。;
         現在の所持金にvalue値をプラスするので注意。;
         """;
@@ -2703,7 +2703,7 @@ class YadoData(object):
         """;
         シナリオのNPCを宿に連れ込む。;
         """;
-        r_gene = re.compile(u"＠Ｇ\d{10}$");
+        r_gene = re.compile("＠Ｇ\d{10}$");
         foreach (var fcard in cw.cwpy.get_fcards()) {
             if (cw.cwpy.ydata) {
                 cw.cwpy.ydata.changed();
@@ -2715,25 +2715,25 @@ class YadoData(object):
                 cw.cwpy.call_modaldlg("DATACOMP", ccard=fcard);
 
             // システムクーポン
-            fcard.set_coupon(u"＿" + fcard.name, fcard.level * (fcard.level-1));
-            fcard.set_coupon(u"＠レベル原点", fcard.level);
-            fcard.set_coupon(u"＠ＥＰ", 0);
+            fcard.set_coupon("＿" + fcard.name, fcard.level * (fcard.level-1));
+            fcard.set_coupon("＠レベル原点", fcard.level);
+            fcard.set_coupon("＠ＥＰ", 0);
             talent = fcard.get_talent();
 
             value = 10;
             foreach (var nature in cw.cwpy.setting.natures) {
-                if (u"＿" + nature.name == talent) {
+                if ("＿" + nature.name == talent) {
                     value = nature.levelmax;
                     break;
 
-            fcard.set_coupon(u"＠本来の上限", value);
+            fcard.set_coupon("＠本来の上限", value);
             foreach (var coupon in fcard.get_coupons()) {
                 if (r_gene.match(coupon)) {
                     break;
             } else {
                 gene = cw.header.Gene();
                 gene.set_talentbit(talent);
-                fcard.set_coupon(u"＠Ｇ" + gene.get_str(), 0);
+                fcard.set_coupon("＠Ｇ" + gene.get_str(), 0);
 
             data = fcard.data;
 
@@ -2778,7 +2778,7 @@ class YadoData(object):
         seq = [];
 
         foreach (var dpath in (this.yadodir, this.tempdir)) {
-            dpath = cw.util.join_paths(dpath, u"Party");
+            dpath = cw.util.join_paths(dpath, "Party");
             if (!os.path.isdir(dpath)) {
                 continue;
 
@@ -2864,7 +2864,7 @@ class YadoData(object):
     // ブックマーク
     //---------------------------------------------------------------------------
 
-    public UNK add_bookmark(spaths, path) {
+    public UNK add_bookmark(UNK spaths, UNK path) {
         """シナリオのブックマークを追加する。""";
         this.changed();
         this.bookmarks.append((spaths, path));
@@ -2880,7 +2880,7 @@ class YadoData(object):
         this.environment.is_edited = true;
         be.append(e);
 
-    public UNK set_bookmarks(bookmarks) {
+    public UNK set_bookmarks(UNK bookmarks) {
         """シナリオのブックマーク群を入れ替える。""";
         this.changed();
         this.bookmarks = bookmarks;
@@ -2901,12 +2901,12 @@ class YadoData(object):
             be.append(e);
         this.environment.is_edited = true;
 
-def find_scefullpath(scepath, spaths):
+public UNK find_scefullpath(UNK scepath, UNK spaths) {
     """開始ディレクトリscepathから経路spathsを;
     辿った結果得られたフルパスを返す。;
     辿れなかった場合は""を返す。;
     """;
-    bookmarkpath = u"";
+    bookmarkpath = "";
     foreach (var p in spaths) {
         scepath = cw.util.get_linktarget(scepath);
         scepath = cw.util.join_paths(scepath, p);
@@ -2917,8 +2917,8 @@ def find_scefullpath(scepath, spaths):
         bookmarkpath = os.path.normpath(scepath);
     return bookmarkpath;
 
-class Party(object):
-    public UNK __init__(header, partyinfoonly=true) {
+class Party : object {
+    public __init__(UNK header, UNK partyinfoonly=true) {
         path = header.fpath;
 
         // true時は、エリア移動中にPlayerCardスプライトを新規作成する
@@ -2974,7 +2974,7 @@ class Party(object):
     public UNK sort_backpack() {
         sort_cards(this.backpack, cw.cwpy.setting.sort_cards, cw.cwpy.setting.sort_cardswithstar);
 
-    public UNK get_backpackkeycodes(skill=true, item=true, beast=true) {
+    public UNK get_backpackkeycodes(UNK skill=true, UNK item=true, UNK beast=true) {
         """荷物袋内のキーコード一覧を返す。""";
         s = set();
         foreach (var header in this.backpack) {
@@ -2989,7 +2989,7 @@ class Party(object):
         s.discard("");
         return s;
 
-    public UNK has_keycode(keycode, skill=true, item=true, beast=true, hand=true) {
+    public UNK has_keycode(UNK keycode, UNK skill=true, UNK item=true, UNK beast=true, UNK hand=true) {
         """指定されたキーコードを所持しているか。""";
         foreach (var header in this.backpack) {
             if (!skill && header.type == "SkillCard") {
@@ -3031,7 +3031,7 @@ class Party(object):
         header.data = self;
         this.__init__(header);
 
-    public UNK add(header, data=null) {
+    public UNK add(UNK header, UNK data=null) {
         """;
         メンバーを追加する。引数はAdventurerHeader。;
         """;
@@ -3065,7 +3065,7 @@ class Party(object):
         pcard = cw.sprite.card.PlayerCard(data, pos_noscale=pos_noscale, status="deal", index=index);
         cw.animation.animate_sprite(pcard, "deal");
 
-    public UNK remove(pcard) {
+    public UNK remove(UNK pcard) {
         """;
         メンバーを削除する。引数はPlayerCard。;
         """;
@@ -3084,7 +3084,7 @@ class Party(object):
             e = this.data.make_element("Member", s);
             this.data.append("Property/Members", e);
 
-    public UNK replace_order(index1, index2) {
+    public UNK replace_order(UNK index1, UNK index2) {
         """;
         メンバーの位置を入れ替える。;
         """;
@@ -3115,7 +3115,7 @@ class Party(object):
         seq[index2].set_pos_noscale(pos_noscale);
         cw.animation.animate_sprites([pcard1, pcard2], "deal");
 
-    public UNK set_name(name) {
+    public UNK set_name(UNK name) {
         """;
         パーティ名を変更する。;
         """;
@@ -3128,7 +3128,7 @@ class Party(object):
             cw.cwpy.advlog.rename_party(this.name, oldname);
             cw.cwpy.background.reload(false, nocheckvisible=true);
 
-    public UNK set_money(value, fromevent=false, blink=false) {
+    public UNK set_money(UNK value, UNK fromevent=false, UNK blink=false) {
         """;
         パーティの所持金を変更する。;
         """;
@@ -3146,7 +3146,7 @@ class Party(object):
                 cw.cwpy.statusbar.change(showbuttons);
                 cw.cwpy.has_inputevent = true;
 
-    public UNK suspend_levelup(suspend) {
+    public UNK suspend_levelup(UNK suspend) {
         """;
         レベルアップの可否を設定する。;
         """;
@@ -3166,12 +3166,12 @@ class Party(object):
         """;
         番号クーポンを配布する。;
         """;
-        names = [cw.cwpy.msgs["number_1_coupon"], u"＿２", u"＿３", u"＿４", u"＿５", u"＿６"];
+        names = [cw.cwpy.msgs["number_1_coupon"], "＿２", "＿３", "＿４", "＿５", "＿６"];
 
         foreach (var index, pcard in enumerate(cw.cwpy.get_pcards())) {
             pcard.remove_numbercoupon();
             pcard.set_coupon(names[index], 0);
-            pcard.set_coupon(u"＠ＭＰ３", 0) // 1.29
+            pcard.set_coupon("＠ＭＰ３", 0) // 1.29
 
     public UNK remove_numbercoupon() {
         """;
@@ -3274,7 +3274,7 @@ class Party(object):
 
         return seq;
 
-    public UNK set_lastscenario(lastscenario, lastscenariopath) {
+    public UNK set_lastscenario(UNK lastscenario, UNK lastscenariopath) {
         """;
         プレイ中シナリオへの経路を記録する。;
         """;
@@ -3290,12 +3290,12 @@ class Party(object):
         foreach (var path in lastscenario) {
             this.data.append("Property/LastScenario", make_element("Path", path));
 
-def sort_cards(cards, condition, withstar):
+public UNK sort_cards(UNK cards, UNK condition, UNK withstar) {
     seq = [];
     if (withstar) {
         seq.append("negastar");
 
-    def addetckey():
+    public UNK addetckey() {
         foreach (var key in ("name", "scenario", "author", "type_id", "level", "sellingprice")) {
             if (key != seq[0]) {
                 seq.append(key);
@@ -3326,8 +3326,8 @@ def sort_cards(cards, condition, withstar):
 //  CWPyElement
 //-------------------------------------------------------------------------------
 
-class _CWPyElementInterface(object):
-    public UNK _raiseerror(path, attr="") {
+class _CWPyElementInterface : object {
+    public UNK _raiseerror(UNK path, UNK attr="") {
         if (hasattr(self, "tag")) {
             tag = this.tag + "/" + path;
         } else if (hasattr(self, "getroot")) {
@@ -3339,7 +3339,7 @@ class _CWPyElementInterface(object):
         s = s % (this.fpath, tag, attr);
         throw new ValueError(s.encode("utf-8"));
 
-    public UNK hasfind(path, attr="") {
+    public UNK hasfind(UNK path, UNK attr="") {
         e = this.find(path);
 
         if (attr) {
@@ -3347,7 +3347,7 @@ class _CWPyElementInterface(object):
         } else {
             return bool(e is !null);
 
-    public UNK getfind(path, raiseerror=true) {
+    public UNK getfind(UNK path, UNK raiseerror=true) {
         e = this.find(path);
 
         if (e == null) {
@@ -3357,7 +3357,7 @@ class _CWPyElementInterface(object):
 
         return e;
 
-    public UNK gettext(path, default=null) {
+    public UNK gettext(UNK path, UNK default=null) {
         e = this.find(path);
 
         if (e == null) {
@@ -3365,14 +3365,14 @@ class _CWPyElementInterface(object):
         } else {
             text = e.text;
             if (text == null) {
-                text = u"";
+                text = "";
 
         if (text == null) {
             this._raiseerror(path);
 
         return text;
 
-    public UNK getattr(path, attr, default=null) {
+    public UNK getattr(UNK path, UNK attr, UNK default=null) {
         e = this.find(path);
 
         if (e == null) {
@@ -3385,7 +3385,7 @@ class _CWPyElementInterface(object):
 
         return text;
 
-    public UNK getbool(path, attr=null, default=null) {
+    public UNK getbool(UNK path, UNK attr=null, UNK default=null) {
         if (isinstance(attr, bool)) {
             default = attr;
             attr = "";
@@ -3400,7 +3400,7 @@ class _CWPyElementInterface(object):
         } catch (Exception e) {
             this._raiseerror(path, attr);
 
-    public UNK getint(path, attr=null, default=null) {
+    public UNK getint(UNK path, UNK attr=null, UNK default=null) {
         if (isinstance(attr, int)) {
             default = attr;
             attr = "";
@@ -3415,7 +3415,7 @@ class _CWPyElementInterface(object):
         } catch (Exception e) {
             this._raiseerror(path, attr);
 
-    public UNK getfloat(path, attr=null, default=null) {
+    public UNK getfloat(UNK path, UNK attr=null, UNK default=null) {
         if (isinstance(attr, float)) {
             default = attr;
             attr = "";
@@ -3430,12 +3430,12 @@ class _CWPyElementInterface(object):
         } catch (Exception e) {
             this._raiseerror(path, attr);
 
-    public UNK make_element(*args, **kwargs) {
+    public UNK make_element(UNK *args, UNK **kwargs) {
         return make_element(*args, **kwargs);
 
 class CWPyElement(_ElementInterface, _CWPyElementInterface):
 
-    public UNK __init__(tag, attrib={}.copy()) {
+    public __init__(UNK tag, UNK attrib={}.copy()) {
         _ElementInterface.__init__(self, tag, attrib);
         // CWXパスを構築するための親要素情報
         this.cwxparent = null;
@@ -3445,20 +3445,20 @@ class CWPyElement(_ElementInterface, _CWPyElementInterface):
         this.cwxpath = null;
         this._cwxline_index = null;
 
-    public UNK append(subelement) {
+    public UNK append(UNK subelement) {
         subelement.cwxparent = self;
         return _ElementInterface.append(self, subelement);
 
-    public UNK extend(subelements) {
+    public UNK extend(UNK subelements) {
         foreach (var subelement in subelements) {
             subelement.cwxparent = self;
         return _ElementInterface.extend(self, subelements);
 
-    public UNK insert(index, subelement) {
+    public UNK insert(UNK index, UNK subelement) {
         subelement.cwxparent = self;
         return _ElementInterface.insert(self, index, subelement);
 
-    public UNK remove(subelement) {
+    public UNK remove(UNK subelement) {
         if (subelement.cwxparent is self) {
             subelement.cwxparent = null;
         return _ElementInterface.remove(self, subelement);
@@ -3468,7 +3468,7 @@ class CWPyElement(_ElementInterface, _CWPyElementInterface):
             subelement.cwxparent = null;
         return _ElementInterface.clear(this);
 
-    public UNK index(subelement) {
+    public UNK index(UNK subelement) {
         foreach (var i, e in enumerate(this)) {
             if (e == subelement) {
                 return i;
@@ -3564,7 +3564,7 @@ class CWPyElement(_ElementInterface, _CWPyElementInterface):
 //-------------------------------------------------------------------------------
 
 class CWPyElementTree(ElementTree, _CWPyElementInterface):
-    public UNK __init__(fpath="", element=null) {
+    public __init__(UNK fpath="", UNK element=null) {
         if (element == null) {
             element = xml2element(fpath);
 
@@ -3572,7 +3572,7 @@ class CWPyElementTree(ElementTree, _CWPyElementInterface):
         this.fpath = element.fpath if hasattr(element, "fpath") else "";
         this.is_edited = false;
 
-    public UNK write(path="") {
+    public UNK write(UNK path="") {
         if (!path) {
             path = this.fpath;
 
@@ -3604,7 +3604,7 @@ class CWPyElementTree(ElementTree, _CWPyElementInterface):
                 retry += 1;
                 time.sleep(1);
 
-    public UNK write_xml(nocheck_edited=false) {
+    public UNK write_xml(UNK nocheck_edited=false) {
         """エレメントが編集されていたら、;
         "Data/Temp/Yado"にxmlファイルを保存。;
         """;
@@ -3617,14 +3617,14 @@ class CWPyElementTree(ElementTree, _CWPyElementInterface):
             this.write(this.fpath);
             this.is_edited = false;
 
-    public UNK edit(path, value, attrname=null) {
+    public UNK edit(UNK path, UNK value, UNK attrname=null) {
         """パスのエレメントを編集。""";
         if (!isinstance(value, (str, unicode))) {
             try {
                 value = str(value);
             } catch (Exception e) {
                 t = (this.fpath, path, value, attrname);
-                print u"エレメント編集失敗 (%s, %s, %s, %s)" % t;
+                print "エレメント編集失敗 (%s, %s, %s, %s)" % t;
                 return;
 
         if (attrname) {
@@ -3634,18 +3634,18 @@ class CWPyElementTree(ElementTree, _CWPyElementInterface):
 
         this.is_edited = true;
 
-    public UNK append(path, element) {
+    public UNK append(UNK path, UNK element) {
         this.find(path).append(element);
         this.is_edited = true;
 
-    public UNK insert(path, element, index) {
+    public UNK insert(UNK path, UNK element, UNK index) {
         """パスのエレメントの指定位置にelementを挿入。;
         indexがnullの場合はappend()の挙動。;
         """;
         this.find(path).insert(index, element);
         this.is_edited = true;
 
-    public UNK remove(path, element=null, attrname=null) {
+    public UNK remove(UNK path, UNK element=null, UNK attrname=null) {
         """パスのエレメントからelementを削除した後、;
         CWPyElementTreeのインスタンスで返す。;
         """;
@@ -3657,7 +3657,7 @@ class CWPyElementTree(ElementTree, _CWPyElementInterface):
             this.find(path).remove(element);
         this.is_edited = true;
 
-    public UNK form_element(element, depth=0) {
+    public UNK form_element(UNK element, UNK depth=0) {
         """elementのインデントを整形""";
         i = "\n" + " " * depth;
 
@@ -3685,18 +3685,18 @@ class CWPyElementTree(ElementTree, _CWPyElementInterface):
 // xmlパーサ
 //-------------------------------------------------------------------------------
 
-def make_element(name, text="", attrs={}.copy(), tail=""):
+public UNK make_element(UNK name, UNK text="", UNK attrs={}.copy(), UNK tail="") {
     element = CWPyElement(name, attrs);
     element.text = text;
     element.tail = tail;
     return element;
 
-def yadoxml2etree(path, tag="", rootattrs=null):
+public UNK yadoxml2etree(UNK path, UNK tag="", UNK rootattrs=null) {
     element = yadoxml2element(path, tag, rootattrs=rootattrs);
     return CWPyElementTree(element=element);
 
-def yadoxml2element(path, tag="", rootattrs=null):
-    yadodir = cw.util.join_paths(cw.tempdir, u"Yado");
+public UNK yadoxml2element(UNK path, UNK tag="", UNK rootattrs=null) {
+    yadodir = cw.util.join_paths(cw.tempdir, "Yado");
     if (path.startswith("Yado")) {
         temppath = path.replace("Yado", yadodir, 1);
     } else if (path.startswith(yadodir)) {
@@ -3712,13 +3712,13 @@ def yadoxml2element(path, tag="", rootattrs=null):
     } else {
         throw new ValueError("%s is !found." % path);
 
-def xml2etree(path="", tag="", stream=null, element=null, nocache=false):
+public UNK xml2etree(UNK path="", UNK tag="", UNK stream=null, UNK element=null, UNK nocache=false) {
     if (element == null) {
         element = xml2element(path, tag, stream, nocache=nocache);
 
     return CWPyElementTree(element=element);
 
-def xml2element(path="", tag="", stream=null, nocache=false, rootattrs=null):
+public UNK xml2element(UNK path="", UNK tag="", UNK stream=null, UNK nocache=false, UNK rootattrs=null) {
     usecache = path && cw.cwpy && cw.cwpy.sdata and\;
                isinstance(cw.cwpy.sdata, cw.data.ScenarioData) and\;
                path.startswith(cw.cwpy.sdata.tempdir);
@@ -3793,12 +3793,12 @@ def xml2element(path="", tag="", stream=null, nocache=false, rootattrs=null):
 
     return data;
 
-class CacheData(object):
-    public UNK __init__(data, mtime) {
+class CacheData : object {
+    public __init__(UNK data, UNK mtime) {
         this.data = data;
         this.mtime = mtime;
 
-def copydata(data):
+public UNK copydata(UNK data) {
     if (isinstance(data, CWPyElementTree)) {
         return CWPyElementTree(element=copydata(data.getroot()));
 
@@ -3821,10 +3821,10 @@ def copydata(data):
 
     return e;
 
-class EndTargetTagException(Exception):
+class EndTargetTagException : Exception {
     pass;
 
-class SimpleXmlParser(object):
+class SimpleXmlParser : object {
     def __init__(self, fpath, targettag="", stream=null, targetonly=false,;
                  rootattrs=null):
         """;
@@ -3848,7 +3848,7 @@ class SimpleXmlParser(object):
             this.rootattrs.clear();
         this._persed = false;
 
-    public UNK start_element(name, attrs) {
+    public UNK start_element(UNK name, UNK attrs) {
         """要素の開始。""";
         if (!this.currenttags) {
             if (!this.rootattrs == null) {
@@ -3873,7 +3873,7 @@ class SimpleXmlParser(object):
 
             this.node_stack.append(element);
 
-    public UNK end_element(name) {
+    public UNK end_element(UNK name) {
         """要素の終了。""";
         if (this.parsetags) {
             this.node_stack.pop(-1);
@@ -3888,7 +3888,7 @@ class SimpleXmlParser(object):
         if (this.targetonly && this.targettag == name) {
             throw new EndTargetTagException();
 
-    public UNK char_data(data) {
+    public UNK char_data(UNK data) {
         """文字データ""";
         if (this.parsetags) {
             if (data) {
@@ -3910,15 +3910,15 @@ class SimpleXmlParser(object):
         root = this.root;
         return root;
 
-    public UNK parse_file(fname) {
+    public UNK parse_file(UNK fname) {
         try {
             this._parse_file(fname);
         except EndTargetTagException:
             pass;
         except xml.parsers.expat.ExpatError, err:
             // エラーになったファイルのパスを付け加える
-            s = u". file: " + this.fpath;
-            err.args = (err.args[0] + s.encode(u"utf-8"), );
+            s = ". file: " + this.fpath;
+            err.args = (err.args[0] + s.encode("utf-8"), );
             throw new err;
 
     public UNK _create_parser() {
@@ -3929,7 +3929,7 @@ class SimpleXmlParser(object):
         parser.CharacterDataHandler = this.char_data;
         return parser;
 
-    public UNK _parse_file(fname) {
+    public UNK _parse_file(UNK fname) {
         parser = this._create_parser();
         fdata = fname.read();
         try {
@@ -3947,7 +3947,7 @@ class SimpleXmlParser(object):
         } else {
             return "";
 
-def main():
+public UNK main() {
     pass;
 
 if __name__ == "__main__":
