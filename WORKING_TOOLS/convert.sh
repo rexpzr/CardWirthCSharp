@@ -1,4 +1,5 @@
 #!/bin/sh
+
 perl -pi -e 's@\r\n?@\n@' $1
 perl -pi -e 's@^//@@' $1
 perl -pi -e 's@$@;@' $1
@@ -10,23 +11,25 @@ perl -pi -e 's@(\W)self\.@$1this.@g' $1
 perl -pi -e 's@^class ([^: ]+?)\(([^: ]+?)\):$@class $1 : $2 {@' $1
 perl -pi -e 's@^class ([^: ]+?):$@class $1 {@' $1
 
-perl -pi -e 's/(^| )def (\S+?)\((.+?)\):$/$1public UNK $2(XabcX$3XabcX) {/' $1
+#関数の書き換え
+
+perl -pi -e 's/(^| )def __init__\(self\):$/$1public __init__() {/' $1
+perl -pi -e 's/(^| )def (\S+?)\(self\):$/$1public UNK $2() {/' $1
+
+perl -pi -e 's/(^| )def __init__\(self, ?(.*?)\):$/$1public __init__(XabcX$2XabcX) {/' $1
+perl -pi -e 's/(^| )def (\S+?)\((self, )?(.*?)\):$/$1public UNK $2(XabcX$4XabcX) {/' $1
 
 for i in `seq 1 20`; do
   perl -pi -e 's/XabcX([^,]+?), /UNK $1, XabcX/' $1
 done
 
+perl -pi -e 's/XabcXXabcX//' $1
 perl -pi -e 's/XabcX(.+?)XabcX/UNK $1/' $1
 
 
-perl -pi -e 's@ def (\S+?)\(self\):$@ public UNK $1() {@' $1
-perl -pi -e 's@(^| )def (\S+?)\(\):$@$1public UNK $2() {@' $1
 
 
-
-perl -pi -e 's@ public UNK __init__@ public __init__@' $1
-
-
+perl -pi -e 's@([^a-zA-Z0-9_])u"@$1"@g' $1
 
 perl -pi -e 's@ if (.+):$@ if ($1) {@' $1
 perl -pi -e 's@ else:$@ } else {@' $1
