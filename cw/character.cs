@@ -208,20 +208,25 @@ class Character
         // クーポン一覧
         this.coupons = {};
 
-        // for e in this.data.getfind("Property/Coupons"):
-        //     if not e.text:
-        //         continue
+        foreach (var e in this.data.getfind("Property/Coupons")) {
+            if (!e.text){
+                continue;
+            }
 
-        //     if e.text in (u"＠効果対象", u"イベント対象", u"使用者"):
-        //         // 効果・イベント対象に付与されるシステムクーポン(Wsn.2)
-        //         continue
+            if (e.text in (u"＠効果対象", u"イベント対象", u"使用者")) {
+                // 効果・イベント対象に付与されるシステムクーポン(Wsn.2)
+                continue;
+            }
 
-        //     try:
-        //         this.coupons[e.text] = int(e.get("value")), e
-        //     except:
-        //         this.coupons[e.text] = 0, e
-        //     if e.text == u"：Ｒ":
-        //         this.reversed = True
+            try {
+                this.coupons[e.text] = int(e.get("value")), e
+            }
+            catch (Exception e) {
+                this.coupons[e.text] = 0, e;
+            }
+            if (e.text == "：Ｒ"){
+                this.reversed = true;
+            }
 
         // 時限クーポンのデータのリスト(name, flag_countable)
         this.timedcoupons = this.get_timedcoupons();
@@ -284,7 +289,7 @@ class Character
                     fpath = info.path;
                     fname = os.path.basename(fpath);
                     fpath2 = cw.util.join_yadodir(fpath);
-                    if (os.path.isfile(fpath2));
+                    if (os.path.isfile(fpath2))
                     {
                         cw.sprite.message.store_messagelogimage(fpath2, can_loaded_scaledimage);
                     }
@@ -292,7 +297,7 @@ class Character
                 // F9のためにシナリオ突入時の画像の記録を取る
                 name = os.path.splitext(os.path.basename(this.data.fpath))[0];
                 log = cw.util.join_paths(cw.tempdir, u"ScenarioLog/Face/Log.xml");
-                if (os.path.isfile(log));
+                if (os.path.isfile(log))
                 {
                     etree = cw.data.xml2etree(log);
                 }else{
@@ -568,8 +573,8 @@ class Character
         return tuple(cardpocket);
     }
 
-    public UNK get_keycodes(bool skill=true, bool item=true, bool beast=true)) {
-        """所持カードのキーコード一覧を返す。"""
+    public UNK get_keycodes(bool skill=true, bool item=true, bool beast=true) {
+        // """所持カードのキーコード一覧を返す。"""
         s = set(); //TODO
         List<UNK> seq = new List<UNK>(); //TODO
         if (skill) {
@@ -590,8 +595,8 @@ class Character
         return s;
     }
 
-    public bool has_keycode(UNK keycode, bool skill=true, bool item=true, bool beast=true, bool hand=true)) {
-        """指定されたキーコードを所持しているか。"""
+    public bool has_keycode(UNK keycode, bool skill=true, bool item=true, bool beast=true, bool hand=true) {
+        // """指定されたキーコードを所持しているか。"""
         if (hand && this.deck) {
             // 戦闘時の手札(Wsn.2);
             foreach(var header in this.deck.get_hand(self)) {
@@ -625,7 +630,7 @@ class Character
         return false;
     }
 
-   public virtual UNK lost(){
+   public virtual UNK lost() {
        // """
        // 対象消去やゲームオーバー時に呼ばれる。
        // Playerクラスでオーバーライト。
@@ -783,39 +788,44 @@ class Character
         // """
         return (bool)this.life < this.maxlife;
     }
-//
-//    def is_inactive(self, check_reversed=True):
-//        """
-//        行動不可状態かどうかをbool値で返す
-//        """
-//        b = self.is_sleep()
-//        b |= self.is_paralyze()
-//        b |= self.is_bind()
-//        b |= self.is_unconscious()
-//        if check_reversed:
-//            b |= self.is_reversed()
-//        return b
-//
-//    def is_active(self):
-//        """
-//        行動可能状態かどうかをbool値で返す
-//        """
-//        return not self.is_inactive()
-//
-//    def is_dead(self):
-//        """
-//        非生存状態かどうかをbool値で返す
-//        """
-//        b = self.is_paralyze()
-//        b |= self.is_unconscious()
-//        b |= self.is_reversed()
-//        return b
-//
-//    def is_alive(self):
-//        """
-//        生存状態かどうかをbool値で返す
-//        """
-//        return not self.is_dead()
+
+    public bool is_inactive(bool check_reversed=true) {
+        // """
+        // 行動不可状態かどうかをbool値で返す
+        // """
+        b = this.is_sleep();
+        b |= this.is_paralyze();
+        b |= this.is_bind();
+        b |= this.is_unconscious();
+        if (check_reversed) {
+            b |= this.is_reversed();
+        }
+        return b;
+    }
+
+    public bool is_active() {
+        // """
+        // 行動可能状態かどうかをbool値で返す
+        // """
+        return !this.is_inactive();
+    }
+
+    public bool is_dead() {
+        // """
+        // 非生存状態かどうかをbool値で返す
+        // """
+        b = this.is_paralyze();
+        b |= this.is_unconscious();
+        b |= this.is_reversed();
+        return b;
+    }
+
+    public bool is_alive() {
+        // """
+        // 生存状態かどうかをbool値で返す
+        // """
+        return !this.is_dead();
+    }
 
     public UNK is_fine()
     {
@@ -852,19 +862,20 @@ class Character
             return this.is_active();
         }
     }
-//    def is_resistable(self, use_enhance=True):
-//        """
-//        抵抗判定可能かどうかbool値で返す。
-//        呪縛状態でも抵抗できる。
-//        """
-//        b = self.is_sleep()
-//        b |= self.is_paralyze()
-//        b |= self.is_unconscious()
-//        if use_enhance:
-//            return not b and self.get_enhance_res() > -10
-//        else:
-//            return not b
-//
+    public bool is_resistable(bool use_enhance=True):
+        // """
+        // 抵抗判定可能かどうかbool値で返す。
+        // 呪縛状態でも抵抗できる。
+        // """
+        b = this.is_sleep();
+        b |= this.is_paralyze();
+        b |= this.is_unconscious();
+        if (use_enhance) {
+            return !b && this.get_enhance_res() > -10;
+        } else {
+            return !b;
+        }
+
     public bool is_reversed()
     {
         // """
@@ -1503,10 +1514,10 @@ class Character
         tdice = dice;
 
         thresholdbonus = int(thresholdbonus);
-        voc = self.get_vocation_val(vocation);
+        voc = this.get_vocation_val(vocation);
         bonus = int(voc + enhance);
         uvalue = cw.util.div_vocation(thresholdbonus) + level + subbonus + udice;
-        tvalue = cw.util.div_vocation(bonus) + self.level + tdice;
+        tvalue = cw.util.div_vocation(bonus) + this.level + tdice;
         return uvalue <= tvalue;
     }
 
@@ -1521,7 +1532,7 @@ class Character
         bool flag;
 
         dice = cw.cwpy.dice.roll(2);
-        threshold = level - self.level - 1;
+        threshold = level - this.level - 1;
 
         if (dice == 12)
         {
@@ -1710,11 +1721,11 @@ class Character
         bonus = -2147483647;
         maxbonustargs = [];
         // 最大ボーナスを取得
-        motions = self._get_motions(header);
+        motions = this._get_motions(header);
         for (motion in motions)
         {
             mtype = motion.get("type", "")
-            if (not self._is_bonusedmtype(mtype))
+            if (not this._is_bonusedmtype(mtype))
             {
                 continue;
             }
@@ -3774,7 +3785,7 @@ class Player : Character {
        if (cw.cwpy.ydata)
        {
            for (header in cw.cwpy.ydata.partyrecord){
-               header.rename_member(self.data.fpath, name);
+               header.rename_member(this.data.fpath, name);
            }
        }
        cw.cwpy.background.reload(false, nocheckvisible=true);

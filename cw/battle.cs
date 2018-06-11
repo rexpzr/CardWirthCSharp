@@ -397,7 +397,7 @@ class BattleEngine;
         }
     }
  
-    public void win(runevent=true) {
+    public void win(bool runevent=true) {
          // """勝利処理。勝利イベント終了後も戦闘が続行していたら、
          // 強制的に戦闘エリアから離脱する。
          // """
@@ -405,7 +405,7 @@ class BattleEngine;
         foreach(var member in cw.cwpy.get_pcards()) {
             member.clear_action();
         }
-        assert cw.cwpy.is_battlestatus();
+        Debug.Assert(cw.cwpy.is_battlestatus());
  
         is_battlestarting = this.is_battlestarting();
         cw.cwpy.hide_cards(true);
@@ -425,7 +425,7 @@ class BattleEngine;
         cw.cwpy.clear_battlearea(true, eventkeynum=eventkeynum, is_battlestarting=is_battlestarting); // TODO
     }
  
-    public void defeat(runevent=true) {
+    public void defeat(bool runevent=true) {
          // """敗北処理。敗北イベント後、
          // パーティが全滅状態だったら、ゲームオーバ画面に遷移。
          // """
@@ -503,7 +503,7 @@ class BattleEngine;
  
         member = this.members[0];
         members = [(-member.decide_actionorder(), 0, member)]; // TODO
-        for( i, member in enumerate(this.members[1:], 1)) { // TODO
+        foreach (var i, member in enumerate(this.members[1:], 1)) { // TODO
             o = (-member.decide_actionorder(), -i, member);
             bisect.insort(members, o);
         }

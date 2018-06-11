@@ -254,7 +254,7 @@ class CWBinaryBase {
         if (e_imgpath == null) {
             return;
         }
-        Debug.assert(e_imgpath.tag in ("ImagePath", "Talk"), e_imgpath.tag);
+        Debug.Assert(e_imgpath.tag in ("ImagePath", "Talk"), e_imgpath.tag);
         postype = e_imgpath.getattr(".", "positiontype", "Default");
         if (postype in (defpostype, "Default")) {
             return;

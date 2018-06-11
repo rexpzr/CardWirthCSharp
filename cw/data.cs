@@ -3226,7 +3226,7 @@ class YadoData {
                 }
             }
         }
-        Debug.assert(len(this.environment.getfind("CompleteStamps")) == 0);
+        Debug.Assert(len(this.environment.getfind("CompleteStamps")) == 0);
     }
 
     public void clear_gossips() {
@@ -3247,7 +3247,7 @@ class YadoData {
                 }
             }
         }
-        Debug.assert(len(this.environment.getfind("Gossips")) == 0);
+        Debug.Assert(len(this.environment.getfind("Gossips")) == 0);
     }
 
     public void set_money(UNK value, bool blink=false) {
@@ -3743,7 +3743,7 @@ class Party {
             cw.cwpy.ydata.changed();
         }
         seq = cw.cwpy.get_pcards();
-        Debug.assert(len(seq) == len(this.members));
+        Debug.Assert(len(seq) == len(this.members));
         seq[index1], seq[index2] = seq[index2], seq[index1];
         this.members[index1], this.members[index2] = this.members[index2], this.members[index1];
         foreach (var index, pcard in enumerate(seq)) {
@@ -4279,15 +4279,15 @@ class CWPyElement : _ElementInterface, _CWPyElementInterface { // TODO
                 cwxpath.append("playercard:%s" % (e.cwxparent.index(e)));
             } else {
                 // Content
-                Debug.assert(!e.cwxparent == null, e.tag);
-                Debug.assert(e.cwxparent.tag in ("Contents", "ContentsLine"), "%s/%s" % (e.cwxparent.tag, e.tag));
+                Debug.Assert(!e.cwxparent == null, e.tag);
+                Debug.Assert(e.cwxparent.tag in ("Contents", "ContentsLine"), "%s/%s" % (e.cwxparent.tag, e.tag));
                 if (e.cwxparent.tag == "ContentsLine") {
                     if (e._cwxline_index == null) {
                         foreach (var i, line_child in enumerate(e.cwxparent)) {
                             line_child._cwxline_index = i;
                         }
                     }
-                    Debug.assert(!e._cwxline_index == null);
+                    Debug.Assert(!e._cwxline_index == null);
                     foreach (var _i in xrange(e._cwxline_index)) {
                         cwxpath.append(":0");
                     }
