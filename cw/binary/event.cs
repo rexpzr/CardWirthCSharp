@@ -93,7 +93,7 @@ class SimpleEvent : base.CWBinaryBase {
     // """イベント発火条件なしのイベントデータのクラス。;
     // カードイベント・パッケージ等で使う。;
     // """;
-    public SimpleEvent(parent, f, yadodata=false) : base(parent, f, yadodata) {
+    public SimpleEvent(UNK parent, UNK f, bool yadodata=false) : base(parent, f, yadodata) {
         contents_num = f.dword();
         this.contents = [content.Content(self, f, 0) for _cnt in xrange(contents_num)];
 
