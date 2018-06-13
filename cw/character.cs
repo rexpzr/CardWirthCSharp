@@ -1652,7 +1652,7 @@ class Character
         //  * 適性値を-6する
         seq = []; // 手札交換以外のカード
         exchange = []; // 手札交換
-        for (t in headers)
+        foreach (var t in headers)
         {
             header = t[1];
             if (header.type == "ActionCard" && header.id == 0)
@@ -1662,7 +1662,7 @@ class Character
                 seq.append(t);
             }
         }
-        assert len(seq)+len(exchange) == len(headers);
+        Debug.Asset(len(seq)+len(exchange) == len(headers));
 
         // カードを選択する(手札交換以外)
 
@@ -1671,7 +1671,7 @@ class Character
         maxd = -2147483647;
         // 選択されたカード
         selected = (null, null);
-        for (i, t in enumerate(itertools.chain(seq, exchange)))
+        foreach (var i, t in enumerate(itertools.chain(seq, exchange)))
         {
             header = t[1];
 
@@ -1722,14 +1722,14 @@ class Character
         maxbonustargs = [];
         // 最大ボーナスを取得
         motions = this._get_motions(header);
-        for (motion in motions)
+        foreach (var motion in motions)
         {
             mtype = motion.get("type", "")
             if (not this._is_bonusedmtype(mtype))
             {
                 continue;
             }
-            for (targ in targets){
+            foreach (var targ in targets){
                 b = targ.get_targetingbonus(mtype);
                 if (bonus == b)
                 {
@@ -3411,12 +3411,13 @@ class Character
         eff = false;
         if (vanish)
         {
-            // for header in this.get_pocketcards(idx)[::-1]:
-            //     if (not header.attachment)
-            //     {
-            //         this.throwaway_card(header, update_image=false)
-            //         eff = true
-            //       }
+            foreach (var header in this.get_pocketcards(idx)[::-1]) {
+                if (not header.attachment)
+                {
+                    this.throwaway_card(header, update_image=false)
+                    eff = true
+                }
+            }
         }
         else if (this.can_addbeast())
         {
@@ -3693,7 +3694,7 @@ class Character
             if (events) {
                 e_eventtarget = None;
                 if (fromevent) {
-                    for t in itertools.chain(cw.cwpy.get_pcards(), cw.cwpy.get_ecards(), cw.cwpy.get_fcards()) // TODO
+                    foreach (var t in itertools.chain(cw.cwpy.get_pcards(), cw.cwpy.get_ecards(), cw.cwpy.get_fcards())) // TODO
                     {
                         if (isinstance(t, cw.character.Character)) { // TODO
                             if (t.has_coupon("＠イベント対象")) {
@@ -3784,7 +3785,7 @@ class Player : Character {
        Character.set_name(name);
        if (cw.cwpy.ydata)
        {
-           for (header in cw.cwpy.ydata.partyrecord){
+           foreach (var header in cw.cwpy.ydata.partyrecord) {
                header.rename_member(this.data.fpath, name);
            }
        }
@@ -3853,12 +3854,12 @@ class AlbumPage
         Dictionary<string, UNK> d;
         d = {};
 
-        for (e in this.data.getfind("Property/Coupons"))
+        foreach (var e in this.data.getfind("Property/Coupons"))
         {
             coupon = e.text
             if (coupon && coupon.startswith(u"＠"))
             {
-                d[coupon] = (int)e.get("value", "0")
+                d[coupon] = (int)e.get("value", "0");
             }
         }
         return d;
