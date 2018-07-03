@@ -545,7 +545,7 @@ class Character
             pe = this.data.find(path);
             if (pe != null) {
                 foreach(var e in pe) {
-                    if (maxn <= len(headers)) {
+                    if (maxn <= headers.Count) {
                         // 最大所持数を越えたカードは消去
                         break;
                     }
@@ -862,7 +862,8 @@ class Character
             return this.is_active();
         }
     }
-    public bool is_resistable(bool use_enhance=True):
+    public bool is_resistable(bool use_enhance=true) 
+    {
         // """
         // 抵抗判定可能かどうかbool値で返す。
         // 呪縛状態でも抵抗できる。
@@ -875,6 +876,7 @@ class Character
         } else {
             return !b;
         }
+    }
 
     public bool is_reversed()
     {
@@ -1115,7 +1117,7 @@ class Character
     //　カード操作
     //---------------------------------------------------------------------------
 
-    public UNK use_card(UNK targets, UNK header)
+    public void use_card(UNK targets, UNK header)
     {
         // """targetsにカードを使用する。"""
         cw.cwpy.advlog.use_card(this, header, targets);
@@ -1283,7 +1285,7 @@ class Character
     //　戦闘行動関係
     //---------------------------------------------------------------------------
 
-    public UNK action()
+    public void action()
     {
         // """設定している戦闘行動を行う。
         // BattleEngineからのみ呼ばれる。
@@ -1326,7 +1328,7 @@ class Character
                     {
                         // カードの効果で召喚獣カードが
                         // いなくなっている場合
-                        continue; // TODO
+                        continue;
                     }
                     this.use_card(targets_b, header_b);
 
@@ -1350,6 +1352,7 @@ class Character
                         break;
                     }
                 }
+            }
             // 手札カードの使用
             if (this.is_alive() && !ishidden && this.status != "reversed" && this.actiondata && cw.cwpy.is_battlestatus())
             {
@@ -1363,6 +1366,8 @@ class Character
                     this.use_card(targets, header);
                 }
             }
+        }
+    }
 
 
     public void set_action(UNK target,UNK header,UNK beasts=[][:],bool auto=false) //TODO
@@ -1563,7 +1568,7 @@ class Character
         return this.actionorder;
     }
 
-    public UNK decide_action()
+    public void decide_action()
     {
         // """
         // 自動手札選択。
@@ -1581,7 +1586,7 @@ class Character
         }
         // 召喚獣カード
         beasts = [];
-        for (header in this.get_pocketcards(cw.POCKET_BEAST))
+        foreach (var header in this.get_pocketcards(cw.POCKET_BEAST))
         {
             if (header.is_autoselectable())
             {
@@ -1594,7 +1599,7 @@ class Character
                     bonus = this._get_targetingbonus_and_targets(header, effectivetargets)
                     effectivetargets = this._get_targetingbonus_and_targets(header, effectivetargets)
 
-                    if (!header.allrange && len(targets) > 1)
+                    if (!header.allrange && targets.Count > 1)
                     {
                         targets = [cw.cwpy.dice.choice(effectivetargets)];
                     }
@@ -1613,7 +1618,7 @@ class Character
         // 使用するカード
         headers = [];
 
-        for (header in this.deck.hand)
+        foreach (var header in this.deck.hand)
         {
             if (header.is_autoselectable())
             {
@@ -1633,7 +1638,7 @@ class Character
         targets = this.decide_usecard(header)
         header = this.decide_usecard(header)
 
-        if (header && !header.allrange && len(targets) > 1)
+        if (header && !header.allrange && targets.Count > 1)
         {
             targets = [cw.cwpy.dice.choice(targets)];
         }
@@ -1662,7 +1667,7 @@ class Character
                 seq.append(t);
             }
         }
-        Debug.Asset(len(seq)+len(exchange) == len(headers));
+        Debug.Asset(seq.Count+exchange.Count == headers.Count);
 
         // カードを選択する(手札交換以外)
 
@@ -1677,7 +1682,7 @@ class Character
 
             // 適性値
             vocation = (int)header.get_vocation_val();
-            if (seq.Count <= i) //if (len(seq) <= i)
+            if (seq.Count <= i) //if (seq.Count <= i)
             {
                 vocation -= 6; // 手札交換なので-6
             }else{
@@ -1701,7 +1706,8 @@ class Character
         return selected;
     }
     
-    public UNK _get_motions(UNK header)    {
+    public UNK _get_motions(UNK header)
+    {
         if (header.type == "ActionCard" and header.id == 7)
         {
             // 逃走の場合は"VanishTarget"を"Runaway"というボーナス判定用特殊効果に置換する
@@ -1809,7 +1815,7 @@ class Character
             // すでにその行動のターゲットになっている場合はボーナスを入れず、
             // ターゲット回数分をペナルティとする(選択されにくくなる)
             targeting = 0;
-            foreach (s, tarr, _user in cw.cwpy.battle.priorityacts)
+            foreach (var s, tarr, _user in cw.cwpy.battle.priorityacts)
             {
                 if (mtype == s)
                 {
@@ -1844,6 +1850,7 @@ class Character
         // """
         return this.cardpocket[index];
     }
+
     public UNK get_cardpocketspace()
     {
         // """
@@ -1927,7 +1934,7 @@ class Character
         return voc;
     }
 
-    public UNK _clear_vocationcache()
+    public void _clear_vocationcache()
     {
         // """能力値のキャッシュをクリアする。"""
         this._voc_tbl = {};
@@ -2249,7 +2256,7 @@ class Character
     }
 
     @synclock(_couponlock);
-    public UNK replace_allcoupons(UNK seq, UNK syscoupons={}.copy()) {
+    public bool replace_allcoupons(UNK seq, UNK syscoupons={}.copy()) {
         // """システムクーポン以外の全てのクーポンを;
         // listの内容に入れ替える。;
         // 所持クーポンが変化したらtrueを返す。;
@@ -2350,7 +2357,7 @@ class Character
     }
 
     @synclock(_couponlock);
-    public UNK has_sex() {
+    public bool has_sex() {
         return this._has_sex();
     }
 
@@ -2380,11 +2387,11 @@ class Character
     }
 
     @synclock(_couponlock);
-    public UNK set_age(age) {
+    public UNK set_age(int age) {
         this._set_age(age);
     }
 
-    public UNK _set_age(age) {
+    public UNK _set_age(int age) {
         if (cw.cwpy.ydata) {
             cw.cwpy.ydata.changed();
         }
@@ -2494,11 +2501,11 @@ class Character
     }
 
     @synclock(_couponlock);
-    public UNK set_race(race) {
+    public void set_race(UNK race) {
         this._set_race(race);
     }
 
-    public UNK _set_race(race) {
+    public void _set_race(UNK race) {
         old = this._get_race();
         if (race == old) {
             return;
@@ -2526,7 +2533,7 @@ class Character
     }
 
     @synclock(_couponlock);
-    public UNK count_timedcoupon(value=-1) {
+    public void count_timedcoupon(value=-1) {
         // """
         // 時限クーポンの点数を減らす。
         // value: 減らす数。
@@ -2567,7 +2574,7 @@ class Character
         this._set_coupon(name, value, true);
     }
 
-    public UNK _set_coupon(name, value, update=true) {
+    public void _set_coupon(UNK name, UNK value, bool update=true) {
         if (cw.cwpy.ydata) {
             cw.cwpy.ydata.changed();
         }
@@ -2704,6 +2711,7 @@ class Character
     public UNK get_limitlevel() {
         // """レベルの調節範囲の最大値を返す。"""
         return this._get_limitlevel();
+    }
 
     public UNK _get_limitlevel() {
         l = this._get_couponvalue(u"＠レベル原点", raiseerror=false);
@@ -2751,7 +2759,7 @@ class Character
     }
 
     @synclock(_couponlock);
-    public UNK set_level(UNK value, bool regulate=false, bool debugedit=false, UNK backpack_party=null, bool revert_cardpocket=true) {
+    public void set_level(UNK value, bool regulate=false, bool debugedit=false, UNK backpack_party=null, bool revert_cardpocket=true) {
         // """レベルを設定する。;
         // regulate: レベルを調節する場合はtrue。;
         // backpack_party: レベルが下がって手札を持ちきれなくなった際、;
@@ -2866,7 +2874,7 @@ class Character
         }
     }
 
-    public UNK add_cardpocketmemory(UNK header) {
+    public void add_cardpocketmemory(UNK header) {
         // """レベル調節前に所持していたカードを記憶する。"""
         memories = this.data.find("./CardMemories");
         if (memories == null) {
@@ -2888,7 +2896,7 @@ class Character
         memories.append(e);
     }
 
-    public UNK revert_cardpocket(backpack_party=null) {
+    public void revert_cardpocket(backpack_party=null) {
         // """記憶していたカードを検索し、
         // 見つかったら再び所持する。"""
         if (!cw.cwpy.setting.revert_cardpocket) {
@@ -2977,7 +2985,7 @@ class Character
         }
     }
 
-    public UNK set_fullrecovery(bool decideaction=false) {
+    public void set_fullrecovery(bool decideaction=false) {
         // """
         // 完全回復処理。HP＆精神力＆状態異常回復。
         // 強化値もすべて0、付帯召喚以外の召喚獣カードも消去。
@@ -3022,7 +3030,7 @@ class Character
         return this.life - oldlife;
     }
 
-    public UNK set_paralyze(value) {
+    public UNK set_paralyze(UNK value) {
         // """
         // 麻痺値を操作する。
         // 麻痺値は0～40の範囲を越えない。
@@ -3056,7 +3064,7 @@ class Character
         return this.poison - old;
     }
 
-    public UNK set_mentality(string name, UNK value, bool overwrite=true) {
+    public void set_mentality(string name, UNK value, bool overwrite=true) {
         // """
         // 精神状態とその継続ラウンド数を操作する。
         // 継続ラウンド数の範囲は0～999を越えない。
@@ -3089,7 +3097,7 @@ class Character
         this.adjust_action();
     }
 
-    public UNK set_bind(UNK value, bool overwrite=true) {
+    public void set_bind(UNK value, bool overwrite=true) {
         // """
         // 束縛状態の継続ラウンド数を操作する。
         // 継続ラウンド数の範囲は0～999を越えない。
@@ -3110,7 +3118,7 @@ class Character
         this.adjust_action();
     }
 
-    public UNK set_silence(UNK value, bool overwrite=true) {
+    public void set_silence(UNK value, bool overwrite=true) {
         // """
         // 沈黙状態の継続ラウンド数を操作する。
         // 継続ラウンド数の範囲は0～999を越えない。
@@ -3130,7 +3138,7 @@ class Character
         this.data.edit("Property/Status/Silence", (string)(this.silence), "duration");
     }
 
-    public UNK set_faceup(UNK value, bool overwrite=true) {
+    public void set_faceup(UNK value, bool overwrite=true) {
         // """
         // 暴露状態の継続ラウンド数を操作する。
         // 継続ラウンド数の範囲は0～999を越えない。
@@ -3150,7 +3158,7 @@ class Character
         this.data.edit("Property/Status/FaceUp", (string)(this.faceup), "duration");
     }
 
-    public UNK set_antimagic(UNK value, bool overwrite=true) {
+    public void set_antimagic(UNK value, bool overwrite=true) {
         // """
         // 魔法無効状態の継続ラウンド数を操作する。
         // 継続ラウンド数の範囲は0～999を越えない。
@@ -3170,7 +3178,7 @@ class Character
         this.data.edit("Property/Status/AntiMagic", (string)(this.antimagic), "duration");
     }
 
-    public UNK set_vanish(bool battlespeed=false) {
+    public void set_vanish(bool battlespeed=false) {
         // """
         // 対象消去を行う。
         // """
@@ -3198,7 +3206,7 @@ class Character
         }
     }
 
-    public UNK cancel_vanish() {
+    public void cancel_vanish() {
         // """対象消去をキャンセルする。
         // 表示処理は行わないため、呼び出し後に行う必要がある。
         // """
@@ -3217,7 +3225,7 @@ class Character
         cw.cwpy.pcards.insert(cw.cwpy.ydata.party.members.index(this.data), self);
     }
 
-    public UNK commit_vanish() {
+    public void commit_vanish() {
         if (!this.is_vanished()) {
             return;
         }
@@ -3398,7 +3406,7 @@ class Character
         }
     }
     
-    public void set_beast(UNK element=None, bool vanish=false, bool is_scenariocard=false)
+    public bool set_beast(UNK element=None, bool vanish=false, bool is_scenariocard=false)
     {
         // """召喚獣を召喚する。付帯召喚設定は強制的にクリアされる。
         // vanish: 召喚獣を消去するかどうか。
@@ -3432,17 +3440,17 @@ class Character
         }
     }
 
-    public void can_addbeast()
+    public bool can_addbeast()
     {
         if (this.is_unconscious())
         {
            return false;
         }
         idx = cw.POCKET_BEAST;
-        return len(this.get_pocketcards(idx)) < this.get_cardpocketspace()[idx];
+        return this.get_pocketcards(idx).Count < this.get_cardpocketspace()[idx];
     }
 
-    public UNK decrease_physical(UNK stype, UNK time);
+    public void decrease_physical(UNK stype, UNK time);
     {
         // """中毒麻痺の時間経過による軽減。""";
         for (int _t=0; _t<time; _t++)
@@ -3473,7 +3481,7 @@ class Character
         }
     }
 
-    public UNK set_timeelapse(time=1, fromevent=false);
+    public void set_timeelapse(UNK time=1, bool fromevent=false);
     {
         // """時間経過。"""
         if (cw.cwpy.ydata) {
@@ -3845,7 +3853,7 @@ class AlbumPage
         this.level = cw.util.numwrap(this.data.getint("Property/Level"), 1, 65536);
     }
 
-    public UNK get_specialcoupons()
+    public Dictionary<string, UNK> get_specialcoupons()
     {
         // """
         // "＠"で始まる特殊クーポンの
