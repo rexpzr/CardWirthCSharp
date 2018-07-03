@@ -79,14 +79,14 @@ class Area : base.CWBinaryBase {
         return this.data;
     }
 
-    public static UNK unconv(UNK f, UNK data) {
+    public static void unconv(UNK f, UNK data) {
         restype = 0;
         name = "";
         resid = 0;
-        events = [];
+        events = new List<UNK>();
         spreadtype = 0;
-        mcards = [];
-        bgimgs = [];
+        mcards = new List<UNK>();
+        bgimgs = new List<UNK>();
 
         foreach (var e in data) {
             if (e.tag == "Property") {
@@ -191,11 +191,11 @@ class MenuCard : base.CWBinaryBase {
         return this.data;
     }
 
-    public static UNK unconv(UNK f, UNK data) {
+    public static void unconv(UNK f, UNK data) {
         image = null;
         name = "";
         description = "";
-        events = [];
+        events = new List<UNK>();
         flag = "";
         scale = 0;
         left = 0;
