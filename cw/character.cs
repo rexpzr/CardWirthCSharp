@@ -227,6 +227,7 @@ class Character
             if (e.text == "：Ｒ"){
                 this.reversed = true;
             }
+        }
 
         // 時限クーポンのデータのリスト(name, flag_countable)
         this.timedcoupons = this.get_timedcoupons();
@@ -1893,6 +1894,7 @@ class Character
         if (enhance_act)
         {
             value += this.get_enhance_act();
+        }
         return value;
     }
 
@@ -3602,6 +3604,7 @@ class Character
             if (this.is_analyzable()) {
                 updateimage = true;
             }
+        }
 
         // 行動力
         if (this.enhance_act_dur > 0) {
@@ -3618,6 +3621,7 @@ class Character
             if (this.is_analyzable()) {
                 updateimage = true;
             }
+        }
 
         // 回避力
         if (this.enhance_avo_dur > 0) {
@@ -3651,6 +3655,7 @@ class Character
             if (this.is_analyzable()) {
                 updateimage = true;
             }
+        }
 
         // 防御力
         if (this.enhance_def_dur > 0) {
@@ -3667,6 +3672,7 @@ class Character
             if (this.is_analyzable()) {
                 updateimage = true;
             }
+        }
 
         // 中毒効果で死亡していたら、ステータスを元に戻す
         if (this.is_unconscious()) {
@@ -3751,12 +3757,12 @@ class Character
         } else if (pocket == cw.POCKET_BEAST) {
             type = "BeastCards";
         } else {
-            assert false;
+            Debug.Assert(false);
         }
         this.data.edit(type, str(value), "hold_all");
     }
-
 }
+
 class Player : Character {
     public void lost()
      {
