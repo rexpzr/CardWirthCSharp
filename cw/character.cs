@@ -200,7 +200,7 @@ class Character
         this.actionautoselected = false;
         // 行動順位を決定する数値
         this.actionorder = 0;
-        // ラウンド処理中で行動開始前ならTrue
+        // ラウンド処理中で行動開始前ならtrue
         this.actionend = true;
 
         this.reversed = false;
@@ -407,7 +407,7 @@ class Character
         }
 
         // 外部から設定したイメージは常にスケーリング可能とする
-        this.data.edit(".", (string)(True), "scaledimage"); // TODO
+        this.data.edit(".", (true).ToString(), "scaledimage"); // TODO
 
         this.data.is_edited = true;
 
@@ -841,7 +841,7 @@ class Character
         // """
         // 各種データが暴露可能かどうかbool値で返す。
         // EnemyCardのための処理。
-        // デバッグフラグがTrueだったら問答無用で暴露する。
+        // デバッグフラグがtrueだったら問答無用で暴露する。
         // """
         if (isinstance(Enemy))
         {
@@ -1476,7 +1476,7 @@ class Character
     {
         // """戦闘中にペナルティカードを自動選択した状態か。
         // headerにnull以外が指定された時は、選択されたペナルティカードが
-        // 指定されたheaderと一致する時のみTrueを返す。
+        // 指定されたheaderと一致する時のみtrueを返す。
         // """
         List<UNK> headerp; 
         if (cw.cwpy.battle && this.actiondata && this.actionautoselected)
@@ -1494,7 +1494,7 @@ class Character
     public bool decide_outcome(UNK level, UNK vocation, UNK thresholdbonus=6, UNK enhance=0, UNK subbonus=0)
     {
         // """
-        // 行為判定を行う。成功ならTrue。失敗ならFalseを返す。
+        // 行為判定を行う。成功ならtrue。失敗ならFalseを返す。
         // level: 判定レベル。
         // vocation: 適性データ。(身体適性名, 精神適性名)のタプル。
         // thresholdbonus: アクション元の適性値+行動力強化値。効果コンテントだと6。
@@ -2556,7 +2556,7 @@ class Character
                 n = cw.util.numwrap(n, 0, 999);
 
                 if (n > 0) {
-                    e.set("value", (string)(n));
+                    e.set("value", (n).ToString());
                     this.coupons[coupon] = n, e;
                 } else {
                     this._remove_coupon(coupon);
@@ -2583,7 +2583,7 @@ class Character
         value = (int)(value);
         value = cw.util.numwrap(value, -999, 999);
         removed = this._remove_coupon(name, false);
-        e = this.data.make_element("Coupon", name, {"value" : (string)(value)});
+        e = this.data.make_element("Coupon", name, {"value" : (value).ToString()});
         this.data.append("Property/Coupons", e);
         this.coupons[name] = value, e;
 
@@ -2799,12 +2799,12 @@ class Character
                 // 避けるため、計算上の体力と実際の最大体力が食い違う
                 // 場合は計算用係数を付与する
                 coeff = float(this.maxlife) / (int)(maxlife);
-                this.data.edit("Property/Life", (string)(coeff), "coefficient");
+                this.data.edit("Property/Life", (coeff).ToString(), "coefficient");
             }
         }
 
         this.level = value;
-        this.data.edit("Property/Level", (string)(this.level));
+        this.data.edit("Property/Level", (this.level).ToString());
         // 最大HPとHP
         maxlife = calc_maxlife(vit, minval, this.level);
         if (coeff != 1) {
@@ -2812,7 +2812,7 @@ class Character
         }
         maxlife = (int)(max(1, maxlife));
         this.maxlife += maxlife - this.maxlife;
-        this.data.edit("Property/Life", (string)(this.maxlife), "max");
+        this.data.edit("Property/Life", (this.maxlife).ToString(), "max");
         this.set_life(this.maxlife);
         // 技能の使用回数
         foreach (var header in this.cardpocket[cw.POCKET_SKILL]) {
@@ -2827,11 +2827,11 @@ class Character
                 }
 
                 if (e.text == u"＠レベル原点") {
-                    e.attrib["value"] = (string)(this.level);
+                    e.attrib["value"] = (this.level).ToString();
                     this.coupons[e.text] = this.level, e;
                 } else if (e.text == u"＠ＥＰ") {
                     value = e.getint(".", "value", 0) + (value - limit) * 10;
-                    e.attrib["value"] = (string)(value);
+                    e.attrib["value"] = (value).ToString();
                     this.coupons[e.text] = value, e;
                 }
             }
@@ -2890,10 +2890,10 @@ class Character
         e.append(cw.data.make_element("Scenario", header.scenario));
         e.append(cw.data.make_element("Author", header.author));
         if (type != "BeastCard") {
-            e.append(cw.data.make_element("Hold", (string)(header.hold)));
+            e.append(cw.data.make_element("Hold", (header.hold).ToString()));
         }
         if (header.type != "SkillCard") {
-            e.append(cw.data.make_element("UseLimit", (string)(header.uselimit)));
+            e.append(cw.data.make_element("UseLimit", (header.uselimit).ToString()));
         }
         memories.append(e);
     }
@@ -3024,7 +3024,7 @@ class Character
         oldlife = this.life;
         this.life += value;
         this.life = cw.util.numwrap(this.life, 0, this.maxlife);
-        this.data.edit("Property/Life", (string)((int)(this.life)));
+        this.data.edit("Property/Life", ((int)(this.life)).ToString());
         this.adjust_action();
         if (this.is_unconscious()) {
             this.set_unconsciousstatus();
@@ -3046,7 +3046,7 @@ class Character
         if (0 < this.paralyze) {
             this.set_mentality("Normal", 0);
         }
-        this.data.edit("Property/Status/Paralyze", (string)(this.paralyze));
+        this.data.edit("Property/Status/Paralyze", (this.paralyze).ToString());
         this.adjust_action();
         return this.paralyze - old;
     }
@@ -3062,7 +3062,7 @@ class Character
         old = this.poison;
         this.poison += value;
         this.poison = cw.util.numwrap(this.poison, 0, 40);
-        this.data.edit("Property/Status/Poison", (string)(this.poison));
+        this.data.edit("Property/Status/Poison", (this.poison).ToString());
         return this.poison - old;
     }
 
@@ -3095,7 +3095,7 @@ class Character
 
         path = "Property/Status/Mentality";
         this.data.edit(path, this.mentality);
-        this.data.edit(path, (string)(this.mentality_dur), "duration");
+        this.data.edit(path, (this.mentality_dur).ToString(), "duration");
         this.adjust_action();
     }
 
@@ -3116,7 +3116,7 @@ class Character
             this.bind = max(this.bind, value);
         }
         this.bind = cw.util.numwrap(this.bind, 0, 999);
-        this.data.edit("Property/Status/Bind", (string)(this.bind), "duration");
+        this.data.edit("Property/Status/Bind", (this.bind).ToString(), "duration");
         this.adjust_action();
     }
 
@@ -3137,7 +3137,7 @@ class Character
             this.silence = max(this.silence, value);
         }
         this.silence = cw.util.numwrap(this.silence, 0, 999);
-        this.data.edit("Property/Status/Silence", (string)(this.silence), "duration");
+        this.data.edit("Property/Status/Silence", (this.silence).ToString(), "duration");
     }
 
     public void set_faceup(UNK value, bool overwrite=true) {
@@ -3157,7 +3157,7 @@ class Character
             this.faceup = max(this.faceup, value);
         }
         this.faceup = cw.util.numwrap(this.faceup, 0, 999);
-        this.data.edit("Property/Status/FaceUp", (string)(this.faceup), "duration");
+        this.data.edit("Property/Status/FaceUp", (this.faceup).ToString(), "duration");
     }
 
     public void set_antimagic(UNK value, bool overwrite=true) {
@@ -3177,7 +3177,7 @@ class Character
             this.antimagic = max(this.antimagic, value);
         }
         this.antimagic = cw.util.numwrap(this.antimagic, 0, 999);
-        this.data.edit("Property/Status/AntiMagic", (string)(this.antimagic), "duration");
+        this.data.edit("Property/Status/AntiMagic", (this.antimagic).ToString(), "duration");
     }
 
     public void set_vanish(bool battlespeed=false) {
@@ -3299,8 +3299,8 @@ class Character
         this.enhance_act_dur = duration;
         this.enhance_act_dur = cw.util.numwrap(this.enhance_act_dur, 0, 999);
         path = "Property/Enhance/Action";
-        this.data.edit(path, (string)(this.enhance_act));
-        this.data.edit(path, (string)(this.enhance_act_dur), "duration");
+        this.data.edit(path, (this.enhance_act).ToString());
+        this.data.edit(path, (this.enhance_act_dur).ToString(), "duration");
     }
 
     public void set_enhance_avo(int value, UNK duration) {
@@ -3326,8 +3326,8 @@ class Character
         this.enhance_avo_dur = duration;
         this.enhance_avo_dur = cw.util.numwrap(this.enhance_avo_dur, 0, 999);
         path = "Property/Enhance/Avoid";
-        this.data.edit(path, (string)(this.enhance_avo));
-        this.data.edit(path, (string)(this.enhance_avo_dur), "duration");
+        this.data.edit(path, (this.enhance_avo).ToString());
+        this.data.edit(path, (this.enhance_avo_dur).ToString(), "duration");
     }
 
     public void set_enhance_res(int value, UNK duration) {
@@ -3353,8 +3353,8 @@ class Character
         this.enhance_res_dur = duration;
         this.enhance_res_dur = cw.util.numwrap(this.enhance_res_dur, 0, 999);
         path = "Property/Enhance/Resist";
-        this.data.edit(path, (string)(this.enhance_res));
-        this.data.edit(path, (string)(this.enhance_res_dur), "duration");
+        this.data.edit(path, (this.enhance_res).ToString());
+        this.data.edit(path, (this.enhance_res_dur).ToString(), "duration");
     }
 
     public void set_enhance_def(int value, UNK duration) {
@@ -3380,8 +3380,8 @@ class Character
         this.enhance_def_dur = duration;
         this.enhance_def_dur = cw.util.numwrap(this.enhance_def_dur, 0, 999);
         path = "Property/Enhance/Defense";
-        this.data.edit(path, (string)(this.enhance_def));
-        this.data.edit(path, (string)(this.enhance_def_dur), "duration");
+        this.data.edit(path, (this.enhance_def).ToString());
+        this.data.edit(path, (this.enhance_def_dur).ToString(), "duration");
     }
 
     public void set_skillpower(int value=999) {
@@ -3492,8 +3492,8 @@ class Character
         // 時限クーポン処理
         this.count_timedcoupon();
         oldalive = this.is_alive();
-        flag = false; // 反転しながら画像を更新する場合はTrue
-        updateimage = false; // 反転せずに画像を更新する場合はTrue
+        flag = false; // 反転しながら画像を更新する場合はtrue
+        updateimage = false; // 反転せずに画像を更新する場合はtrue
 
         // 中毒
         if (this.is_poison() && !this.is_unconscious()) {
